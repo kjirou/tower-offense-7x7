@@ -4,7 +4,9 @@
   "description": "ATODE",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "develop": "$(npm bin)/webpack-dev-server --config webpack-configs/development.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "typecheck": "$(npm bin)/tsc --project tsconfig-typecheck.json"
   },
   "repository": {
     "type": "git",
@@ -17,5 +19,12 @@
   },
   "homepage": "https://github.com/kjirou/tower-offense-7x7#readme",
   "private": true,
-  "devDependencies": {}
+  "devDependencies": {
+    "ejs": "^2.6.1",
+    "ts-loader": "^5.3.3",
+    "typescript": "^3.4.3",
+    "webpack": "^4.30.0",
+    "webpack-cli": "^3.3.0",
+    "webpack-dev-server": "^3.3.1"
+  }
 }
