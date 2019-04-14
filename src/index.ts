@@ -1,9 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-function Root(): JSX.Element {
-  return React.createElement('div', {}, 'Hello, React!');
-}
+import Root from './components/Root';
 
 window.addEventListener('DOMContentLoaded', function() {
   const appDestination = document.querySelector('.js-app');
