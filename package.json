@@ -4,6 +4,7 @@
   "description": "ATODE",
   "main": "index.js",
   "scripts": {
+    "develop": "$(npm bin)/webpack-dev-server --config webpack-configs/development.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
