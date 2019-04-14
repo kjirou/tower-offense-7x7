@@ -1,9 +1,15 @@
-const a = 1;
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 
-const b = 2;
-//b = 22;
+import Root from './components/Root';
 
-//let c: number = 3;
-//c = 'a';
+window.addEventListener('DOMContentLoaded', function() {
+  const appDestination = document.querySelector('.js-app');
 
-console.log('Hello, index.ts!');
+  if (appDestination) {
+    ReactDOM.render(
+      React.createElement(Root, {}),
+      appDestination
+    );
+  }
+});
