@@ -47,18 +47,16 @@ module.exports = {
 
       app.engine('html', ejs.renderFile);
 
-      app.get('/', (req, res) => {
-        res.render(
-          path.join(WEBPACK_DEV_SERVER_ROOT, 'templates/index.html'),
-          genereateCommonTemplateVariables()
-        );
-      });
-
-      app.get('/*.html', (req, res) => {
-        res.render(
-          path.join(WEBPACK_DEV_SERVER_ROOT, 'templates', req.path),
-          genereateCommonTemplateVariables()
-        );
+      [
+        ['/', 'index.html'],
+        ['/tower-offense-7x7/', 'tower-offense-7x7/index.html'],
+      ].forEach(([pagePath, templatePath]) => {
+        app.get(pagePath, (req, res) => {
+          res.render(
+            path.join(WEBPACK_DEV_SERVER_ROOT, 'templates', templatePath),
+            genereateCommonTemplateVariables()
+          );
+        });
       });
     },
   },
