@@ -15,5 +15,6 @@
   "bugs": {
     "url": "https://github.com/kjirou/tower-offense-7x7/issues"
   },
-  "homepage": "https://github.com/kjirou/tower-offense-7x7#readme"
+  "homepage": "https://github.com/kjirou/tower-offense-7x7#readme",
+  "private": true
 }
