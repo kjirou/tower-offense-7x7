@@ -4,6 +4,7 @@
   "description": "ATODE",
   "main": "index.js",
   "scripts": {
+    "develop": "$(npm bin)/parcel --public-url '/tower-offense-7x7/' src/index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
