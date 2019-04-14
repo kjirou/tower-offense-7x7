@@ -18,7 +18,5 @@
   },
   "homepage": "https://github.com/kjirou/tower-offense-7x7#readme",
   "private": true,
-  "devDependencies": {
-    "parcel-bundler": "^1.12.3"
-  }
+  "devDependencies": {}
 }
