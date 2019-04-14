@@ -18,6 +18,7 @@
   "homepage": "https://github.com/kjirou/tower-offense-7x7#readme",
   "private": true,
   "devDependencies": {
+    "ejs": "^2.6.1",
     "ts-loader": "^5.3.3",
     "typescript": "^3.4.3",
     "webpack": "^4.30.0",
