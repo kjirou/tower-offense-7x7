@@ -61,6 +61,32 @@ function BattleFieldBoard(props: {board: BattleFieldSquareProp[][]}): JSX.Elemen
   );
 }
 
+function SquareMonitor(): JSX.Element {
+  const style = {
+    position: 'relative',
+    width: '360px',
+    height: '64px',
+    backgroundColor: 'yellow',
+  };
+
+  return (
+    <div style={style}>SquareMonitor!</div>
+  );
+}
+
+function Barrack(): JSX.Element {
+  const style = {
+    position: 'relative',
+    width: '360px',
+    height: '110px',
+    backgroundColor: 'green',
+  };
+
+  return (
+    <div style={style}>Barrack!</div>
+  );
+}
+
 function BattlePage(): JSX.Element {
   const boardProps: BattleFieldSquareProp[][] = [];
   for (let y = 0; y < 7; y++) {
@@ -85,6 +111,8 @@ function BattlePage(): JSX.Element {
     <div style={style}>
       <MetaInformationBar />
       <BattleFieldBoard board={boardProps} />
+      <SquareMonitor />
+      <Barrack />
     </div>
   );
 }
