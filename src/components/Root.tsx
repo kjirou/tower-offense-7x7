@@ -2,7 +2,7 @@ import * as React from 'react';
 
 function MetaInformationBar(): JSX.Element {
   const style = {
-    display: 'relative',
+    position: 'relative',
     width: '360px',
     height: '48px',
     backgroundColor: 'yellow',
@@ -15,7 +15,7 @@ function MetaInformationBar(): JSX.Element {
 
 function Board(): JSX.Element {
   const style = {
-    display: 'relative',
+    position: 'relative',
     width: '360px',
     height: '360px',
     backgroundColor: 'green',
@@ -28,7 +28,7 @@ function Board(): JSX.Element {
 
 function BattlePage(): JSX.Element {
   const style = {
-    display: 'relative',
+    position: 'relative',
     width: '360px',
     height: '640px',
     backgroundColor: 'silver',
@@ -44,7 +44,7 @@ function BattlePage(): JSX.Element {
 
 export default function Root(): JSX.Element {
   const style = {
-    display: 'relative',
+    position: 'relative',
     margin: '0 auto',
     width: '360px',
     height: '640px',
