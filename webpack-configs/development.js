@@ -26,6 +26,7 @@ module.exports = {
     extensions: sharedWebpackConfig.resolve.extensions,
   },
   plugins: [
+    new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
       __DEVELOPMENT__: true,
       __REACT_DEVTOOLS_GLOBAL_HOOK__: '({isDisabled: true})',
