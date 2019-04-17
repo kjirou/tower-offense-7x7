@@ -28,7 +28,7 @@ type PageState = {
   pageId: 'welcome' | 'battle',
 }
 
-type ApplicationState = {
+export type ApplicationState = {
   activatedPage: PageState,
 }
 

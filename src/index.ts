@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import Root from './components/Root';
+import App from './components/App';
 import {createInitialApplicationState} from './state-manager';
 
 window.addEventListener('DOMContentLoaded', function() {
@@ -11,7 +11,7 @@ window.addEventListener('DOMContentLoaded', function() {
     const applicationState = createInitialApplicationState();
 
     ReactDOM.render(
-      React.createElement(Root, {}),
+      React.createElement(App, {initialState: applicationState}),
       appDestination
     );
   }

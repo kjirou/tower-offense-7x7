@@ -117,6 +117,9 @@ function BattlePage(): JSX.Element {
   );
 }
 
+export type Props = {
+};
+
 export default function Root(): JSX.Element {
   const style = {
     position: 'relative',
