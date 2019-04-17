@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-type BattleFieldSquareProp = {
+type BattleFieldSquareProps = {
   x: number,
   y: number,
 };
@@ -18,7 +18,7 @@ function MetaInformationBar(): JSX.Element {
   );
 }
 
-function BattleFieldSquare(props: BattleFieldSquareProp): JSX.Element {
+function BattleFieldSquare(props: BattleFieldSquareProps): JSX.Element {
   const style = {
     position: 'absolute',
     top: `${6 + props.y * 48 + props.y * 2}px`,
@@ -33,7 +33,7 @@ function BattleFieldSquare(props: BattleFieldSquareProp): JSX.Element {
   );
 }
 
-function BattleFieldBoard(props: {board: BattleFieldSquareProp[][]}): JSX.Element {
+function BattleFieldBoard(props: {board: BattleFieldSquareProps[][]}): JSX.Element {
   const style = {
     position: 'relative',
     width: '360px',
@@ -42,7 +42,7 @@ function BattleFieldBoard(props: {board: BattleFieldSquareProp[][]}): JSX.Elemen
   };
 
   // TODO: flatten
-  const flattened: BattleFieldSquareProp[] = [];
+  const flattened: BattleFieldSquareProps[] = [];
   props.board.forEach(row => {
     row.forEach(square => {
       flattened.push(square);
@@ -87,19 +87,9 @@ function Barrack(): JSX.Element {
   );
 }
 
-function BattlePage(): JSX.Element {
-  const boardProps: BattleFieldSquareProp[][] = [];
-  for (let y = 0; y < 7; y++) {
-    const row: BattleFieldSquareProp[] = [];
-    for (let x = 0; x < 7; x++) {
-      row.push({
-        y,
-        x,
-      });
-    }
-    boardProps.push(row);
-  }
-
+function BattlePage(props: {
+  battleFieldBoard: BattleFieldSquareProps[][],
+}): JSX.Element {
   const style = {
     position: 'relative',
     width: '360px',
@@ -110,7 +100,7 @@ function BattlePage(): JSX.Element {
   return (
     <div style={style}>
       <MetaInformationBar />
-      <BattleFieldBoard board={boardProps} />
+      <BattleFieldBoard board={props.battleFieldBoard} />
       <SquareMonitor />
       <Barrack />
     </div>
@@ -118,9 +108,14 @@ function BattlePage(): JSX.Element {
 }
 
 export type Props = {
+  pages: {
+    battle?: {
+      battleFieldBoard: BattleFieldSquareProps[][],
+    },
+  },
 };
 
-export default function Root(): JSX.Element {
+export default function Root(props: Props): JSX.Element {
   const style = {
     position: 'relative',
     margin: '0 auto',
@@ -128,7 +123,11 @@ export default function Root(): JSX.Element {
     height: '640px',
   };
 
-  return (
-    <div style={style}><BattlePage /></div>
-  );
+  if (props.pages.battle) {
+    return (
+      <div style={style}><BattlePage {...props.pages.battle} /></div>
+    );
+  }
+
+  throw new Error('Received invalid root props');
 }
