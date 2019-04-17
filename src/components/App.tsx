@@ -6,23 +6,21 @@ import {ApplicationState} from '../state-manager';
 function mapStateToProps(state: ApplicationState): RootProps {
   const props = {};
 
-  if (state.activatedPage.pageId === 'battle') {
-    const game = state.activatedPage.game;
-    if (game) {
-      const battleFieldBoard = game.battleFieldMatrix.map(row => {
-        return row.map(element => {
-          return Object.assign({}, element);
-        });
+  if (state.pages.battle) {
+    const page = state.pages.battle;
+    const battleFieldBoard = page.game.battleFieldMatrix.map(row => {
+      return row.map(element => {
+        return Object.assign({}, element);
       });
+    });
 
-      return {
-        pages: {
-          battle: {
-            battleFieldBoard,
-          },
+    return {
+      pages: {
+        battle: {
+          battleFieldBoard,
         },
-      };
-    }
+      },
+    };
   }
 
   throw new Error('Received invalid state.');

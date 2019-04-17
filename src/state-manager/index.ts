@@ -23,13 +23,14 @@ type GameState = {
   parties: Party[],
 }
 
-type PageState = {
-  game?: GameState,
-  pageId: 'welcome' | 'battle',
-}
+type BattlePageState = {
+  game: GameState,
+};
 
 export type ApplicationState = {
-  activatedPage: PageState,
+  pages: {
+    battle?: BattlePageState,
+  },
 }
 
 export function createInitialApplicationState(): ApplicationState {
@@ -47,12 +48,13 @@ export function createInitialApplicationState(): ApplicationState {
   }
 
   return {
-    activatedPage: {
-      pageId: 'battle',
-      game: {
-        creatures: [],
-        parties: [],
-        battleFieldMatrix,
+    pages: {
+      battle: {
+        game: {
+          creatures: [],
+          parties: [],
+          battleFieldMatrix,
+        },
       },
     },
   };
