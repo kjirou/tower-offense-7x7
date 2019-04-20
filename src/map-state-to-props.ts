@@ -1,6 +1,6 @@
 import {RootProps} from './components/Root';
 import {BattlePageProps} from './components/pages/BattlePage';
-import {ApplicationState} from './state-manager';
+import {ApplicationState} from './state-manager/application';
 import {BattlePageState} from './state-manager/pages/battle';
 
 export type ApplicationStateSetter = (applicationState: ApplicationState) => void;

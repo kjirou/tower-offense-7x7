@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import {App} from './App';
-import {createInitialApplicationState} from './state-manager';
+import {createInitialApplicationState} from './state-manager/application';
 
 window.addEventListener('DOMContentLoaded', function() {
   const appDestination = document.querySelector('.js-app');
