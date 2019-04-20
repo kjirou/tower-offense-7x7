@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {
+  DragLayer,
   DragSource,
 } from 'react-dnd';
 
@@ -77,8 +78,9 @@ function DraggableCreatureOnSquare(props: DraggableCreatureOnSquareProps): JSX.E
     width: '48px',
     height: '48px',
   };
+  console.log('isDragging:', props.isDragging);
 
-  const creatureOnSquareProps = {
+  const creatureOnSquareProps: CreatureOnSquareProps = {
     image: props.image,
   };
 
@@ -95,13 +97,13 @@ const DraggableCreatureOnSquareForBarrack = DragSource(
   'DraggableCreatureOnSquareForBarrack',
   {
     beginDrag: props => {
-      console.log(props);  // TODO: Delete it
       return props;
     },
   },
   (connect, monitor) => {
     return {
       connectDragSource: connect.dragSource(),
+      connectDragPreview: connect.dragPreview(),
       isDragging: monitor.isDragging(),
     };
   }
@@ -202,6 +204,31 @@ function Barrack(props: BarrackProps): JSX.Element {
   );
 }
 
+function CreatureDragLayer(): any {
+  function collect(monitor: any) {
+    return {
+      isDragging: monitor.isDragging(),
+    };
+  }
+
+  function DragPreview(props: {isDragging: boolean}): JSX.Element {
+    const style = {
+    };
+
+    if (!props.isDragging) {
+      return <div />;
+    }
+
+    return (
+      <div style={style}>
+        Dragging...
+      </div>
+    );
+  }
+
+  return DragLayer(collect)(DragPreview);
+}
+
 export function BattlePage(props: BattlePageProps): JSX.Element {
   const style = {
     position: 'relative',
@@ -216,6 +243,7 @@ export function BattlePage(props: BattlePageProps): JSX.Element {
       <BattleFieldBoard board={props.battleFieldBoard} />
       <SquareMonitor />
       <Barrack board={props.barrackBoard} />
+      <CreatureDragLayer />
     </div>
   );
 }
