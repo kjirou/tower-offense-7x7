@@ -1,6 +1,9 @@
 import {RootProps} from './components/Root';
 import {BattlePageProps} from './components/pages/BattlePage';
 import {ApplicationState} from './state-manager/application';
+import {
+  findCreatureByIdOrError,
+} from './state-manager/game';
 import {BattlePageState} from './state-manager/pages/battle';
 
 export type ApplicationStateSetter = (applicationState: ApplicationState) => void;
@@ -10,15 +13,47 @@ function mapBattlePageStateToProps(
   applicationState: ApplicationState,
   applicationStateSetter: ApplicationStateSetter
 ): BattlePageProps {
-  const battleFieldBoard = state.game.battleFieldMatrix.map(row => {
+  const {
+    barrackMatrix,
+    battleFieldMatrix,
+    creatures,
+  } = state.game;
+
+  function jobIdToDummyImage(jobId: string): string {
+    const mapping: {
+      [key: string]: string,
+    } = {
+      archer: '弓',
+      fighter: '戦',
+      knight: '重',
+      mage: '魔',
+    };
+    return mapping[jobId] || '？';
+  }
+
+  const battleFieldBoard = battleFieldMatrix.map(row => {
     return row.map(element => {
-      return Object.assign({}, element);
+      return {
+        y: element.y,
+        x: element.x,
+        creature: undefined,
+      };
     });
   });
 
-  const barrackBoard = state.game.barrackMatrix.map(row => {
+  const barrackBoard = barrackMatrix.map(row => {
     return row.map(element => {
-      return Object.assign({}, element);
+      const creature = element.creatureId ? findCreatureByIdOrError(creatures, element.creatureId) : undefined;
+
+      return {
+        y: element.y,
+        x: element.x,
+        creature: creature
+          ? {
+            image: jobIdToDummyImage(creature.jobId),
+          }
+          : undefined,
+      };
     });
   });
 

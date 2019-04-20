@@ -2,6 +2,10 @@ import * as React from 'react';
 
 import {flattenMatrix} from '../../utils';
 
+type CreatureOnSquareProps = {
+  image: string,
+};
+
 type BattleFieldSquareProps = {
   x: number,
   y: number,
@@ -10,6 +14,12 @@ type BattleFieldSquareProps = {
 type BarrackSquareProps = {
   x: number,
   y: number,
+  creature: CreatureOnSquareProps | void,
+};
+
+export type BattlePageProps = {
+  battleFieldBoard: BattleFieldSquareProps[][],
+  barrackBoard: BarrackSquareProps[][],
 };
 
 function MetaInformationBar(): JSX.Element {
@@ -23,6 +33,21 @@ function MetaInformationBar(): JSX.Element {
   return (
     <div style={style}>MetaInformationBar!</div>
   );
+}
+
+function CreatureOnSquare(props: CreatureOnSquareProps): JSX.Element {
+  const style = {
+    position: 'absolute',
+    top: '0',
+    left: '0',
+    width: '48px',
+    height: '48px',
+    lineHeight: '48px',
+    fontSize: '24px',
+    textAlign: 'center',
+  };
+
+  return <div style={style}>{props.image}</div>
 }
 
 function BattleFieldSquare(props: BattleFieldSquareProps): JSX.Element {
@@ -55,7 +80,7 @@ function BattleFieldBoard(props: {board: BattleFieldSquareProps[][]}): JSX.Eleme
     {
       squares.map((square) => {
         const key = `square-${square.y}-${square.x}`;
-        return <BattleFieldSquare key={key} y={square.y} x={square.x} />;
+        return <BattleFieldSquare key={key} {...square} />;
       })
     }
     </div>
@@ -86,7 +111,13 @@ function BarrackSquare(props: BarrackSquareProps): JSX.Element {
   };
 
   return (
-    <div style={style}>{`(${props.y},${props.x})`}</div>
+    <div style={style}>
+    {
+      props.creature
+      ? <CreatureOnSquare {...props.creature} />
+      : undefined
+    }
+    </div>
   );
 }
 
@@ -105,17 +136,12 @@ function Barrack(props: {board: BarrackSquareProps[][]}): JSX.Element {
     {
       squares.map((square) => {
         const key = `square-${square.y}-${square.x}`;
-        return <BarrackSquare key={key} y={square.y} x={square.x} />;
+        return <BarrackSquare key={key} {...square} />;
       })
     }
     </div>
   );
 }
-
-export type BattlePageProps = {
-  battleFieldBoard: BattleFieldSquareProps[][],
-  barrackBoard: BarrackSquareProps[][],
-};
 
 export function BattlePage(props: BattlePageProps): JSX.Element {
   const style = {
