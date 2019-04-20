@@ -4,6 +4,7 @@ type Creature = {
   attackPoint: number,
   lifePoint: number,
   id: string,
+  jobId: string,
 }
 
 type Party = {
@@ -34,6 +35,52 @@ export type BattlePageState = {
   game: GameState,
 };
 
+function createDummyAllies(barrackMatrix: BarrackElementState[][]): {
+  creatures: Creature[],
+  party: Party,
+} {
+  const creatures = [
+    {
+      id: 'ally-1',
+      jobId: 'fighter',
+      lifePoint: 12,
+      attackPoint: 4,
+    },
+    {
+      id: 'ally-2',
+      jobId: 'knight',
+      lifePoint: 18,
+      attackPoint: 2,
+    },
+    {
+      id: 'ally-3',
+      jobId: 'archer',
+      lifePoint: 6,
+      attackPoint: 3,
+    },
+    {
+      id: 'ally-4',
+      jobId: 'mage',
+      lifePoint: 3,
+      attackPoint: 3,
+    },
+  ];
+  const creatureIds = creatures.map(e => e.id);
+
+  // Overwrite the arg
+  creatureIds.forEach((creatureId, index) => {
+    barrackMatrix[0][index].creatureId = creatureId;
+  });
+
+  return {
+    creatures,
+    party: {
+      factionId: 'ally',
+      creatureIds,
+    },
+  };
+}
+
 export function createInitialBattlePageState(): BattlePageState {
   const battleFieldMatrix: BattleFieldElementState[][] = [];
   for (let y = 0; y < 7; y++) {
@@ -61,10 +108,14 @@ export function createInitialBattlePageState(): BattlePageState {
     barrackMatrix.push(row);
   }
 
+  const dummyAllies = createDummyAllies(barrackMatrix);
+
   return {
     game: {
-      creatures: [],
-      parties: [],
+      creatures: dummyAllies.creatures,
+      parties: [
+        dummyAllies.party,
+      ],
       battleFieldMatrix,
       barrackMatrix,
     },
