@@ -6,7 +6,7 @@ import {
 } from './Root';
 import {ApplicationState} from '../state-manager';
 
-function mapStateToProps(state: ApplicationState): RootProps {
+function mapStateToProps(state: ApplicationState, setState: (state: ApplicationState) => void): RootProps {
   const props = {};
 
   if (state.pages.battle) {
@@ -39,7 +39,7 @@ function mapStateToProps(state: ApplicationState): RootProps {
 export function App(props: {initialState: ApplicationState}): JSX.Element {
   const [state, setState] = React.useState(props.initialState);
 
-  const rootProps = mapStateToProps(state);
+  const rootProps = mapStateToProps(state, setState);
 
   return <Root {...rootProps} />;
 }
