@@ -11,7 +11,7 @@ export type Props = {
   },
 };
 
-export default function Root(props: Props): JSX.Element {
+export function Root(props: Props): JSX.Element {
   const style = {
     position: 'relative',
     margin: '0 auto',

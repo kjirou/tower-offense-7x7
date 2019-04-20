@@ -1,6 +1,9 @@
 import * as React from 'react';
 
-import Root, {Props as RootProps} from './Root';
+import {
+  Root,
+  Props as RootProps
+} from './Root';
 import {ApplicationState} from '../state-manager';
 
 function mapStateToProps(state: ApplicationState): RootProps {
@@ -33,7 +36,7 @@ function mapStateToProps(state: ApplicationState): RootProps {
   throw new Error('Received invalid state.');
 }
 
-export default function App(props: {initialState: ApplicationState}): JSX.Element {
+export function App(props: {initialState: ApplicationState}): JSX.Element {
   const [state, setState] = React.useState(props.initialState);
 
   const rootProps = mapStateToProps(state);
