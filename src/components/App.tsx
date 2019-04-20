@@ -14,10 +14,17 @@ function mapStateToProps(state: ApplicationState): RootProps {
       });
     });
 
+    const barrackBoard = page.game.barrackMatrix.map(row => {
+      return row.map(element => {
+        return Object.assign({}, element);
+      });
+    });
+
     return {
       pages: {
         battle: {
           battleFieldBoard,
+          barrackBoard,
         },
       },
     };

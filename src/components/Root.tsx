@@ -5,6 +5,11 @@ type BattleFieldSquareProps = {
   y: number,
 };
 
+type BarrackSquareProps = {
+  x: number,
+  y: number,
+};
+
 function MetaInformationBar(): JSX.Element {
   const style = {
     position: 'relative',
@@ -74,7 +79,22 @@ function SquareMonitor(): JSX.Element {
   );
 }
 
-function Barrack(): JSX.Element {
+function BarrackSquare(props: BarrackSquareProps): JSX.Element {
+  const style = {
+    position: 'absolute',
+    top: `${6 + props.y * 48 + props.y * 2}px`,
+    left: `${6 + props.x * 48 + props.x * 2}px`,
+    width: '48px',
+    height: '48px',
+    backgroundColor: 'lime',
+  };
+
+  return (
+    <div style={style}>{`(${props.y},${props.x})`}</div>
+  );
+}
+
+function Barrack(props: {board: BarrackSquareProps[][]}): JSX.Element {
   const style = {
     position: 'relative',
     width: '360px',
@@ -82,13 +102,29 @@ function Barrack(): JSX.Element {
     backgroundColor: 'green',
   };
 
+  // TODO: flatten
+  const flattened: BarrackSquareProps[] = [];
+  props.board.forEach(row => {
+    row.forEach(square => {
+      flattened.push(square);
+    });
+  });
+
   return (
-    <div style={style}>Barrack!</div>
+    <div style={style}>
+    {
+      flattened.map((square) => {
+        const key = `square-${square.y}-${square.x}`;
+        return <BarrackSquare key={key} y={square.y} x={square.x} />;
+      })
+    }
+    </div>
   );
 }
 
 function BattlePage(props: {
   battleFieldBoard: BattleFieldSquareProps[][],
+  barrackBoard: BarrackSquareProps[][],
 }): JSX.Element {
   const style = {
     position: 'relative',
@@ -102,7 +138,7 @@ function BattlePage(props: {
       <MetaInformationBar />
       <BattleFieldBoard board={props.battleFieldBoard} />
       <SquareMonitor />
-      <Barrack />
+      <Barrack board={props.barrackBoard} />
     </div>
   );
 }
@@ -111,6 +147,7 @@ export type Props = {
   pages: {
     battle?: {
       battleFieldBoard: BattleFieldSquareProps[][],
+      barrackBoard: BarrackSquareProps[][],
     },
   },
 };
