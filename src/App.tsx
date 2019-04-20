@@ -15,4 +15,4 @@ function App_(props: {initialState: ApplicationState}): JSX.Element {
   return <Root {...rootProps} />;
 }
 
-export const App = DragDropContext(TouchBackend)(App_);
+export const App = DragDropContext(TouchBackend({ enableMouseEvents: true }))(App_);
