@@ -9,6 +9,7 @@ type CreatureOnSquareProps = {
 type BattleFieldSquareProps = {
   x: number,
   y: number,
+  creature: CreatureOnSquareProps | void,
 };
 
 type BattleFieldProps = {
@@ -69,7 +70,11 @@ function BattleFieldSquare(props: BattleFieldSquareProps): JSX.Element {
   };
 
   return (
-    <div style={style}>{`(${props.y},${props.x})`}</div>
+    <div style={style}>
+    {
+      props.creature ? <CreatureOnSquare {...props.creature} /> : undefined
+    }
+    </div>
   );
 }
 
@@ -121,9 +126,7 @@ function BarrackSquare(props: BarrackSquareProps): JSX.Element {
   return (
     <div style={style}>
     {
-      props.creature
-      ? <CreatureOnSquare {...props.creature} />
-      : undefined
+      props.creature ? <CreatureOnSquare {...props.creature} /> : undefined
     }
     </div>
   );

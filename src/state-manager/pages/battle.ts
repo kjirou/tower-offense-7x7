@@ -36,7 +36,7 @@ export function createInitialBattlePageState(): BattlePageState {
     barrackMatrix.push(row);
   }
 
-  const dummyAllies = createDummyAllies(barrackMatrix);
+  const dummyAllies = createDummyAllies(battleFieldMatrix, barrackMatrix);
 
   return {
     game: {

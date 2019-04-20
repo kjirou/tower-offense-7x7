@@ -33,10 +33,15 @@ function mapBattlePageStateToProps(
 
   const battleFieldBoard = battleFieldMatrix.map(row => {
     return row.map(element => {
+      const creature = element.creatureId ? findCreatureByIdOrError(creatures, element.creatureId) : undefined;
       return {
         y: element.y,
         x: element.x,
-        creature: undefined,
+        creature: creature
+          ? {
+            image: jobIdToDummyImage(creature.jobId),
+          }
+          : undefined,
       };
     });
   });
