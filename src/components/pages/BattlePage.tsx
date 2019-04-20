@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import {flattenMatrix} from '../../utils';
+
 type BattleFieldSquareProps = {
   x: number,
   y: number,
@@ -46,18 +48,12 @@ function BattleFieldBoard(props: {board: BattleFieldSquareProps[][]}): JSX.Eleme
     backgroundColor: 'green',
   };
 
-  // TODO: flatten
-  const flattened: BattleFieldSquareProps[] = [];
-  props.board.forEach(row => {
-    row.forEach(square => {
-      flattened.push(square);
-    });
-  });
+  const squares = flattenMatrix<BattleFieldSquareProps>(props.board);
 
   return (
     <div style={style}>
     {
-      flattened.map((square) => {
+      squares.map((square) => {
         const key = `square-${square.y}-${square.x}`;
         return <BattleFieldSquare key={key} y={square.y} x={square.x} />;
       })
@@ -102,18 +98,12 @@ function Barrack(props: {board: BarrackSquareProps[][]}): JSX.Element {
     backgroundColor: 'green',
   };
 
-  // TODO: flatten
-  const flattened: BarrackSquareProps[] = [];
-  props.board.forEach(row => {
-    row.forEach(square => {
-      flattened.push(square);
-    });
-  });
+  const squares = flattenMatrix<BarrackSquareProps>(props.board);
 
   return (
     <div style={style}>
     {
-      flattened.map((square) => {
+      squares.map((square) => {
         const key = `square-${square.y}-${square.x}`;
         return <BarrackSquare key={key} y={square.y} x={square.x} />;
       })
