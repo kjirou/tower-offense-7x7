@@ -5,13 +5,13 @@ import {
   BattlePage,
 } from './pages/BattlePage';
 
-export type Props = {
+export type RootProps = {
   pages: {
     battle?: BattlePageProps,
   },
 };
 
-export function Root(props: Props): JSX.Element {
+export function Root(props: RootProps): JSX.Element {
   const style = {
     position: 'relative',
     margin: '0 auto',

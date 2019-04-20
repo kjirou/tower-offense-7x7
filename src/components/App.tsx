@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import {
   Root,
-  Props as RootProps
+  RootProps,
 } from './Root';
 import {ApplicationState} from '../state-manager';
 
