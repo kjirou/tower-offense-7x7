@@ -1,32 +1,41 @@
 import {RootProps} from './components/Root';
+import {BattlePageProps} from './components/pages/BattlePage';
 import {ApplicationState} from './state-manager';
+import {BattlePageState} from './state-manager/pages/battle';
+
+export type ApplicationStateSetter = (applicationState: ApplicationState) => void;
+
+function mapBattlePageStateToProps(
+  state: BattlePageState,
+  applicationState: ApplicationState,
+  applicationStateSetter: ApplicationStateSetter
+): BattlePageProps {
+  const battleFieldBoard = state.game.battleFieldMatrix.map(row => {
+    return row.map(element => {
+      return Object.assign({}, element);
+    });
+  });
+
+  const barrackBoard = state.game.barrackMatrix.map(row => {
+    return row.map(element => {
+      return Object.assign({}, element);
+    });
+  });
+
+  return {
+    battleFieldBoard,
+    barrackBoard,
+  };
+}
 
 export function mapStateToProps(
   state: ApplicationState,
-  setState: (state: ApplicationState) => void
+  stateSetter: ApplicationStateSetter
 ): RootProps {
-  const props = {};
-
   if (state.pages.battle) {
-    const page = state.pages.battle;
-    const battleFieldBoard = page.game.battleFieldMatrix.map(row => {
-      return row.map(element => {
-        return Object.assign({}, element);
-      });
-    });
-
-    const barrackBoard = page.game.barrackMatrix.map(row => {
-      return row.map(element => {
-        return Object.assign({}, element);
-      });
-    });
-
     return {
       pages: {
-        battle: {
-          battleFieldBoard,
-          barrackBoard,
-        },
+        battle: mapBattlePageStateToProps(state.pages.battle, state, stateSetter),
       },
     };
   }
