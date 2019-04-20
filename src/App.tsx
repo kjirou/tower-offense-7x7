@@ -3,8 +3,8 @@ import * as React from 'react';
 import {
   Root,
   RootProps,
-} from './Root';
-import {ApplicationState} from '../state-manager';
+} from './components/Root';
+import {ApplicationState} from './state-manager';
 
 function mapStateToProps(state: ApplicationState, setState: (state: ApplicationState) => void): RootProps {
   const props = {};
