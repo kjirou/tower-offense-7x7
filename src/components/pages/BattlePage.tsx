@@ -11,10 +11,18 @@ type BattleFieldSquareProps = {
   y: number,
 };
 
+type BattleFieldProps = {
+  board: BattleFieldSquareProps[][],
+};
+
 type BarrackSquareProps = {
   x: number,
   y: number,
   creature: CreatureOnSquareProps | void,
+};
+
+type BarrackProps = {
+  board: BarrackSquareProps[][],
 };
 
 export type BattlePageProps = {
@@ -65,7 +73,7 @@ function BattleFieldSquare(props: BattleFieldSquareProps): JSX.Element {
   );
 }
 
-function BattleFieldBoard(props: {board: BattleFieldSquareProps[][]}): JSX.Element {
+function BattleFieldBoard(props: BattleFieldProps): JSX.Element {
   const style = {
     position: 'relative',
     width: '360px',
@@ -121,7 +129,7 @@ function BarrackSquare(props: BarrackSquareProps): JSX.Element {
   );
 }
 
-function Barrack(props: {board: BarrackSquareProps[][]}): JSX.Element {
+function Barrack(props: BarrackProps): JSX.Element {
   const style = {
     position: 'relative',
     width: '360px',
