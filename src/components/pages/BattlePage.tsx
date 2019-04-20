@@ -1,9 +1,19 @@
 import * as React from 'react';
+import {
+  DragSource,
+} from 'react-dnd';
 
 import {flattenMatrix} from '../../utils';
 
 type CreatureOnSquareProps = {
   image: string,
+};
+
+type DraggableCreatureOnSquareProps = {
+  // TODO: Although react-dnd exports types, there was no documentation on how to use it.
+  connectDragSource: (element: JSX.Element) => any,
+  image: CreatureOnSquareProps['image'],
+  isDragging: boolean,
 };
 
 type BattleFieldSquareProps = {
@@ -58,6 +68,44 @@ function CreatureOnSquare(props: CreatureOnSquareProps): JSX.Element {
 
   return <div style={style}>{props.image}</div>
 }
+
+function DraggableCreatureOnSquare(props: DraggableCreatureOnSquareProps): JSX.Element {
+  const style = {
+    position: 'absolute',
+    top: '0',
+    left: '0',
+    width: '48px',
+    height: '48px',
+  };
+
+  const creatureOnSquareProps = {
+    image: props.image,
+  };
+
+  // NOTE: The div wrapping is needed against the following react-dnd's error.
+  //       "Only native element nodes can now be passed to React DnD connectors."
+  return props.connectDragSource(
+    <div style={style}>
+      <CreatureOnSquare {...creatureOnSquareProps} />
+    </div>
+  );
+}
+
+const DraggableCreatureOnSquareForBarrack = DragSource(
+  'DraggableCreatureOnSquareForBarrack',
+  {
+    beginDrag: props => {
+      console.log(props);  // TODO: Delete it
+      return props;
+    },
+  },
+  (connect, monitor) => {
+    return {
+      connectDragSource: connect.dragSource(),
+      isDragging: monitor.isDragging(),
+    };
+  }
+)(DraggableCreatureOnSquare);
 
 function BattleFieldSquare(props: BattleFieldSquareProps): JSX.Element {
   const style = {
@@ -126,7 +174,7 @@ function BarrackSquare(props: BarrackSquareProps): JSX.Element {
   return (
     <div style={style}>
     {
-      props.creature ? <CreatureOnSquare {...props.creature} /> : undefined
+      props.creature ? <DraggableCreatureOnSquareForBarrack {...props.creature} /> : undefined
     }
     </div>
   );
