@@ -7,6 +7,7 @@ import {ApplicationState} from './state-manager/application';
 import {
   areGlobalMatrixPositionsEqual,
   findCreatureByIdOrError,
+  identifyMatrixId,
 } from './state-manager/game';
 import {BattlePageState} from './state-manager/pages/battle';
 
@@ -82,15 +83,21 @@ function mapBattlePageStateToProps(
         isSelected: squareCursor
           ? areGlobalMatrixPositionsEqual(element.position, squareCursor.position)
           : false,
-        handleTouch(payload) {
+        handleTouch({y, x}) {
           dispatcher(draft => {
-            draft.game.squareCursor = {
-              position: {
-                matrixId: 'battleField',
-                y: payload.y,
-                x: payload.x,
-              },
-            };
+            const nextSquareCursor = draft.game.squareCursor &&
+                x === draft.game.squareCursor.position.x &&
+                y === draft.game.squareCursor.position.y
+              ? undefined
+              : {
+                position: {
+                  matrixId: identifyMatrixId('battleField'),
+                  y,
+                  x,
+                },
+              }
+            ;
+            draft.game.squareCursor = nextSquareCursor;
           });
         },
       };
@@ -112,15 +119,21 @@ function mapBattlePageStateToProps(
         isSelected: squareCursor
           ? areGlobalMatrixPositionsEqual(element.position, squareCursor.position)
           : false,
-        handleTouch(payload) {
+        handleTouch({y, x}) {
           dispatcher(draft => {
-            draft.game.squareCursor = {
-              position: {
-                matrixId: 'barrack',
-                y: payload.y,
-                x: payload.x,
-              },
-            };
+            const nextSquareCursor = draft.game.squareCursor &&
+                x === draft.game.squareCursor.position.x &&
+                y === draft.game.squareCursor.position.y
+              ? undefined
+              : {
+                position: {
+                  matrixId: identifyMatrixId('barrack'),
+                  y,
+                  x,
+                },
+              }
+            ;
+            draft.game.squareCursor = nextSquareCursor;
           });
         },
       };

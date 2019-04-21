@@ -1,6 +1,15 @@
 type FactionId = 'ally' | 'enemy';
 type MatrixId = 'battleField' | 'barrack';
 
+export function identifyMatrixId(matrixIdLike: string): MatrixId {
+  if (matrixIdLike === 'barrack') {
+    return 'barrack';
+  } else if (matrixIdLike === 'battleField') {
+    return 'battleField';
+  }
+  throw new Error('It is not a MatrixId');
+}
+
 type Creature = {
   attackPoint: number,
   lifePoint: number,
