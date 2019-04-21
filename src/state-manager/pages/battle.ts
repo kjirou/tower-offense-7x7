@@ -41,6 +41,9 @@ export function createInitialBattlePageState(): BattlePageState {
   return {
     game: {
       creatures: dummyAllies.creatures,
+      creatureSelection: {
+        creatureId: undefined,
+      },
       parties: [
         dummyAllies.party,
       ],

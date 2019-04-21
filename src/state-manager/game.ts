@@ -7,6 +7,10 @@ type Creature = {
   jobId: string,
 }
 
+type CreatureSelection = {
+  creatureId: Creature['id'] | void,
+};
+
 type Party = {
   factionId: FactionId,
   creatureIds: Creature['id'][],
@@ -31,6 +35,7 @@ export type BarrackMatrixState = BarrackElementState[][];
 export type GameState = {
   barrackMatrix: BarrackMatrixState,
   battleFieldMatrix: BattleFieldMatrixState,
+  creatureSelection: CreatureSelection,
   creatures: Creature[],
   parties: Party[],
 }
