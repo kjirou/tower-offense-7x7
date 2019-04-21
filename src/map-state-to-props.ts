@@ -1,4 +1,5 @@
 import produce from 'immer';
+import * as React from 'react';
 
 import {RootProps} from './components/Root';
 import {BattlePageProps} from './components/pages/BattlePage';
@@ -9,22 +10,21 @@ import {
 } from './state-manager/game';
 import {BattlePageState} from './state-manager/pages/battle';
 
-export type ApplicationStateSetter = (applicationState: ApplicationState) => void;
-type Dispatcher<State> = (callback: (draft: State) => void) => void;
+type ReactSetState<State> = (setStateAction: React.SetStateAction<State>) => void;
+type Dispatcher<State> = (immerCallback: (draft: State) => void) => void;
 
 function makeOneTimeApplicationDispatcher(
-  applicationState: ApplicationState,
-  applicationStateSetter: ApplicationStateSetter
+  setState: ReactSetState<ApplicationState>
 ): Dispatcher<ApplicationState> {
   let callCount = 0;
   return function dispatcher(immerCallback) {
     if (callCount > 0) {
       throw new Error('Can only call the dispatcher once in one Flux cycle.');
     }
-    applicationStateSetter(
-      produce(applicationState, immerCallback)
-    );
     callCount++;
+    setState(applicationState => {
+      return produce(applicationState, immerCallback);
+    });
   }
 }
 
@@ -125,9 +125,9 @@ function mapBattlePageStateToProps(
 
 export function mapStateToProps(
   state: ApplicationState,
-  stateSetter: ApplicationStateSetter
+  setState: ReactSetState<ApplicationState>
 ): RootProps {
-  const oneTimeApplicationDispatcher = makeOneTimeApplicationDispatcher(state, stateSetter);
+  const oneTimeApplicationDispatcher = makeOneTimeApplicationDispatcher(setState);
 
   if (state.pages.battle) {
     return {
