@@ -12,6 +12,7 @@ type BattleFieldSquareProps = {
     x: number,
     y: number,
   }) => void,
+  isSelected: boolean,
   x: number,
   y: number,
 };
@@ -26,6 +27,7 @@ type BarrackSquareProps = {
     x: number,
     y: number,
   }) => void,
+  isSelected: boolean,
   x: number,
   y: number,
 };
@@ -74,7 +76,7 @@ function BattleFieldSquare(props: BattleFieldSquareProps): JSX.Element {
     left: `${6 + props.x * 48 + props.x * 2}px`,
     width: '48px',
     height: '48px',
-    backgroundColor: 'lime',
+    backgroundColor: props.isSelected ? 'yellow' : 'lime',
   };
 
   return (
@@ -131,7 +133,7 @@ function BarrackSquare(props: BarrackSquareProps): JSX.Element {
     left: `${6 + props.x * 48 + props.x * 2}px`,
     width: '48px',
     height: '48px',
-    backgroundColor: 'lime',
+    backgroundColor: props.isSelected ? 'yellow' : 'lime',
   };
 
   return (

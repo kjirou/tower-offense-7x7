@@ -64,6 +64,12 @@ export function findCreatureByIdOrError(creatures: Creature[], creatureId: Creat
   return found;
 }
 
+export function areGlobalMatrixPositionsEqual(a: GlobalMatrixPosition, b: GlobalMatrixPosition): boolean {
+  return a.matrixId === b.matrixId &&
+    a.y === b.y &&
+    a.x === b.x;
+}
+
 function createDummyAllies(
   battleFieldMatrix: BattleFieldMatrixState,
   barrackMatrix: BarrackMatrixState

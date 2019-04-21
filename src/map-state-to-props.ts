@@ -4,6 +4,7 @@ import {RootProps} from './components/Root';
 import {BattlePageProps} from './components/pages/BattlePage';
 import {ApplicationState} from './state-manager/application';
 import {
+  areGlobalMatrixPositionsEqual,
   findCreatureByIdOrError,
 } from './state-manager/game';
 import {BattlePageState} from './state-manager/pages/battle';
@@ -35,6 +36,7 @@ function mapBattlePageStateToProps(
     barrackMatrix,
     battleFieldMatrix,
     creatures,
+    squareCursor,
   } = state.game;
 
   function jobIdToDummyImage(jobId: string): string {
@@ -52,6 +54,7 @@ function mapBattlePageStateToProps(
   const battleFieldBoard: BattlePageProps['battleFieldBoard'] = battleFieldMatrix.map(row => {
     return row.map(element => {
       const creature = element.creatureId ? findCreatureByIdOrError(creatures, element.creatureId) : undefined;
+
       return {
         y: element.position.y,
         x: element.position.x,
@@ -60,6 +63,9 @@ function mapBattlePageStateToProps(
             image: jobIdToDummyImage(creature.jobId),
           }
           : undefined,
+        isSelected: squareCursor
+          ? areGlobalMatrixPositionsEqual(element.position, squareCursor.position)
+          : false,
         handleTouch(payload) {
           dispatcher(draft => {
             // TODO: Pass a custom dispatcher for the battle page.
@@ -90,6 +96,9 @@ function mapBattlePageStateToProps(
             image: jobIdToDummyImage(creature.jobId),
           }
           : undefined,
+        isSelected: squareCursor
+          ? areGlobalMatrixPositionsEqual(element.position, squareCursor.position)
+          : false,
         handleTouch(payload) {
           dispatcher(draft => {
             // TODO: Pass a custom dispatcher for the battle page.
