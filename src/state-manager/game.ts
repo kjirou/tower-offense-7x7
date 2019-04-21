@@ -31,14 +31,14 @@ type Party = {
 }
 
 type BattleFieldElementState = {
-  creatureId: Creature['id'] | void,
+  creatureId: Creature['id'] | undefined,
   position: GlobalMatrixPosition,
 }
 
 type BattleFieldMatrixState = BattleFieldElementState[][];
 
 type BarrackElementState = {
-  creatureId: Creature['id'] | void,
+  creatureId: Creature['id'] | undefined,
   position: GlobalMatrixPosition,
 }
 
@@ -49,7 +49,7 @@ export type GameState = {
   battleFieldMatrix: BattleFieldMatrixState,
   creatures: Creature[],
   parties: Party[],
-  squareCursor: SquareCursor | void,
+  squareCursor: SquareCursor | undefined,
 }
 
 function findCreatureById(creatures: Creature[], creatureId: Creature['id']): Creature | void {
