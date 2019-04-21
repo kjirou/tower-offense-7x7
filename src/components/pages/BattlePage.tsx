@@ -7,9 +7,13 @@ type CreatureOnSquareProps = {
 };
 
 type BattleFieldSquareProps = {
+  creature: CreatureOnSquareProps | void,
+  handleTouch: (payload: {
+    x: number,
+    y: number,
+  }) => void,
   x: number,
   y: number,
-  creature: CreatureOnSquareProps | void,
 };
 
 type BattleFieldProps = {
@@ -17,9 +21,13 @@ type BattleFieldProps = {
 };
 
 type BarrackSquareProps = {
+  creature: CreatureOnSquareProps | void,
+  handleTouch: (payload: {
+    x: number,
+    y: number,
+  }) => void,
   x: number,
   y: number,
-  creature: CreatureOnSquareProps | void,
 };
 
 type BarrackProps = {
@@ -27,8 +35,8 @@ type BarrackProps = {
 };
 
 export type BattlePageProps = {
-  battleFieldBoard: BattleFieldSquareProps[][],
   barrackBoard: BarrackSquareProps[][],
+  battleFieldBoard: BattleFieldSquareProps[][],
 };
 
 function MetaInformationBar(): JSX.Element {
@@ -70,7 +78,10 @@ function BattleFieldSquare(props: BattleFieldSquareProps): JSX.Element {
   };
 
   return (
-    <div style={style}>
+    <div
+      style={style}
+      onTouchStart={() => props.handleTouch({x: props.x, y: props.y})}
+    >
     {
       props.creature ? <CreatureOnSquare {...props.creature} /> : undefined
     }
@@ -124,7 +135,10 @@ function BarrackSquare(props: BarrackSquareProps): JSX.Element {
   };
 
   return (
-    <div style={style}>
+    <div
+      style={style}
+      onTouchStart={() => props.handleTouch({x: props.x, y: props.y})}
+    >
     {
       props.creature ? <CreatureOnSquare {...props.creature} /> : undefined
     }

@@ -1,3 +1,5 @@
+import produce from 'immer';
+
 import {RootProps} from './components/Root';
 import {BattlePageProps} from './components/pages/BattlePage';
 import {ApplicationState} from './state-manager/application';
@@ -7,11 +9,27 @@ import {
 import {BattlePageState} from './state-manager/pages/battle';
 
 export type ApplicationStateSetter = (applicationState: ApplicationState) => void;
+type Dispatcher<State> = (callback: (draft: State) => void) => void;
+
+function makeOneTimeApplicationDispatcher(
+  applicationState: ApplicationState,
+  applicationStateSetter: ApplicationStateSetter
+): Dispatcher<ApplicationState> {
+  let callCount = 0;
+  return function dispatcher(immerCallback) {
+    if (callCount > 0) {
+      throw new Error('Can only call the dispatcher once in one Flux cycle.');
+    }
+    applicationStateSetter(
+      produce(applicationState, immerCallback)
+    );
+    callCount++;
+  }
+}
 
 function mapBattlePageStateToProps(
   state: BattlePageState,
-  applicationState: ApplicationState,
-  applicationStateSetter: ApplicationStateSetter
+  dispatcher: Dispatcher<ApplicationState>,
 ): BattlePageProps {
   const {
     barrackMatrix,
@@ -31,7 +49,7 @@ function mapBattlePageStateToProps(
     return mapping[jobId] || '？';
   }
 
-  const battleFieldBoard = battleFieldMatrix.map(row => {
+  const battleFieldBoard: BattlePageProps['battleFieldBoard'] = battleFieldMatrix.map(row => {
     return row.map(element => {
       const creature = element.creatureId ? findCreatureByIdOrError(creatures, element.creatureId) : undefined;
       return {
@@ -42,11 +60,25 @@ function mapBattlePageStateToProps(
             image: jobIdToDummyImage(creature.jobId),
           }
           : undefined,
+        handleTouch(payload) {
+          dispatcher(draft => {
+            // TODO: Pass a custom dispatcher for the battle page.
+            if (draft.pages.battle) {
+              draft.pages.battle.game.squareCursor = {
+                position: {
+                  matrixId: 'battleField',
+                  y: payload.y,
+                  x: payload.x,
+                },
+              };
+            }
+          });
+        },
       };
     });
   });
 
-  const barrackBoard = barrackMatrix.map(row => {
+  const barrackBoard: BattlePageProps['barrackBoard'] = barrackMatrix.map(row => {
     return row.map(element => {
       const creature = element.creatureId ? findCreatureByIdOrError(creatures, element.creatureId) : undefined;
 
@@ -58,6 +90,20 @@ function mapBattlePageStateToProps(
             image: jobIdToDummyImage(creature.jobId),
           }
           : undefined,
+        handleTouch(payload) {
+          dispatcher(draft => {
+            // TODO: Pass a custom dispatcher for the battle page.
+            if (draft.pages.battle) {
+              draft.pages.battle.game.squareCursor = {
+                position: {
+                  matrixId: 'barrack',
+                  y: payload.y,
+                  x: payload.x,
+                },
+              };
+            }
+          });
+        },
       };
     });
   });
@@ -72,10 +118,12 @@ export function mapStateToProps(
   state: ApplicationState,
   stateSetter: ApplicationStateSetter
 ): RootProps {
+  const oneTimeApplicationDispatcher = makeOneTimeApplicationDispatcher(state, stateSetter);
+
   if (state.pages.battle) {
     return {
       pages: {
-        battle: mapBattlePageStateToProps(state.pages.battle, state, stateSetter),
+        battle: mapBattlePageStateToProps(state.pages.battle, oneTimeApplicationDispatcher),
       },
     };
   }
