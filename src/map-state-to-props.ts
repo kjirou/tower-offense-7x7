@@ -28,9 +28,25 @@ function makeOneTimeApplicationDispatcher(
   }
 }
 
+function makeScopedOneTimeDispatcher<OriginalState, ScopedState>(
+  originalDispatcher: Dispatcher<OriginalState>,
+  scoping: (state: OriginalState) => ScopedState | void,
+): Dispatcher<ScopedState> {
+  return function dispatcher(immerLikeCallback) {
+    originalDispatcher(draft => {
+      const scopedState = scoping(draft);
+      if (scopedState) {
+        immerLikeCallback(scopedState);
+      } else {
+        throw new Error('Invalid state scoping.');
+      }
+    });
+  }
+}
+
 function mapBattlePageStateToProps(
   state: BattlePageState,
-  dispatcher: Dispatcher<ApplicationState>,
+  dispatcher: Dispatcher<BattlePageState>,
 ): BattlePageProps {
   const {
     barrackMatrix,
@@ -68,16 +84,13 @@ function mapBattlePageStateToProps(
           : false,
         handleTouch(payload) {
           dispatcher(draft => {
-            // TODO: Pass a custom dispatcher for the battle page.
-            if (draft.pages.battle) {
-              draft.pages.battle.game.squareCursor = {
-                position: {
-                  matrixId: 'battleField',
-                  y: payload.y,
-                  x: payload.x,
-                },
-              };
-            }
+            draft.game.squareCursor = {
+              position: {
+                matrixId: 'battleField',
+                y: payload.y,
+                x: payload.x,
+              },
+            };
           });
         },
       };
@@ -101,16 +114,13 @@ function mapBattlePageStateToProps(
           : false,
         handleTouch(payload) {
           dispatcher(draft => {
-            // TODO: Pass a custom dispatcher for the battle page.
-            if (draft.pages.battle) {
-              draft.pages.battle.game.squareCursor = {
-                position: {
-                  matrixId: 'barrack',
-                  y: payload.y,
-                  x: payload.x,
-                },
-              };
-            }
+            draft.game.squareCursor = {
+              position: {
+                matrixId: 'barrack',
+                y: payload.y,
+                x: payload.x,
+              },
+            };
           });
         },
       };
@@ -130,9 +140,14 @@ export function mapStateToProps(
   const oneTimeApplicationDispatcher = makeOneTimeApplicationDispatcher(setState);
 
   if (state.pages.battle) {
+    const battlePageOneTimeDispatcher = makeScopedOneTimeDispatcher<ApplicationState, BattlePageState>(
+      oneTimeApplicationDispatcher,
+      (state) => state.pages.battle
+    );
+
     return {
       pages: {
-        battle: mapBattlePageStateToProps(state.pages.battle, oneTimeApplicationDispatcher),
+        battle: mapBattlePageStateToProps(state.pages.battle, battlePageOneTimeDispatcher),
       },
     };
   }
