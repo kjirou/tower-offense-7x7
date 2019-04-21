@@ -8,14 +8,21 @@ type Creature = {
   jobId: string,
 }
 
-type CreatureSelection = {
-  creatureId: Creature['id'] | void,
-};
-
 type GlobalMatrixPosition = {
   matrixId: MatrixId,
   x: number,
   y: number,
+};
+
+// A selection data of the square
+//
+// The "square" means an element of some matrices.
+type SquareCursor = {
+  position: {
+    matrixId: 'battleField' | 'barrack',
+    x: GlobalMatrixPosition['x'],
+    y: GlobalMatrixPosition['y'],
+  },
 };
 
 type Party = {
@@ -40,9 +47,9 @@ type BarrackMatrixState = BarrackElementState[][];
 export type GameState = {
   barrackMatrix: BarrackMatrixState,
   battleFieldMatrix: BattleFieldMatrixState,
-  creatureSelection: CreatureSelection,
   creatures: Creature[],
   parties: Party[],
+  squareCursor: SquareCursor | void,
 }
 
 function findCreatureById(creatures: Creature[], creatureId: Creature['id']): Creature | void {
@@ -159,13 +166,11 @@ export function createInitialGameState(): GameState {
 
   return {
     creatures: dummyAllies.creatures,
-    creatureSelection: {
-      creatureId: undefined,
-    },
     parties: [
       dummyAllies.party,
     ],
     battleFieldMatrix,
     barrackMatrix,
+    squareCursor: undefined,
   };
 }
