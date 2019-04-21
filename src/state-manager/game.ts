@@ -1,4 +1,5 @@
 type FactionId = 'ally' | 'enemy';
+type MatrixId = 'battleField' | 'barrack';
 
 type Creature = {
   attackPoint: number,
@@ -11,6 +12,12 @@ type CreatureSelection = {
   creatureId: Creature['id'] | void,
 };
 
+type GlobalMatrixPosition = {
+  matrixId: MatrixId,
+  x: number,
+  y: number,
+};
+
 type Party = {
   factionId: FactionId,
   creatureIds: Creature['id'][],
@@ -18,16 +25,14 @@ type Party = {
 
 type BattleFieldElementState = {
   creatureId: Creature['id'] | void,
-  x: number,
-  y: number,
+  position: GlobalMatrixPosition,
 }
 
 type BattleFieldMatrixState = BattleFieldElementState[][];
 
 type BarrackElementState = {
   creatureId: Creature['id'] | void,
-  x: number,
-  y: number,
+  position: GlobalMatrixPosition,
 }
 
 type BarrackMatrixState = BarrackElementState[][];
@@ -120,11 +125,14 @@ function createDummyAllies(
 export function createInitialGameState(): GameState {
   const battleFieldMatrix: BattleFieldMatrixState = [];
   for (let y = 0; y < 7; y++) {
-    const row = [];
+    const row: BattleFieldElementState[] = [];
     for (let x = 0; x < 7; x++) {
       row.push({
-        y,
-        x,
+        position: {
+          matrixId: 'battleField',
+          y,
+          x,
+        },
         creatureId: undefined,
       });
     }
@@ -133,11 +141,14 @@ export function createInitialGameState(): GameState {
 
   const barrackMatrix: BarrackMatrixState = [];
   for (let y = 0; y < 2; y++) {
-    const row = [];
+    const row: BarrackElementState[] = [];
     for (let x = 0; x < 7; x++) {
       row.push({
-        y,
-        x,
+        position: {
+          matrixId: 'barrack',
+          y,
+          x,
+        },
         creatureId: undefined,
       });
     }

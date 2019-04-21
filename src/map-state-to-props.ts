@@ -35,8 +35,8 @@ function mapBattlePageStateToProps(
     return row.map(element => {
       const creature = element.creatureId ? findCreatureByIdOrError(creatures, element.creatureId) : undefined;
       return {
-        y: element.y,
-        x: element.x,
+        y: element.position.y,
+        x: element.position.x,
         creature: creature
           ? {
             image: jobIdToDummyImage(creature.jobId),
@@ -51,8 +51,8 @@ function mapBattlePageStateToProps(
       const creature = element.creatureId ? findCreatureByIdOrError(creatures, element.creatureId) : undefined;
 
       return {
-        y: element.y,
-        x: element.x,
+        y: element.position.y,
+        x: element.position.x,
         creature: creature
           ? {
             image: jobIdToDummyImage(creature.jobId),
