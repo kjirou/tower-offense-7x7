@@ -22,7 +22,7 @@ type BattleFieldElementState = {
   y: number,
 }
 
-export type BattleFieldMatrixState = BattleFieldElementState[][];
+type BattleFieldMatrixState = BattleFieldElementState[][];
 
 type BarrackElementState = {
   creatureId: Creature['id'] | void,
@@ -30,7 +30,7 @@ type BarrackElementState = {
   y: number,
 }
 
-export type BarrackMatrixState = BarrackElementState[][];
+type BarrackMatrixState = BarrackElementState[][];
 
 export type GameState = {
   barrackMatrix: BarrackMatrixState,
@@ -52,7 +52,7 @@ export function findCreatureByIdOrError(creatures: Creature[], creatureId: Creat
   return found;
 }
 
-export function createDummyAllies(
+function createDummyAllies(
   battleFieldMatrix: BattleFieldMatrixState,
   barrackMatrix: BarrackMatrixState
 ): {
@@ -114,5 +114,47 @@ export function createDummyAllies(
       factionId: 'ally',
       creatureIds,
     },
+  };
+}
+
+export function createInitialGameState(): GameState {
+  const battleFieldMatrix: BattleFieldMatrixState = [];
+  for (let y = 0; y < 7; y++) {
+    const row = [];
+    for (let x = 0; x < 7; x++) {
+      row.push({
+        y,
+        x,
+        creatureId: undefined,
+      });
+    }
+    battleFieldMatrix.push(row);
+  }
+
+  const barrackMatrix: BarrackMatrixState = [];
+  for (let y = 0; y < 2; y++) {
+    const row = [];
+    for (let x = 0; x < 7; x++) {
+      row.push({
+        y,
+        x,
+        creatureId: undefined,
+      });
+    }
+    barrackMatrix.push(row);
+  }
+
+  const dummyAllies = createDummyAllies(battleFieldMatrix, barrackMatrix);
+
+  return {
+    creatures: dummyAllies.creatures,
+    creatureSelection: {
+      creatureId: undefined,
+    },
+    parties: [
+      dummyAllies.party,
+    ],
+    battleFieldMatrix,
+    barrackMatrix,
   };
 }
