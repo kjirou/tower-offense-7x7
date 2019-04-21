@@ -1,4 +1,14 @@
 type FactionId = 'ally' | 'enemy';
+type MatrixId = 'battleField' | 'barrack';
+
+export function identifyMatrixId(matrixIdLike: string): MatrixId {
+  if (matrixIdLike === 'barrack') {
+    return 'barrack';
+  } else if (matrixIdLike === 'battleField') {
+    return 'battleField';
+  }
+  throw new Error('It is not a MatrixId');
+}
 
 type Creature = {
   attackPoint: number,
@@ -7,32 +17,48 @@ type Creature = {
   jobId: string,
 }
 
+type GlobalMatrixPosition = {
+  matrixId: MatrixId,
+  x: number,
+  y: number,
+};
+
+// A selection data of the square
+//
+// The "square" means an element of some matrices.
+type SquareCursor = {
+  position: {
+    matrixId: 'battleField' | 'barrack',
+    x: GlobalMatrixPosition['x'],
+    y: GlobalMatrixPosition['y'],
+  },
+};
+
 type Party = {
   factionId: FactionId,
   creatureIds: Creature['id'][],
 }
 
 type BattleFieldElementState = {
-  creatureId: Creature['id'] | void,
-  x: number,
-  y: number,
+  creatureId: Creature['id'] | undefined,
+  position: GlobalMatrixPosition,
 }
 
-export type BattleFieldMatrixState = BattleFieldElementState[][];
+type BattleFieldMatrixState = BattleFieldElementState[][];
 
 type BarrackElementState = {
-  creatureId: Creature['id'] | void,
-  x: number,
-  y: number,
+  creatureId: Creature['id'] | undefined,
+  position: GlobalMatrixPosition,
 }
 
-export type BarrackMatrixState = BarrackElementState[][];
+type BarrackMatrixState = BarrackElementState[][];
 
 export type GameState = {
   barrackMatrix: BarrackMatrixState,
   battleFieldMatrix: BattleFieldMatrixState,
   creatures: Creature[],
   parties: Party[],
+  squareCursor: SquareCursor | undefined,
 }
 
 function findCreatureById(creatures: Creature[], creatureId: Creature['id']): Creature | void {
@@ -47,7 +73,13 @@ export function findCreatureByIdOrError(creatures: Creature[], creatureId: Creat
   return found;
 }
 
-export function createDummyAllies(
+export function areGlobalMatrixPositionsEqual(a: GlobalMatrixPosition, b: GlobalMatrixPosition): boolean {
+  return a.matrixId === b.matrixId &&
+    a.y === b.y &&
+    a.x === b.x;
+}
+
+function createDummyAllies(
   battleFieldMatrix: BattleFieldMatrixState,
   barrackMatrix: BarrackMatrixState
 ): {
@@ -109,5 +141,51 @@ export function createDummyAllies(
       factionId: 'ally',
       creatureIds,
     },
+  };
+}
+
+export function createInitialGameState(): GameState {
+  const battleFieldMatrix: BattleFieldMatrixState = [];
+  for (let y = 0; y < 7; y++) {
+    const row: BattleFieldElementState[] = [];
+    for (let x = 0; x < 7; x++) {
+      row.push({
+        position: {
+          matrixId: 'battleField',
+          y,
+          x,
+        },
+        creatureId: undefined,
+      });
+    }
+    battleFieldMatrix.push(row);
+  }
+
+  const barrackMatrix: BarrackMatrixState = [];
+  for (let y = 0; y < 2; y++) {
+    const row: BarrackElementState[] = [];
+    for (let x = 0; x < 7; x++) {
+      row.push({
+        position: {
+          matrixId: 'barrack',
+          y,
+          x,
+        },
+        creatureId: undefined,
+      });
+    }
+    barrackMatrix.push(row);
+  }
+
+  const dummyAllies = createDummyAllies(battleFieldMatrix, barrackMatrix);
+
+  return {
+    creatures: dummyAllies.creatures,
+    parties: [
+      dummyAllies.party,
+    ],
+    battleFieldMatrix,
+    barrackMatrix,
+    squareCursor: undefined,
   };
 }

@@ -1,22 +1,59 @@
+import produce from 'immer';
+import * as React from 'react';
+
 import {RootProps} from './components/Root';
 import {BattlePageProps} from './components/pages/BattlePage';
 import {ApplicationState} from './state-manager/application';
 import {
+  areGlobalMatrixPositionsEqual,
   findCreatureByIdOrError,
+  identifyMatrixId,
 } from './state-manager/game';
 import {BattlePageState} from './state-manager/pages/battle';
 
-export type ApplicationStateSetter = (applicationState: ApplicationState) => void;
+type ReactSetState<State> = (setStateAction: React.SetStateAction<State>) => void;
+type Dispatcher<State> = (immerCallback: (draft: State) => void) => void;
+
+function makeOneTimeApplicationDispatcher(
+  setState: ReactSetState<ApplicationState>
+): Dispatcher<ApplicationState> {
+  let callCount = 0;
+  return function dispatcher(immerCallback) {
+    if (callCount > 0) {
+      throw new Error('Can only call the dispatcher once in one Flux cycle.');
+    }
+    callCount++;
+    setState(applicationState => {
+      return produce(applicationState, immerCallback);
+    });
+  }
+}
+
+function makeScopedOneTimeDispatcher<OriginalState, ScopedState>(
+  originalDispatcher: Dispatcher<OriginalState>,
+  scoping: (state: OriginalState) => ScopedState | void,
+): Dispatcher<ScopedState> {
+  return function dispatcher(immerLikeCallback) {
+    originalDispatcher(draft => {
+      const scopedState = scoping(draft);
+      if (scopedState) {
+        immerLikeCallback(scopedState);
+      } else {
+        throw new Error('Invalid state scoping.');
+      }
+    });
+  }
+}
 
 function mapBattlePageStateToProps(
   state: BattlePageState,
-  applicationState: ApplicationState,
-  applicationStateSetter: ApplicationStateSetter
+  dispatcher: Dispatcher<BattlePageState>,
 ): BattlePageProps {
   const {
     barrackMatrix,
     battleFieldMatrix,
     creatures,
+    squareCursor,
   } = state.game;
 
   function jobIdToDummyImage(jobId: string): string {
@@ -31,33 +68,74 @@ function mapBattlePageStateToProps(
     return mapping[jobId] || '？';
   }
 
-  const battleFieldBoard = battleFieldMatrix.map(row => {
+  const battleFieldBoard: BattlePageProps['battleFieldBoard'] = battleFieldMatrix.map(row => {
     return row.map(element => {
       const creature = element.creatureId ? findCreatureByIdOrError(creatures, element.creatureId) : undefined;
+
       return {
-        y: element.y,
-        x: element.x,
+        y: element.position.y,
+        x: element.position.x,
         creature: creature
           ? {
             image: jobIdToDummyImage(creature.jobId),
           }
           : undefined,
+        isSelected: squareCursor
+          ? areGlobalMatrixPositionsEqual(element.position, squareCursor.position)
+          : false,
+        handleTouch({y, x}) {
+          dispatcher(draft => {
+            const nextSquareCursor = draft.game.squareCursor &&
+                x === draft.game.squareCursor.position.x &&
+                y === draft.game.squareCursor.position.y
+              ? undefined
+              : {
+                position: {
+                  matrixId: identifyMatrixId('battleField'),
+                  y,
+                  x,
+                },
+              }
+            ;
+            draft.game.squareCursor = nextSquareCursor;
+          });
+        },
       };
     });
   });
 
-  const barrackBoard = barrackMatrix.map(row => {
+  const barrackBoard: BattlePageProps['barrackBoard'] = barrackMatrix.map(row => {
     return row.map(element => {
       const creature = element.creatureId ? findCreatureByIdOrError(creatures, element.creatureId) : undefined;
 
       return {
-        y: element.y,
-        x: element.x,
+        y: element.position.y,
+        x: element.position.x,
         creature: creature
           ? {
             image: jobIdToDummyImage(creature.jobId),
           }
           : undefined,
+        isSelected: squareCursor
+          ? areGlobalMatrixPositionsEqual(element.position, squareCursor.position)
+          : false,
+        handleTouch({y, x}) {
+          dispatcher(draft => {
+            const nextSquareCursor = draft.game.squareCursor &&
+                x === draft.game.squareCursor.position.x &&
+                y === draft.game.squareCursor.position.y
+              ? undefined
+              : {
+                position: {
+                  matrixId: identifyMatrixId('barrack'),
+                  y,
+                  x,
+                },
+              }
+            ;
+            draft.game.squareCursor = nextSquareCursor;
+          });
+        },
       };
     });
   });
@@ -70,12 +148,19 @@ function mapBattlePageStateToProps(
 
 export function mapStateToProps(
   state: ApplicationState,
-  stateSetter: ApplicationStateSetter
+  setState: ReactSetState<ApplicationState>
 ): RootProps {
+  const oneTimeApplicationDispatcher = makeOneTimeApplicationDispatcher(setState);
+
   if (state.pages.battle) {
+    const battlePageOneTimeDispatcher = makeScopedOneTimeDispatcher<ApplicationState, BattlePageState>(
+      oneTimeApplicationDispatcher,
+      (state) => state.pages.battle
+    );
+
     return {
       pages: {
-        battle: mapBattlePageStateToProps(state.pages.battle, state, stateSetter),
+        battle: mapBattlePageStateToProps(state.pages.battle, battlePageOneTimeDispatcher),
       },
     };
   }

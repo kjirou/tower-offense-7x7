@@ -6,6 +6,7 @@ import {ApplicationState} from './state-manager/application';
 
 export function App(props: {initialState: ApplicationState}): JSX.Element {
   const [state, setState] = React.useState(props.initialState);
+  console.log('state:', state);
 
   const rootProps = mapStateToProps(state, setState);
 
