@@ -15,7 +15,7 @@ export function validateMatrix<Element>(matrix: Element[][]): boolean {
   );
 }
 
-export function flattenMatrix<Element>(matrix: Element[][]) {
+export function flattenMatrix<Element>(matrix: Element[][]): Element[] {
   const flattened: Element[] = [];
 
   matrix.forEach(row => {
