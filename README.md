@@ -1,5 +1,7 @@
 # tower-offense-7x7
 
+[![Build Status](https://travis-ci.org/kjirou/tower-offense-7x7.svg?branch=master)](https://travis-ci.org/kjirou/tower-offense-7x7)
+
 ATODE
 
 
