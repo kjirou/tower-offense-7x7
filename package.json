@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "develop": "$(npm bin)/webpack-dev-server --config webpack-configs/development.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "$(npm bin)/mocha --require 'ts-node-reigister-for-typecheck.js' --recursive 'src/**/__tests__/**/*-test.ts'",
     "typecheck": "$(npm bin)/tsc --project tsconfig-typecheck.json"
   },
   "repository": {
