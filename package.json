@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "develop": "$(npm bin)/webpack-dev-server --config webpack-configs/development.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "$(npm bin)/mocha --require 'ts-node-reigister-for-typecheck.js' --recursive 'src/**/__tests__/**/*-test.ts'",
     "typecheck": "$(npm bin)/tsc --project tsconfig-typecheck.json"
   },
   "repository": {
@@ -20,11 +20,14 @@
   "homepage": "https://github.com/kjirou/tower-offense-7x7#readme",
   "private": true,
   "devDependencies": {
+    "@types/mocha": "^5.2.6",
     "@types/node": "^11.13.4",
     "@types/react": "^16.8.13",
     "@types/react-dom": "^16.8.4",
     "ejs": "^2.6.1",
+    "mocha": "^6.1.4",
     "ts-loader": "^5.3.3",
+    "ts-node": "^8.1.0",
     "typescript": "^3.4.3",
     "webpack": "^4.30.0",
     "webpack-cli": "^3.3.0",
