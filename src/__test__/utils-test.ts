@@ -7,7 +7,11 @@ import {
 
 describe('utils', function() {
   describe('flattenMatrix', function() {
-    it('tmp', function() {
+    it('should flatten a 2D array to an 1D array', function() {
+      assert.deepStrictEqual(
+        flattenMatrix<number>([[1, 2], [3, 4]]),
+        [1, 2, 3, 4],
+      );
     });
   });
 });
