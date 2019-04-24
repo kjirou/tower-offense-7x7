@@ -1,4 +1,4 @@
-import produce from 'immer';
+import produce, {Draft} from 'immer';
 import * as React from 'react';
 
 import {RootProps} from './components/Root';
@@ -12,35 +12,27 @@ import {
 import {BattlePageState} from './state-manager/pages/battle';
 
 type ReactSetState<State> = (setStateAction: React.SetStateAction<State>) => void;
-type Dispatcher<State> = (immerCallback: (draft: State) => void) => void;
+type Dispatcher<State> = (immerLikeCallback: (draft: Draft<State>) => void) => void;
 
-function makeOneTimeApplicationDispatcher(
-  setState: ReactSetState<ApplicationState>
-): Dispatcher<ApplicationState> {
+function makeDispatcher<State, ScopedState>(
+  setState: ReactSetState<State>,
+  scoping: (state: Draft<State>) => Draft<ScopedState> | void,
+): Dispatcher<ScopedState> {
   let callCount = 0;
-  return function dispatcher(immerCallback) {
+  return function dispatcher(immerLikeCallback: (aPartOfDraft: Draft<ScopedState>) => void): void {
     if (callCount > 0) {
       throw new Error('Can only call the dispatcher once in one Flux cycle.');
     }
     callCount++;
     setState(applicationState => {
-      return produce(applicationState, immerCallback);
-    });
-  }
-}
-
-function makeScopedOneTimeDispatcher<OriginalState, ScopedState>(
-  originalDispatcher: Dispatcher<OriginalState>,
-  scoping: (state: OriginalState) => ScopedState | void,
-): Dispatcher<ScopedState> {
-  return function dispatcher(immerLikeCallback) {
-    originalDispatcher(draft => {
-      const scopedState = scoping(draft);
-      if (scopedState) {
-        immerLikeCallback(scopedState);
-      } else {
-        throw new Error('Invalid state scoping.');
-      }
+      return produce(applicationState, draft => {
+        const scopedState = scoping(draft);
+        if (scopedState) {
+          immerLikeCallback(scopedState);
+        } else {
+          throw new Error('Invalid state scoping.');
+        }
+      });
     });
   }
 }
@@ -150,17 +142,15 @@ export function mapStateToProps(
   state: ApplicationState,
   setState: ReactSetState<ApplicationState>
 ): RootProps {
-  const oneTimeApplicationDispatcher = makeOneTimeApplicationDispatcher(setState);
-
   if (state.pages.battle) {
-    const battlePageOneTimeDispatcher = makeScopedOneTimeDispatcher<ApplicationState, BattlePageState>(
-      oneTimeApplicationDispatcher,
+    const dispatcher = makeDispatcher<ApplicationState, BattlePageState>(
+      setState,
       (state) => state.pages.battle
     );
 
     return {
       pages: {
-        battle: mapBattlePageStateToProps(state.pages.battle, battlePageOneTimeDispatcher),
+        battle: mapBattlePageStateToProps(state.pages.battle, dispatcher),
       },
     };
   }
