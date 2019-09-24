@@ -26,12 +26,12 @@
     "@types/react-dom": "^16.8.4",
     "ejs": "^2.7.1",
     "mocha": "^6.2.0",
-    "ts-loader": "^5.3.3",
+    "ts-loader": "^6.1.2",
     "ts-node": "^8.4.1",
     "typescript": "^3.6.3",
-    "webpack": "^4.30.0",
-    "webpack-cli": "^3.3.0",
-    "webpack-dev-server": "^3.3.1"
+    "webpack": "^4.40.2",
+    "webpack-cli": "^3.3.9",
+    "webpack-dev-server": "^3.8.1"
   },
   "dependencies": {
     "immer": "^3.1.1",
