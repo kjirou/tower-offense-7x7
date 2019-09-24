@@ -6,7 +6,7 @@
   "scripts": {
     "develop": "$(npm bin)/webpack-dev-server --config webpack-configs/development.js",
     "test": "$(npm bin)/mocha --require 'ts-node-reigister-for-typecheck.js' --recursive 'src/**/__tests__/**/*-test.ts'",
-    "typecheck": "$(npm bin)/tsc --project tsconfig-typecheck.json"
+    "typecheck": "$(npm bin)/tsc --noEmit"
   },
   "repository": {
     "type": "git",
