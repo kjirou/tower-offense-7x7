@@ -15,5 +15,8 @@
     /* Additional Checks */
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true
-  }
+  },
+  "include": [
+    "src"
+  ]
 }
