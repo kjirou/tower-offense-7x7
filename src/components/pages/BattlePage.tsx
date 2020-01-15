@@ -21,17 +21,6 @@ type BattleFieldProps = {
   board: BattleFieldSquareProps[][],
 };
 
-type BarrackSquareProps = {
-  creature: CreatureOnSquareProps | void,
-  handleTouch: (payload: {
-    x: number,
-    y: number,
-  }) => void,
-  isSelected: boolean,
-  x: number,
-  y: number,
-};
-
 type CardProps = {
   label: string,
   uid: string,
@@ -131,28 +120,6 @@ function SquareMonitor(): JSX.Element {
   );
 }
 
-//function BarrackSquare(props: BarrackSquareProps): JSX.Element {
-//  const style = {
-//    position: 'absolute',
-//    top: `${6 + props.y * 48 + props.y * 2}px`,
-//    left: `${6 + props.x * 48 + props.x * 2}px`,
-//    width: '48px',
-//    height: '48px',
-//    backgroundColor: props.isSelected ? 'yellow' : 'lime',
-//  };
-//
-//  return (
-//    <div
-//      style={style}
-//      onTouchStart={() => props.handleTouch({x: props.x, y: props.y})}
-//    >
-//    {
-//      props.creature ? <CreatureOnSquare {...props.creature} /> : undefined
-//    }
-//    </div>
-//  );
-//}
-
 function Card(props: CardProps): JSX.Element {
   const style = {
     width: '68px',
@@ -188,17 +155,6 @@ function CardsOnYourHand(props: CardsOnYourHandProps): JSX.Element {
     }
     </div>
   );
-
-  //return (
-  //  <div style={style}>
-  //  {
-  //    squares.map((square) => {
-  //      const key = `square-${square.y}-${square.x}`;
-  //      return <BarrackSquare key={key} {...square} />;
-  //    })
-  //  }
-  //  </div>
-  //);
 }
 
 export function BattlePage(props: BattlePageProps): JSX.Element {
