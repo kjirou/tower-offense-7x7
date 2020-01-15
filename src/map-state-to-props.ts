@@ -2,12 +2,18 @@ import produce, {Draft} from 'immer';
 import * as React from 'react';
 
 import {RootProps} from './components/Root';
-import {BattlePageProps} from './components/pages/BattlePage';
+import {
+  BattlePageProps,
+  CardProps,
+} from './components/pages/BattlePage';
 import {ApplicationState} from './state-manager/application';
 import {
+  Card as CardState,
   areGlobalMatrixPositionsEqual,
   findCreatureByIdOrError,
   identifyMatrixId,
+  isCreatureCardType,
+  isSkillCardType,
 } from './state-manager/game';
 import {BattlePageState} from './state-manager/pages/battle';
 
@@ -41,6 +47,7 @@ function mapBattlePageStateToProps(
   state: BattlePageState,
   dispatcher: Dispatcher<BattlePageState>,
 ): BattlePageProps {
+  // TODO: Should not destruct `state.game`.
   const {
     battleFieldMatrix,
     creatures,
@@ -57,6 +64,15 @@ function mapBattlePageStateToProps(
       mage: '魔',
     };
     return mapping[jobId] || '？';
+  }
+
+  function cardStateToProps(cardState: CardState): CardProps {
+    const cardProps = {
+      uid: '',
+      label: '',
+    };
+
+    return cardProps;
   }
 
   const battleFieldBoard: BattlePageProps['battleFieldBoard'] = battleFieldMatrix.map(row => {
@@ -95,29 +111,14 @@ function mapBattlePageStateToProps(
     });
   });
 
-  // TODO: Dummy data
+  const cardsState = state.game.cardsOnYourHand.cards;
   const cardsOnYourHand: BattlePageProps['cardsOnYourHand'] = {
     cards: [
-      {
-        uid: 'a',
-        label: '１',
-      },
-      {
-        uid: 'b',
-        label: '２',
-      },
-      {
-        uid: 'c',
-        label: '３',
-      },
-      {
-        uid: 'd',
-        label: '４',
-      },
-      {
-        uid: 'e',
-        label: '５',
-      },
+      cardStateToProps(cardsState[0]),
+      cardStateToProps(cardsState[1]),
+      cardStateToProps(cardsState[2]),
+      cardStateToProps(cardsState[3]),
+      cardStateToProps(cardsState[4]),
     ],
   };
 

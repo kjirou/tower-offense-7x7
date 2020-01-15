@@ -21,7 +21,7 @@ type BattleFieldProps = {
   board: BattleFieldSquareProps[][],
 };
 
-type CardProps = {
+export type CardProps = {
   label: string,
   uid: string,
 };

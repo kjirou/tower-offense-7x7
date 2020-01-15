@@ -46,8 +46,31 @@ type BattleFieldElementState = {
 
 type BattleFieldMatrixState = BattleFieldElementState[][];
 
+type CreatureCard = {
+  creatureId: Creature['id'],
+}
+
+type SkillCard = {
+  skillId: 'attack' | 'healing' | 'assistance',
+}
+
+export type Card = CreatureCard | SkillCard;
+
+export function isCreatureCardType(card: Card): card is CreatureCard {
+  return 'creatureId' in card;
+}
+
+export function isSkillCardType(card: Card): card is SkillCard {
+  return 'skillId' in card;
+}
+
+type CardsOnYourHandState = {
+  cards: [Card, Card, Card, Card, Card],
+};
+
 export type GameState = {
   battleFieldMatrix: BattleFieldMatrixState,
+  cardsOnYourHand: CardsOnYourHandState,
   creatures: Creature[],
   parties: Party[],
   squareCursor: SquareCursor | undefined,
@@ -148,6 +171,26 @@ export function createInitialGameState(): GameState {
     battleFieldMatrix.push(row);
   }
 
+  const cardsOnYourHand: CardsOnYourHandState = {
+    cards: [
+      {
+        skillId: 'attack',
+      },
+      {
+        skillId: 'healing',
+      },
+      {
+        skillId: 'attack',
+      },
+      {
+        skillId: 'attack',
+      },
+      {
+        skillId: 'assistance',
+      },
+    ],
+  };
+
   const dummyAllies = createDummyAllies(battleFieldMatrix);
 
   return {
@@ -156,6 +199,7 @@ export function createInitialGameState(): GameState {
       dummyAllies.party,
     ],
     battleFieldMatrix,
+    cardsOnYourHand,
     squareCursor: undefined,
   };
 }
