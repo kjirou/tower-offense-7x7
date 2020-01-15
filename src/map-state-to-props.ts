@@ -42,7 +42,6 @@ function mapBattlePageStateToProps(
   dispatcher: Dispatcher<BattlePageState>,
 ): BattlePageProps {
   const {
-    barrackMatrix,
     battleFieldMatrix,
     creatures,
     squareCursor,

@@ -46,15 +46,7 @@ type BattleFieldElementState = {
 
 type BattleFieldMatrixState = BattleFieldElementState[][];
 
-type BarrackElementState = {
-  creatureId: Creature['id'] | undefined,
-  position: GlobalMatrixPosition,
-}
-
-type BarrackMatrixState = BarrackElementState[][];
-
 export type GameState = {
-  barrackMatrix: BarrackMatrixState,
   battleFieldMatrix: BattleFieldMatrixState,
   creatures: Creature[],
   parties: Party[],
@@ -80,8 +72,7 @@ export function areGlobalMatrixPositionsEqual(a: GlobalMatrixPosition, b: Global
 }
 
 function createDummyAllies(
-  battleFieldMatrix: BattleFieldMatrixState,
-  barrackMatrix: BarrackMatrixState
+  battleFieldMatrix: BattleFieldMatrixState
 ): {
   creatures: Creature[],
   party: Party,
@@ -128,10 +119,6 @@ function createDummyAllies(
   // Overwrite args
   battleFieldMatrix[2][1].creatureId = creatures[5].id;
   battleFieldMatrix[3][2].creatureId = creatures[4].id;
-  barrackMatrix[0][0].creatureId = creatures[0].id;
-  barrackMatrix[0][1].creatureId = creatures[1].id;
-  barrackMatrix[0][2].creatureId = creatures[2].id;
-  barrackMatrix[0][3].creatureId = creatures[3].id;
 
   const creatureIds = creatures.map(e => e.id);
 
@@ -161,23 +148,7 @@ export function createInitialGameState(): GameState {
     battleFieldMatrix.push(row);
   }
 
-  const barrackMatrix: BarrackMatrixState = [];
-  for (let y = 0; y < 2; y++) {
-    const row: BarrackElementState[] = [];
-    for (let x = 0; x < 7; x++) {
-      row.push({
-        position: {
-          matrixId: 'barrack',
-          y,
-          x,
-        },
-        creatureId: undefined,
-      });
-    }
-    barrackMatrix.push(row);
-  }
-
-  const dummyAllies = createDummyAllies(battleFieldMatrix, barrackMatrix);
+  const dummyAllies = createDummyAllies(battleFieldMatrix);
 
   return {
     creatures: dummyAllies.creatures,
@@ -185,7 +156,6 @@ export function createInitialGameState(): GameState {
       dummyAllies.party,
     ],
     battleFieldMatrix,
-    barrackMatrix,
     squareCursor: undefined,
   };
 }
