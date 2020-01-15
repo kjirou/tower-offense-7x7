@@ -21,24 +21,18 @@ type BattleFieldProps = {
   board: BattleFieldSquareProps[][],
 };
 
-type BarrackSquareProps = {
-  creature: CreatureOnSquareProps | void,
-  handleTouch: (payload: {
-    x: number,
-    y: number,
-  }) => void,
-  isSelected: boolean,
-  x: number,
-  y: number,
+export type CardProps = {
+  label: string,
+  uid: string,
 };
 
-type BarrackProps = {
-  board: BarrackSquareProps[][],
+type CardsOnYourHandProps = {
+  cards: [CardProps, CardProps, CardProps, CardProps, CardProps],
 };
 
 export type BattlePageProps = {
-  barrackBoard: BarrackSquareProps[][],
   battleFieldBoard: BattleFieldSquareProps[][],
+  cardsOnYourHand: CardsOnYourHandProps,
 };
 
 function MetaInformationBar(): JSX.Element {
@@ -126,44 +120,38 @@ function SquareMonitor(): JSX.Element {
   );
 }
 
-function BarrackSquare(props: BarrackSquareProps): JSX.Element {
+function Card(props: CardProps): JSX.Element {
   const style = {
-    position: 'absolute',
-    top: `${6 + props.y * 48 + props.y * 2}px`,
-    left: `${6 + props.x * 48 + props.x * 2}px`,
-    width: '48px',
-    height: '48px',
-    backgroundColor: props.isSelected ? 'yellow' : 'lime',
+    width: '68px',
+    height: '100px',
+    backgroundColor: 'lime',
   };
 
   return (
     <div
       style={style}
-      onTouchStart={() => props.handleTouch({x: props.x, y: props.y})}
     >
-    {
-      props.creature ? <CreatureOnSquare {...props.creature} /> : undefined
-    }
+      {props.label}
     </div>
   );
 }
 
-function Barrack(props: BarrackProps): JSX.Element {
+function CardsOnYourHand(props: CardsOnYourHandProps): JSX.Element {
   const style = {
-    position: 'relative',
+    display: 'flex',
     width: '360px',
-    height: '110px',
+    height: '112px',
+    padding: '6px',
+    justifyContent: 'space-between',
     backgroundColor: 'green',
   };
-
-  const squares = flattenMatrix<BarrackSquareProps>(props.board);
 
   return (
     <div style={style}>
     {
-      squares.map((square) => {
-        const key = `square-${square.y}-${square.x}`;
-        return <BarrackSquare key={key} {...square} />;
+      props.cards.map((card) => {
+        const key = `card-${card.uid}`;
+        return <Card key={key} {...card} />;
       })
     }
     </div>
@@ -183,7 +171,7 @@ export function BattlePage(props: BattlePageProps): JSX.Element {
       <MetaInformationBar />
       <BattleFieldBoard board={props.battleFieldBoard} />
       <SquareMonitor />
-      <Barrack board={props.barrackBoard} />
+      <CardsOnYourHand {...props.cardsOnYourHand} />
     </div>
   );
 }

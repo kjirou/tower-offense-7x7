@@ -2,12 +2,18 @@ import produce, {Draft} from 'immer';
 import * as React from 'react';
 
 import {RootProps} from './components/Root';
-import {BattlePageProps} from './components/pages/BattlePage';
+import {
+  BattlePageProps,
+  CardProps,
+} from './components/pages/BattlePage';
 import {ApplicationState} from './state-manager/application';
 import {
+  Card as CardState,
   areGlobalMatrixPositionsEqual,
   findCreatureByIdOrError,
   identifyMatrixId,
+  isCreatureCardType,
+  isSkillCardType,
 } from './state-manager/game';
 import {BattlePageState} from './state-manager/pages/battle';
 
@@ -41,8 +47,8 @@ function mapBattlePageStateToProps(
   state: BattlePageState,
   dispatcher: Dispatcher<BattlePageState>,
 ): BattlePageProps {
+  // TODO: Should not destruct `state.game`.
   const {
-    barrackMatrix,
     battleFieldMatrix,
     creatures,
     squareCursor,
@@ -58,6 +64,26 @@ function mapBattlePageStateToProps(
       mage: '魔',
     };
     return mapping[jobId] || '？';
+  }
+
+  function cardStateToProps(cardState: CardState): CardProps {
+    const cardProps = {
+      uid: cardState.uid,
+      label: '？',
+    };
+
+    if (isSkillCardType(cardState)) {
+      const mapping: {
+        [key: string]: string,
+      } = {
+        attack: 'A',
+        healing: 'H',
+        support: 'S',
+      };
+      cardProps.label = mapping[cardState.skillId];
+    }
+
+    return cardProps;
   }
 
   const battleFieldBoard: BattlePageProps['battleFieldBoard'] = battleFieldMatrix.map(row => {
@@ -96,45 +122,20 @@ function mapBattlePageStateToProps(
     });
   });
 
-  const barrackBoard: BattlePageProps['barrackBoard'] = barrackMatrix.map(row => {
-    return row.map(element => {
-      const creature = element.creatureId ? findCreatureByIdOrError(creatures, element.creatureId) : undefined;
-
-      return {
-        y: element.position.y,
-        x: element.position.x,
-        creature: creature
-          ? {
-            image: jobIdToDummyImage(creature.jobId),
-          }
-          : undefined,
-        isSelected: squareCursor
-          ? areGlobalMatrixPositionsEqual(element.position, squareCursor.position)
-          : false,
-        handleTouch({y, x}) {
-          dispatcher(draft => {
-            const nextSquareCursor = draft.game.squareCursor &&
-                x === draft.game.squareCursor.position.x &&
-                y === draft.game.squareCursor.position.y
-              ? undefined
-              : {
-                position: {
-                  matrixId: identifyMatrixId('barrack'),
-                  y,
-                  x,
-                },
-              }
-            ;
-            draft.game.squareCursor = nextSquareCursor;
-          });
-        },
-      };
-    });
-  });
+  const cardsState = state.game.cardsOnYourHand.cards;
+  const cardsOnYourHand: BattlePageProps['cardsOnYourHand'] = {
+    cards: [
+      cardStateToProps(cardsState[0]),
+      cardStateToProps(cardsState[1]),
+      cardStateToProps(cardsState[2]),
+      cardStateToProps(cardsState[3]),
+      cardStateToProps(cardsState[4]),
+    ],
+  };
 
   return {
     battleFieldBoard,
-    barrackBoard,
+    cardsOnYourHand,
   };
 }
 

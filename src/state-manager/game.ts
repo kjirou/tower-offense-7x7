@@ -46,16 +46,33 @@ type BattleFieldElementState = {
 
 type BattleFieldMatrixState = BattleFieldElementState[][];
 
-type BarrackElementState = {
-  creatureId: Creature['id'] | undefined,
-  position: GlobalMatrixPosition,
+type CreatureCard = {
+  creatureId: Creature['id'],
+  uid: string,
 }
 
-type BarrackMatrixState = BarrackElementState[][];
+type SkillCard = {
+  skillId: 'attack' | 'healing' | 'support',
+  uid: string,
+}
+
+export type Card = CreatureCard | SkillCard;
+
+export function isCreatureCardType(card: Card): card is CreatureCard {
+  return 'creatureId' in card;
+}
+
+export function isSkillCardType(card: Card): card is SkillCard {
+  return 'skillId' in card;
+}
+
+type CardsOnYourHandState = {
+  cards: [Card, Card, Card, Card, Card],
+};
 
 export type GameState = {
-  barrackMatrix: BarrackMatrixState,
   battleFieldMatrix: BattleFieldMatrixState,
+  cardsOnYourHand: CardsOnYourHandState,
   creatures: Creature[],
   parties: Party[],
   squareCursor: SquareCursor | undefined,
@@ -80,8 +97,7 @@ export function areGlobalMatrixPositionsEqual(a: GlobalMatrixPosition, b: Global
 }
 
 function createDummyAllies(
-  battleFieldMatrix: BattleFieldMatrixState,
-  barrackMatrix: BarrackMatrixState
+  battleFieldMatrix: BattleFieldMatrixState
 ): {
   creatures: Creature[],
   party: Party,
@@ -128,10 +144,6 @@ function createDummyAllies(
   // Overwrite args
   battleFieldMatrix[2][1].creatureId = creatures[5].id;
   battleFieldMatrix[3][2].creatureId = creatures[4].id;
-  barrackMatrix[0][0].creatureId = creatures[0].id;
-  barrackMatrix[0][1].creatureId = creatures[1].id;
-  barrackMatrix[0][2].creatureId = creatures[2].id;
-  barrackMatrix[0][3].creatureId = creatures[3].id;
 
   const creatureIds = creatures.map(e => e.id);
 
@@ -161,23 +173,32 @@ export function createInitialGameState(): GameState {
     battleFieldMatrix.push(row);
   }
 
-  const barrackMatrix: BarrackMatrixState = [];
-  for (let y = 0; y < 2; y++) {
-    const row: BarrackElementState[] = [];
-    for (let x = 0; x < 7; x++) {
-      row.push({
-        position: {
-          matrixId: 'barrack',
-          y,
-          x,
-        },
-        creatureId: undefined,
-      });
-    }
-    barrackMatrix.push(row);
-  }
+  const cardsOnYourHand: CardsOnYourHandState = {
+    cards: [
+      {
+        uid: 'card-1',
+        skillId: 'attack',
+      },
+      {
+        uid: 'card-2',
+        skillId: 'healing',
+      },
+      {
+        uid: 'card-3',
+        skillId: 'attack',
+      },
+      {
+        uid: 'card-4',
+        skillId: 'attack',
+      },
+      {
+        uid: 'card-5',
+        skillId: 'support',
+      },
+    ],
+  };
 
-  const dummyAllies = createDummyAllies(battleFieldMatrix, barrackMatrix);
+  const dummyAllies = createDummyAllies(battleFieldMatrix);
 
   return {
     creatures: dummyAllies.creatures,
@@ -185,7 +206,7 @@ export function createInitialGameState(): GameState {
       dummyAllies.party,
     ],
     battleFieldMatrix,
-    barrackMatrix,
+    cardsOnYourHand,
     squareCursor: undefined,
   };
 }
