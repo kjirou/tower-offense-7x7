@@ -32,7 +32,7 @@ type BarrackSquareProps = {
   y: number,
 };
 
-type BarrackProps = {
+type CardsOnYourHandProps = {
   board: BarrackSquareProps[][],
 };
 
@@ -148,7 +148,7 @@ function BarrackSquare(props: BarrackSquareProps): JSX.Element {
   );
 }
 
-function Barrack(props: BarrackProps): JSX.Element {
+function CardsOnYourHand(props: CardsOnYourHandProps): JSX.Element {
   const style = {
     position: 'relative',
     width: '360px',
@@ -183,7 +183,7 @@ export function BattlePage(props: BattlePageProps): JSX.Element {
       <MetaInformationBar />
       <BattleFieldBoard board={props.battleFieldBoard} />
       <SquareMonitor />
-      <Barrack board={props.barrackBoard} />
+      <CardsOnYourHand board={props.barrackBoard} />
     </div>
   );
 }
