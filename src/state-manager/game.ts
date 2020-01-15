@@ -48,10 +48,12 @@ type BattleFieldMatrixState = BattleFieldElementState[][];
 
 type CreatureCard = {
   creatureId: Creature['id'],
+  uid: string,
 }
 
 type SkillCard = {
-  skillId: 'attack' | 'healing' | 'assistance',
+  skillId: 'attack' | 'healing' | 'support',
+  uid: string,
 }
 
 export type Card = CreatureCard | SkillCard;
@@ -174,19 +176,24 @@ export function createInitialGameState(): GameState {
   const cardsOnYourHand: CardsOnYourHandState = {
     cards: [
       {
+        uid: 'card-1',
         skillId: 'attack',
       },
       {
+        uid: 'card-2',
         skillId: 'healing',
       },
       {
+        uid: 'card-3',
         skillId: 'attack',
       },
       {
+        uid: 'card-4',
         skillId: 'attack',
       },
       {
-        skillId: 'assistance',
+        uid: 'card-5',
+        skillId: 'support',
       },
     ],
   };

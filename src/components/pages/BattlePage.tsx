@@ -131,6 +131,7 @@ function Card(props: CardProps): JSX.Element {
     <div
       style={style}
     >
+      {props.label}
     </div>
   );
 }

@@ -68,9 +68,20 @@ function mapBattlePageStateToProps(
 
   function cardStateToProps(cardState: CardState): CardProps {
     const cardProps = {
-      uid: '',
-      label: '',
+      uid: cardState.uid,
+      label: '？',
     };
+
+    if (isSkillCardType(cardState)) {
+      const mapping: {
+        [key: string]: string,
+      } = {
+        attack: 'A',
+        healing: 'H',
+        support: 'S',
+      };
+      cardProps.label = mapping[cardState.skillId];
+    }
 
     return cardProps;
   }
