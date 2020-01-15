@@ -42,8 +42,8 @@ type CardsOnYourHandProps = {
 };
 
 export type BattlePageProps = {
-  barrackBoard: BarrackSquareProps[][],
   battleFieldBoard: BattleFieldSquareProps[][],
+  cardsOnYourHand: CardsOnYourHandProps,
 };
 
 function MetaInformationBar(): JSX.Element {
@@ -168,7 +168,7 @@ function Card(props: CardProps): JSX.Element {
   );
 }
 
-function CardsOnYourHand(props: {}): JSX.Element {
+function CardsOnYourHand(props: CardsOnYourHandProps): JSX.Element {
   const style = {
     display: 'flex',
     width: '360px',
@@ -178,35 +178,10 @@ function CardsOnYourHand(props: {}): JSX.Element {
     backgroundColor: 'green',
   };
 
-  // TODO: Dummy data
-  const cards: CardsOnYourHandProps['cards'] = [
-    {
-      uid: 'a',
-      label: '１',
-    },
-    {
-      uid: 'b',
-      label: '２',
-    },
-    {
-      uid: 'c',
-      label: '３',
-    },
-    {
-      uid: 'd',
-      label: '４',
-    },
-    {
-      uid: 'e',
-      label: '５',
-    },
-  ];
-
-
   return (
     <div style={style}>
     {
-      cards.map((card) => {
+      props.cards.map((card) => {
         const key = `card-${card.uid}`;
         return <Card key={key} {...card} />;
       })
@@ -239,7 +214,7 @@ export function BattlePage(props: BattlePageProps): JSX.Element {
       <MetaInformationBar />
       <BattleFieldBoard board={props.battleFieldBoard} />
       <SquareMonitor />
-      <CardsOnYourHand />
+      <CardsOnYourHand {...props.cardsOnYourHand} />
     </div>
   );
 }

@@ -96,45 +96,35 @@ function mapBattlePageStateToProps(
     });
   });
 
-  const barrackBoard: BattlePageProps['barrackBoard'] = barrackMatrix.map(row => {
-    return row.map(element => {
-      const creature = element.creatureId ? findCreatureByIdOrError(creatures, element.creatureId) : undefined;
-
-      return {
-        y: element.position.y,
-        x: element.position.x,
-        creature: creature
-          ? {
-            image: jobIdToDummyImage(creature.jobId),
-          }
-          : undefined,
-        isSelected: squareCursor
-          ? areGlobalMatrixPositionsEqual(element.position, squareCursor.position)
-          : false,
-        handleTouch({y, x}) {
-          dispatcher(draft => {
-            const nextSquareCursor = draft.game.squareCursor &&
-                x === draft.game.squareCursor.position.x &&
-                y === draft.game.squareCursor.position.y
-              ? undefined
-              : {
-                position: {
-                  matrixId: identifyMatrixId('barrack'),
-                  y,
-                  x,
-                },
-              }
-            ;
-            draft.game.squareCursor = nextSquareCursor;
-          });
-        },
-      };
-    });
-  });
+  // TODO: Dummy data
+  const cardsOnYourHand: BattlePageProps['cardsOnYourHand'] = {
+    cards: [
+      {
+        uid: 'a',
+        label: '１',
+      },
+      {
+        uid: 'b',
+        label: '２',
+      },
+      {
+        uid: 'c',
+        label: '３',
+      },
+      {
+        uid: 'd',
+        label: '４',
+      },
+      {
+        uid: 'e',
+        label: '５',
+      },
+    ],
+  };
 
   return {
     battleFieldBoard,
-    barrackBoard,
+    cardsOnYourHand,
   };
 }
 
