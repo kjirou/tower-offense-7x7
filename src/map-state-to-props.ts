@@ -11,49 +11,20 @@ import {
   Card as CardState,
   areGlobalMatrixPositionsEqual,
   findCreatureByIdOrError,
-  identifyMatrixId,
   isCreatureCardType,
   isSkillCardType,
 } from './state-manager/game';
-import {BattlePageState} from './state-manager/pages/battle';
+import {
+  BattlePageState,
+  selectBattleFieldSquare,
+} from './state-manager/pages/battle';
 
-type ReactSetState<State> = (setStateAction: React.SetStateAction<State>) => void;
-type Dispatcher<State> = (immerLikeCallback: (draft: Draft<State>) => void) => void;
-
-function makeDispatcher<State, ScopedState>(
-  setState: ReactSetState<State>,
-  scoping: (state: Draft<State>) => Draft<ScopedState> | void,
-): Dispatcher<ScopedState> {
-  let callCount = 0;
-  return function dispatcher(immerLikeCallback: (aPartOfDraft: Draft<ScopedState>) => void): void {
-    if (callCount > 0) {
-      throw new Error('Can only call the dispatcher once in one Flux cycle.');
-    }
-    callCount++;
-    setState(applicationState => {
-      return produce(applicationState, draft => {
-        const scopedState = scoping(draft);
-        if (scopedState) {
-          immerLikeCallback(scopedState);
-        } else {
-          throw new Error('Invalid state scoping.');
-        }
-      });
-    });
-  }
-}
+type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>;
 
 function mapBattlePageStateToProps(
   state: BattlePageState,
-  dispatcher: Dispatcher<BattlePageState>,
+  setState: ReactSetState
 ): BattlePageProps {
-  // TODO: Should not destruct `state.game`.
-  const {
-    battleFieldMatrix,
-    creatures,
-    squareCursor,
-  } = state.game;
-
   function jobIdToDummyImage(jobId: string): string {
     const mapping: {
       [key: string]: string,
@@ -86,9 +57,10 @@ function mapBattlePageStateToProps(
     return cardProps;
   }
 
-  const battleFieldBoard: BattlePageProps['battleFieldBoard'] = battleFieldMatrix.map(row => {
+  const battleFieldBoard: BattlePageProps['battleFieldBoard'] = state.game.battleFieldMatrix.map(row => {
     return row.map(element => {
-      const creature = element.creatureId ? findCreatureByIdOrError(creatures, element.creatureId) : undefined;
+      const creature = element.creatureId ?
+        findCreatureByIdOrError(state.game.creatures, element.creatureId) : undefined;
 
       return {
         y: element.position.y,
@@ -98,24 +70,21 @@ function mapBattlePageStateToProps(
             image: jobIdToDummyImage(creature.jobId),
           }
           : undefined,
-        isSelected: squareCursor
-          ? areGlobalMatrixPositionsEqual(element.position, squareCursor.position)
+        isSelected: state.game.squareCursor
+          ? areGlobalMatrixPositionsEqual(element.position, state.game.squareCursor.position)
           : false,
         handleTouch({y, x}) {
-          dispatcher(draft => {
-            const nextSquareCursor = draft.game.squareCursor &&
-                x === draft.game.squareCursor.position.x &&
-                y === draft.game.squareCursor.position.y
-              ? undefined
-              : {
-                position: {
-                  matrixId: identifyMatrixId('battleField'),
-                  y,
-                  x,
-                },
-              }
-            ;
-            draft.game.squareCursor = nextSquareCursor;
+          // TODO: So verbose
+          setState(applicationState => {
+            const pageState = applicationState.pages.battle;
+            if (pageState) {
+              return Object.assign({}, applicationState, {
+                pages: {
+                  battle: selectBattleFieldSquare(pageState, y, x),
+                }
+              });
+            }
+            return applicationState;
           });
         },
       };
@@ -141,17 +110,12 @@ function mapBattlePageStateToProps(
 
 export function mapStateToProps(
   state: ApplicationState,
-  setState: ReactSetState<ApplicationState>
+  setState: ReactSetState
 ): RootProps {
   if (state.pages.battle) {
-    const dispatcher = makeDispatcher<ApplicationState, BattlePageState>(
-      setState,
-      (state) => state.pages.battle
-    );
-
     return {
       pages: {
-        battle: mapBattlePageStateToProps(state.pages.battle, dispatcher),
+        battle: mapBattlePageStateToProps(state.pages.battle, setState),
       },
     };
   }

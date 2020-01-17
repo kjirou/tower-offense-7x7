@@ -96,65 +96,51 @@ export function areGlobalMatrixPositionsEqual(a: GlobalMatrixPosition, b: Global
     a.x === b.x;
 }
 
-function createDummyAllies(
-  battleFieldMatrix: BattleFieldMatrixState
-): {
-  creatures: Creature[],
-  party: Party,
-} {
-  const creatures = [
-    {
-      id: 'ally-1',
-      jobId: 'fighter',
-      lifePoint: 12,
-      attackPoint: 4,
-    },
-    {
-      id: 'ally-2',
-      jobId: 'knight',
-      lifePoint: 18,
-      attackPoint: 2,
-    },
-    {
-      id: 'ally-3',
-      jobId: 'archer',
-      lifePoint: 6,
-      attackPoint: 3,
-    },
-    {
-      id: 'ally-4',
-      jobId: 'mage',
-      lifePoint: 3,
-      attackPoint: 3,
-    },
-    {
-      id: 'ally-5',
-      jobId: 'fighter',
-      lifePoint: 12,
-      attackPoint: 4,
-    },
-    {
-      id: 'ally-6',
-      jobId: 'mage',
-      lifePoint: 3,
-      attackPoint: 3,
-    },
-  ];
-
-  // Overwrite args
-  battleFieldMatrix[2][1].creatureId = creatures[5].id;
-  battleFieldMatrix[3][2].creatureId = creatures[4].id;
-
-  const creatureIds = creatures.map(e => e.id);
-
-  return {
-    creatures,
-    party: {
-      factionId: 'ally',
-      creatureIds,
-    },
-  };
-}
+const dummyAllCreatures: Creature[] = [
+  {
+    id: 'ally-1',
+    jobId: 'fighter',
+    lifePoint: 12,
+    attackPoint: 4,
+  },
+  {
+    id: 'ally-2',
+    jobId: 'knight',
+    lifePoint: 18,
+    attackPoint: 2,
+  },
+  {
+    id: 'ally-3',
+    jobId: 'archer',
+    lifePoint: 6,
+    attackPoint: 3,
+  },
+  {
+    id: 'ally-4',
+    jobId: 'mage',
+    lifePoint: 3,
+    attackPoint: 3,
+  },
+  {
+    id: 'ally-5',
+    jobId: 'fighter',
+    lifePoint: 12,
+    attackPoint: 4,
+  },
+  {
+    id: 'ally-6',
+    jobId: 'mage',
+    lifePoint: 3,
+    attackPoint: 3,
+  },
+];
+const dummyAllCreatureIds = dummyAllCreatures.map(e => e.id);
+const dummyAllyParty: Party = {
+  factionId: 'ally',
+  creatureIds: dummyAllCreatures
+    .filter(e => /^ally-/.test(e.id))
+    .map(e => e.id),
+};
 
 export function createInitialGameState(): GameState {
   const battleFieldMatrix: BattleFieldMatrixState = [];
@@ -172,6 +158,9 @@ export function createInitialGameState(): GameState {
     }
     battleFieldMatrix.push(row);
   }
+
+  battleFieldMatrix[2][1].creatureId = dummyAllCreatures[5].id;
+  battleFieldMatrix[3][2].creatureId = dummyAllCreatures[4].id;
 
   const cardsOnYourHand: CardsOnYourHandState = {
     cards: [
@@ -198,12 +187,10 @@ export function createInitialGameState(): GameState {
     ],
   };
 
-  const dummyAllies = createDummyAllies(battleFieldMatrix);
-
   return {
-    creatures: dummyAllies.creatures,
+    creatures: dummyAllCreatures,
     parties: [
-      dummyAllies.party,
+      dummyAllyParty,
     ],
     battleFieldMatrix,
     cardsOnYourHand,
