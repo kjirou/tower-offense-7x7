@@ -11,11 +11,13 @@ import {
   Card as CardState,
   areGlobalMatrixPositionsEqual,
   findCreatureByIdOrError,
-  identifyMatrixId,
   isCreatureCardType,
   isSkillCardType,
 } from './state-manager/game';
-import {BattlePageState} from './state-manager/pages/battle';
+import {
+  BattlePageState,
+  selectBattleFieldSquare,
+} from './state-manager/pages/battle';
 
 type ReactSetState<State> = (setStateAction: React.SetStateAction<State>) => void;
 type Dispatcher<State> = (immerLikeCallback: (draft: Draft<State>) => void) => void;
@@ -46,6 +48,7 @@ function makeDispatcher<State, ScopedState>(
 function mapBattlePageStateToProps(
   state: BattlePageState,
   dispatcher: Dispatcher<BattlePageState>,
+  setState: React.Dispatch<React.SetStateAction<ApplicationState>>,
 ): BattlePageProps {
   function jobIdToDummyImage(jobId: string): string {
     const mapping: {
@@ -96,20 +99,17 @@ function mapBattlePageStateToProps(
           ? areGlobalMatrixPositionsEqual(element.position, state.game.squareCursor.position)
           : false,
         handleTouch({y, x}) {
-          dispatcher(draft => {
-            const nextSquareCursor = draft.game.squareCursor &&
-                x === draft.game.squareCursor.position.x &&
-                y === draft.game.squareCursor.position.y
-              ? undefined
-              : {
-                position: {
-                  matrixId: identifyMatrixId('battleField'),
-                  y,
-                  x,
-                },
-              }
-            ;
-            draft.game.squareCursor = nextSquareCursor;
+          // TODO: So verbose
+          setState(applicationState => {
+            const pageState = applicationState.pages.battle;
+            if (pageState) {
+              return Object.assign({}, applicationState, {
+                pages: {
+                  battle: selectBattleFieldSquare(pageState, y, x),
+                }
+              });
+            }
+            return applicationState;
           });
         },
       };
@@ -145,7 +145,7 @@ export function mapStateToProps(
 
     return {
       pages: {
-        battle: mapBattlePageStateToProps(state.pages.battle, dispatcher),
+        battle: mapBattlePageStateToProps(state.pages.battle, dispatcher, setState),
       },
     };
   }
