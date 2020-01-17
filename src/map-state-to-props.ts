@@ -47,13 +47,6 @@ function mapBattlePageStateToProps(
   state: BattlePageState,
   dispatcher: Dispatcher<BattlePageState>,
 ): BattlePageProps {
-  // TODO: Should not destruct `state.game`.
-  const {
-    battleFieldMatrix,
-    creatures,
-    squareCursor,
-  } = state.game;
-
   function jobIdToDummyImage(jobId: string): string {
     const mapping: {
       [key: string]: string,
@@ -86,9 +79,10 @@ function mapBattlePageStateToProps(
     return cardProps;
   }
 
-  const battleFieldBoard: BattlePageProps['battleFieldBoard'] = battleFieldMatrix.map(row => {
+  const battleFieldBoard: BattlePageProps['battleFieldBoard'] = state.game.battleFieldMatrix.map(row => {
     return row.map(element => {
-      const creature = element.creatureId ? findCreatureByIdOrError(creatures, element.creatureId) : undefined;
+      const creature = element.creatureId ?
+        findCreatureByIdOrError(state.game.creatures, element.creatureId) : undefined;
 
       return {
         y: element.position.y,
@@ -98,8 +92,8 @@ function mapBattlePageStateToProps(
             image: jobIdToDummyImage(creature.jobId),
           }
           : undefined,
-        isSelected: squareCursor
-          ? areGlobalMatrixPositionsEqual(element.position, squareCursor.position)
+        isSelected: state.game.squareCursor
+          ? areGlobalMatrixPositionsEqual(element.position, state.game.squareCursor.position)
           : false,
         handleTouch({y, x}) {
           dispatcher(draft => {
