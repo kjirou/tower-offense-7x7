@@ -6,7 +6,10 @@ import {
   BattlePageProps,
   CardProps,
 } from './components/pages/BattlePage';
-import {ApplicationState} from './state-manager/application';
+import {
+  ApplicationState,
+  updateBattlePageState,
+} from './state-manager/application';
 import {
   Card as CardState,
   areGlobalMatrixPositionsEqual,
@@ -22,7 +25,7 @@ import {
 type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>;
 
 function mapBattlePageStateToProps(
-  state: BattlePageState,
+  battlePageState: BattlePageState,
   setState: ReactSetState
 ): BattlePageProps {
   function jobIdToDummyImage(jobId: string): string {
@@ -57,10 +60,12 @@ function mapBattlePageStateToProps(
     return cardProps;
   }
 
-  const battleFieldBoard: BattlePageProps['battleFieldBoard'] = state.game.battleFieldMatrix.map(row => {
+  const gameState = battlePageState.game;
+
+  const battleFieldBoard: BattlePageProps['battleFieldBoard'] = gameState.battleFieldMatrix.map(row => {
     return row.map(element => {
       const creature = element.creatureId ?
-        findCreatureByIdOrError(state.game.creatures, element.creatureId) : undefined;
+        findCreatureByIdOrError(gameState.creatures, element.creatureId) : undefined;
 
       return {
         y: element.position.y,
@@ -70,28 +75,22 @@ function mapBattlePageStateToProps(
             image: jobIdToDummyImage(creature.jobId),
           }
           : undefined,
-        isSelected: state.game.squareCursor
-          ? areGlobalMatrixPositionsEqual(element.position, state.game.squareCursor.position)
+        isSelected: gameState.squareCursor
+          ? areGlobalMatrixPositionsEqual(element.position, gameState.squareCursor.position)
           : false,
         handleTouch({y, x}) {
-          // TODO: So verbose
-          setState(applicationState => {
-            const pageState = applicationState.pages.battle;
-            if (pageState) {
-              return Object.assign({}, applicationState, {
-                pages: {
-                  battle: selectBattleFieldSquare(pageState, y, x),
-                }
-              });
-            }
-            return applicationState;
+          setState(applicationState_ => {
+            return updateBattlePageState(
+              applicationState_,
+              battlePageState_ => selectBattleFieldSquare(battlePageState_, y, x)
+            );
           });
         },
       };
     });
   });
 
-  const cardsState = state.game.cardsOnYourHand.cards;
+  const cardsState = gameState.cardsOnYourHand.cards;
   const cardsOnYourHand: BattlePageProps['cardsOnYourHand'] = {
     cards: [
       cardStateToProps(cardsState[0]),
