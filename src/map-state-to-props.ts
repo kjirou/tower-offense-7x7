@@ -60,10 +60,12 @@ function mapBattlePageStateToProps(
     return cardProps;
   }
 
-  const battleFieldBoard: BattlePageProps['battleFieldBoard'] = state.game.battleFieldMatrix.map(row => {
+  const gameState = state.game;
+
+  const battleFieldBoard: BattlePageProps['battleFieldBoard'] = gameState.battleFieldMatrix.map(row => {
     return row.map(element => {
       const creature = element.creatureId ?
-        findCreatureByIdOrError(state.game.creatures, element.creatureId) : undefined;
+        findCreatureByIdOrError(gameState.creatures, element.creatureId) : undefined;
 
       return {
         y: element.position.y,
@@ -73,8 +75,8 @@ function mapBattlePageStateToProps(
             image: jobIdToDummyImage(creature.jobId),
           }
           : undefined,
-        isSelected: state.game.squareCursor
-          ? areGlobalMatrixPositionsEqual(element.position, state.game.squareCursor.position)
+        isSelected: gameState.squareCursor
+          ? areGlobalMatrixPositionsEqual(element.position, gameState.squareCursor.position)
           : false,
         handleTouch({y, x}) {
           setState(applicationState_ => {
@@ -88,7 +90,7 @@ function mapBattlePageStateToProps(
     });
   });
 
-  const cardsState = state.game.cardsOnYourHand.cards;
+  const cardsState = gameState.cardsOnYourHand.cards;
   const cardsOnYourHand: BattlePageProps['cardsOnYourHand'] = {
     cards: [
       cardStateToProps(cardsState[0]),
