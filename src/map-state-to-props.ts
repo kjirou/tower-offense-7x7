@@ -25,7 +25,7 @@ import {
 type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>;
 
 function mapBattlePageStateToProps(
-  state: BattlePageState,
+  battlePageState: BattlePageState,
   setState: ReactSetState
 ): BattlePageProps {
   function jobIdToDummyImage(jobId: string): string {
@@ -60,7 +60,7 @@ function mapBattlePageStateToProps(
     return cardProps;
   }
 
-  const gameState = state.game;
+  const gameState = battlePageState.game;
 
   const battleFieldBoard: BattlePageProps['battleFieldBoard'] = gameState.battleFieldMatrix.map(row => {
     return row.map(element => {
