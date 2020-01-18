@@ -27,10 +27,11 @@ export type BattleFieldElementState = {
 
 export type BattleFieldMatrixState = BattleFieldElementState[][];
 
-//export type NormalAttackContext = {
-//  attackerCreatureId: string,
-//  creatures: Creature[],
-//}
+export type NormalAttackContext = {
+  attackerCreatureId: string,
+  battleFieldMatrix: BattleFieldMatrixState,
+  creatures: Creature[],
+}
 
 export function identifyMatrixId(matrixIdLike: string): MatrixId {
   if (matrixIdLike === 'barrack') {
