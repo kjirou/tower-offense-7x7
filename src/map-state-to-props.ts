@@ -6,7 +6,10 @@ import {
   BattlePageProps,
   CardProps,
 } from './components/pages/BattlePage';
-import {ApplicationState} from './state-manager/application';
+import {
+  ApplicationState,
+  updateBattlePageState,
+} from './state-manager/application';
 import {
   Card as CardState,
   areGlobalMatrixPositionsEqual,
@@ -74,17 +77,11 @@ function mapBattlePageStateToProps(
           ? areGlobalMatrixPositionsEqual(element.position, state.game.squareCursor.position)
           : false,
         handleTouch({y, x}) {
-          // TODO: So verbose
-          setState(applicationState => {
-            const pageState = applicationState.pages.battle;
-            if (pageState) {
-              return Object.assign({}, applicationState, {
-                pages: {
-                  battle: selectBattleFieldSquare(pageState, y, x),
-                }
-              });
-            }
-            return applicationState;
+          setState(applicationState_ => {
+            return updateBattlePageState(
+              applicationState_,
+              battlePageState_ => selectBattleFieldSquare(battlePageState_, y, x)
+            );
           });
         },
       };
