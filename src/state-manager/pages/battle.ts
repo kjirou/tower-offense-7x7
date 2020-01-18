@@ -3,8 +3,10 @@ import produce from 'immer';
 import {
   GameState,
   createInitialGameState,
-  identifyMatrixId,
 } from '../game';
+import {
+  identifyMatrixId,
+} from '../game/utils';
 
 export type BattlePageState = {
   game: GameState,

@@ -1,27 +1,12 @@
-type FactionId = 'ally' | 'enemy';
-type MatrixId = 'battleField' | 'barrack';
-
-export function identifyMatrixId(matrixIdLike: string): MatrixId {
-  if (matrixIdLike === 'barrack') {
-    return 'barrack';
-  } else if (matrixIdLike === 'battleField') {
-    return 'battleField';
-  }
-  throw new Error('It is not a MatrixId');
-}
-
-type Creature = {
-  attackPoint: number,
-  lifePoint: number,
-  id: string,
-  jobId: string,
-}
-
-type GlobalMatrixPosition = {
-  matrixId: MatrixId,
-  x: number,
-  y: number,
-};
+import {
+  BattleFieldElementState,
+  BattleFieldMatrixState,
+  Creature,
+  GlobalMatrixPosition,
+  MatrixId,
+  Party,
+  identifyMatrixId,
+} from './utils';
 
 // A selection data of the square
 //
@@ -33,18 +18,6 @@ type SquareCursor = {
     y: GlobalMatrixPosition['y'],
   },
 };
-
-type Party = {
-  factionId: FactionId,
-  creatureIds: Creature['id'][],
-}
-
-type BattleFieldElementState = {
-  creatureId: Creature['id'] | undefined,
-  position: GlobalMatrixPosition,
-}
-
-type BattleFieldMatrixState = BattleFieldElementState[][];
 
 type CreatureCard = {
   creatureId: Creature['id'],
