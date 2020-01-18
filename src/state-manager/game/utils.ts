@@ -20,16 +20,16 @@ export type GlobalMatrixPosition = {
   y: number,
 }
 
-export type BattleFieldElementState = {
+export type BattleFieldElement = {
   creatureId: Creature['id'] | undefined,
   position: GlobalMatrixPosition,
 }
 
-export type BattleFieldMatrixState = BattleFieldElementState[][];
+export type BattleFieldMatrix = BattleFieldElement[][];
 
 export type NormalAttackContext = {
   attackerCreatureId: string,
-  battleFieldMatrix: BattleFieldMatrixState,
+  battleFieldMatrix: BattleFieldMatrix,
   creatures: Creature[],
 }
 

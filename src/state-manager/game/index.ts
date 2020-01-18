@@ -1,6 +1,6 @@
 import {
-  BattleFieldElementState,
-  BattleFieldMatrixState,
+  BattleFieldElement,
+  BattleFieldMatrix,
   Creature,
   GlobalMatrixPosition,
   MatrixId,
@@ -44,7 +44,7 @@ type CardsOnYourHandState = {
 };
 
 export type GameState = {
-  battleFieldMatrix: BattleFieldMatrixState,
+  battleFieldMatrix: BattleFieldMatrix,
   cardsOnYourHand: CardsOnYourHandState,
   creatures: Creature[],
   parties: Party[],
@@ -116,9 +116,9 @@ const dummyAllyParty: Party = {
 };
 
 export function createInitialGameState(): GameState {
-  const battleFieldMatrix: BattleFieldMatrixState = [];
+  const battleFieldMatrix: BattleFieldMatrix = [];
   for (let y = 0; y < 7; y++) {
-    const row: BattleFieldElementState[] = [];
+    const row: BattleFieldElement[] = [];
     for (let x = 0; x < 7; x++) {
       row.push({
         position: {
