@@ -16,7 +16,7 @@ export const findCreatureByIdOrError = findCreatureByIdOrError_;
 //
 // The "square" means an element of some matrices.
 type SquareCursor = {
-  position: {
+  globalPosition: {
     matrixId: 'battleField' | 'barrack',
     x: GlobalMatrixPosition['x'],
     y: GlobalMatrixPosition['y'],

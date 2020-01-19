@@ -29,7 +29,8 @@ export type GlobalMatrixPosition = {
 
 export type BattleFieldElement = {
   creatureId: Creature['id'] | undefined,
-  position: GlobalMatrixPosition,
+  globalPosition: GlobalMatrixPosition,
+  position: MatrixPosition,
 }
 
 export type BattleFieldMatrix = BattleFieldElement[][];
@@ -70,6 +71,10 @@ export function createBattleFieldMatrix(rowLength: number, columnLength: number)
     for (let x = 0; x < columnLength; x++) {
       row.push({
         position: {
+          y,
+          x,
+        },
+        globalPosition: {
           matrixId: 'battleField',
           y,
           x,

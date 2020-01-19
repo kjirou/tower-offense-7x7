@@ -21,11 +21,11 @@ export function createInitialBattlePageState(): BattlePageState {
 export function selectBattleFieldSquare(state: BattlePageState, y: number, x: number): BattlePageState {
   return produce(state, draft => {
     const nextSquareCursor = draft.game.squareCursor &&
-        y === draft.game.squareCursor.position.y &&
-        x === draft.game.squareCursor.position.x
+        y === draft.game.squareCursor.globalPosition.y &&
+        x === draft.game.squareCursor.globalPosition.x
       ? undefined
       : {
-        position: {
+        globalPosition: {
           matrixId: identifyMatrixId('battleField'),
           y,
           x,

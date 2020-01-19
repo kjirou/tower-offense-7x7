@@ -76,7 +76,7 @@ function mapBattlePageStateToProps(
           }
           : undefined,
         isSelected: gameState.squareCursor
-          ? areGlobalMatrixPositionsEqual(element.position, gameState.squareCursor.position)
+          ? areGlobalMatrixPositionsEqual(element.globalPosition, gameState.squareCursor.globalPosition)
           : false,
         handleTouch({y, x}) {
           setState(applicationState_ => {
