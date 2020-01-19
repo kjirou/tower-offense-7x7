@@ -98,7 +98,7 @@ export function measureDistance(
 
 export function findBattleFieldElementsByDistance(
   matrix: BattleFieldMatrix,
-  startPoint: GlobalMatrixPosition,
+  startPoint: MatrixPosition | GlobalMatrixPosition,
   distance: number
 ): BattleFieldElement[] {
   const elements: BattleFieldElement[] = []
