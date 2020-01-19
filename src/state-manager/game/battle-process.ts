@@ -1,10 +1,11 @@
 import {
   Creature,
+  Party,
   NormalAttackContext,
   findCreatureByIdOrError,
 } from './utils';
 
-function findCreatureWithParty(creatures: Creature[], parties: Party, creatureId: Creature['id']): {
+function findCreatureWithParty(creatures: Creature[], parties: Party[], creatureId: Creature['id']): {
   creature: Creature,
   party: Party,
 } {
