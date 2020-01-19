@@ -46,10 +46,17 @@ function findCreatureById(creatures: Creature[], creatureId: Creature['id']): Cr
   return creatures.find(creature => creature.id === creatureId);
 }
 
+// TODO: Rename to `findCreatureById` (and change the one above)
 export function findCreatureByIdOrError(creatures: Creature[], creatureId: Creature['id']): Creature {
   const found = findCreatureById(creatures, creatureId);
   if (!found) {
     throw new Error('Can not found a creature.');
   }
   return found;
+}
+
+export function measureDistance(from: GlobalMatrixPosition, to: GlobalMatrixPosition): number {
+  const deltaY = from.y > to.y ? from.y - to.y : to.y - from.y
+  const deltaX = from.x > to.x ? from.x - to.x : to.x - from.x
+  return Math.abs(deltaY) + Math.abs(deltaX)
 }
