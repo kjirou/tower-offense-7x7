@@ -2,7 +2,11 @@ import * as assert from 'assert'
 import {describe, it} from 'mocha'
 
 import {
+  BattleFieldElement,
+  BattleFieldMatrix,
   GlobalMatrixPosition,
+  createBattleFieldMatrix,
+  findBattleFieldElementsByDistance,
   measureDistance,
 } from '../utils'
 
@@ -53,6 +57,72 @@ describe('state-manager/game/utils', function() {
         }
         assert.strictEqual(measureDistance(fromPosition, toPosition), distance)
       })
+    })
+  })
+
+  describe('findBattleFieldElementsByDistance', function() {
+    // +-+-+-+
+    // | |0| |
+    // +-+-+-+
+    // |1|S|3| (S == 2)
+    // +-+-+-+
+    // | |4| |
+    // +-+-+-+
+    it('can find elements within 1 or less than 1 distance', function() {
+      const matrix = createBattleFieldMatrix(3, 3)
+      const elements = findBattleFieldElementsByDistance(matrix, matrix[1][1].position, 1)
+      assert.strictEqual(elements[0].position.y, 0)
+      assert.strictEqual(elements[0].position.x, 1)
+      assert.strictEqual(elements[1].position.y, 1)
+      assert.strictEqual(elements[1].position.x, 0)
+      assert.strictEqual(elements[2].position.y, 1)
+      assert.strictEqual(elements[2].position.x, 1)
+      assert.strictEqual(elements[3].position.y, 1)
+      assert.strictEqual(elements[3].position.x, 2)
+      assert.strictEqual(elements[4].position.y, 2)
+      assert.strictEqual(elements[4].position.x, 1)
+    })
+
+    // +-+-+-+
+    // | | |0|
+    // +-+-+-+
+    // | |1|2|
+    // +-+-+-+
+    // |3|4|S| (S == 5)
+    // +-+-+-+
+    it('can find elements within 2 or less than 2 distances', function() {
+      const matrix = createBattleFieldMatrix(3, 3)
+      const elements = findBattleFieldElementsByDistance(matrix, matrix[2][2].position, 2)
+      assert.strictEqual(elements[0].position.y, 0)
+      assert.strictEqual(elements[0].position.x, 2)
+      assert.strictEqual(elements[1].position.y, 1)
+      assert.strictEqual(elements[1].position.x, 1)
+      assert.strictEqual(elements[2].position.y, 1)
+      assert.strictEqual(elements[2].position.x, 2)
+      assert.strictEqual(elements[3].position.y, 2)
+      assert.strictEqual(elements[3].position.x, 0)
+      assert.strictEqual(elements[4].position.y, 2)
+      assert.strictEqual(elements[4].position.x, 1)
+      assert.strictEqual(elements[5].position.y, 2)
+      assert.strictEqual(elements[5].position.x, 2)
+    })
+
+    // +-+-+
+    // |S|1| (S == 0)
+    // +-+-+
+    // |2|3|
+    // +-+-+
+    it('should sort in the order `y` then sort in the order `x`', function() {
+      const matrix = createBattleFieldMatrix(2, 2)
+      const elements = findBattleFieldElementsByDistance(matrix, matrix[0][0].position, 99)
+      assert.strictEqual(elements[0].position.y, 0)
+      assert.strictEqual(elements[0].position.x, 0)
+      assert.strictEqual(elements[1].position.y, 0)
+      assert.strictEqual(elements[1].position.x, 1)
+      assert.strictEqual(elements[2].position.y, 1)
+      assert.strictEqual(elements[2].position.x, 0)
+      assert.strictEqual(elements[3].position.y, 1)
+      assert.strictEqual(elements[3].position.x, 1)
     })
   })
 })

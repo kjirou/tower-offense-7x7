@@ -5,6 +5,7 @@ import {
   GlobalMatrixPosition,
   MatrixId,
   Party,
+  createBattleFieldMatrix,
   findCreatureByIdOrError as findCreatureByIdOrError_,
   identifyMatrixId,
 } from './utils';
@@ -107,21 +108,7 @@ const dummyAllyParty: Party = {
 };
 
 export function createInitialGameState(): GameState {
-  const battleFieldMatrix: BattleFieldMatrix = [];
-  for (let y = 0; y < 7; y++) {
-    const row: BattleFieldElement[] = [];
-    for (let x = 0; x < 7; x++) {
-      row.push({
-        position: {
-          matrixId: 'battleField',
-          y,
-          x,
-        },
-        creatureId: undefined,
-      });
-    }
-    battleFieldMatrix.push(row);
-  }
+  const battleFieldMatrix = createBattleFieldMatrix(7, 7)
 
   battleFieldMatrix[2][1].creatureId = dummyAllCreatures[5].id;
   battleFieldMatrix[3][2].creatureId = dummyAllCreatures[4].id;

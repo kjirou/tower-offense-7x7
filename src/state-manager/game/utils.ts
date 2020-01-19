@@ -56,8 +56,43 @@ export function findCreatureByIdOrError(creatures: Creature[], creatureId: Creat
   return found;
 }
 
+export function createBattleFieldMatrix(rowLength: number, columnLength: number): BattleFieldMatrix {
+  const battleFieldMatrix: BattleFieldMatrix = []
+  for (let y = 0; y < rowLength; y++) {
+    const row: BattleFieldElement[] = [];
+    for (let x = 0; x < columnLength; x++) {
+      row.push({
+        position: {
+          matrixId: 'battleField',
+          y,
+          x,
+        },
+        creatureId: undefined,
+      })
+    }
+    battleFieldMatrix.push(row)
+  }
+  return battleFieldMatrix;
+}
+
 export function measureDistance(from: GlobalMatrixPosition, to: GlobalMatrixPosition): number {
   const deltaY = from.y > to.y ? from.y - to.y : to.y - from.y
   const deltaX = from.x > to.x ? from.x - to.x : to.x - from.x
   return Math.abs(deltaY) + Math.abs(deltaX)
+}
+
+export function findBattleFieldElementsByDistance(
+  matrix: BattleFieldMatrix,
+  startPoint: GlobalMatrixPosition,
+  distance: number
+): BattleFieldElement[] {
+  const elements: BattleFieldElement[] = []
+  for (let y = 0; y < matrix.length; y++) {
+    for (let x = 0; x < matrix[y].length; x++) {
+      if (measureDistance(startPoint, matrix[y][x].position) <= distance) {
+        elements.push(matrix[y][x])
+      }
+    }
+  }
+  return elements
 }
