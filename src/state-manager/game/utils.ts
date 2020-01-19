@@ -41,3 +41,15 @@ export function identifyMatrixId(matrixIdLike: string): MatrixId {
   }
   throw new Error('It is not a MatrixId.');
 }
+
+function findCreatureById(creatures: Creature[], creatureId: Creature['id']): Creature | void {
+  return creatures.find(creature => creature.id === creatureId);
+}
+
+export function findCreatureByIdOrError(creatures: Creature[], creatureId: Creature['id']): Creature {
+  const found = findCreatureById(creatures, creatureId);
+  if (!found) {
+    throw new Error('Can not found a creature.');
+  }
+  return found;
+}

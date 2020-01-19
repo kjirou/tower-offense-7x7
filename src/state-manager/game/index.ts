@@ -5,8 +5,11 @@ import {
   GlobalMatrixPosition,
   MatrixId,
   Party,
+  findCreatureByIdOrError as findCreatureByIdOrError_,
   identifyMatrixId,
 } from './utils';
+
+export const findCreatureByIdOrError = findCreatureByIdOrError_;
 
 // A selection data of the square
 //
@@ -49,18 +52,6 @@ export type GameState = {
   creatures: Creature[],
   parties: Party[],
   squareCursor: SquareCursor | undefined,
-}
-
-function findCreatureById(creatures: Creature[], creatureId: Creature['id']): Creature | void {
-  return creatures.find(creature => creature.id === creatureId);
-}
-
-export function findCreatureByIdOrError(creatures: Creature[], creatureId: Creature['id']): Creature {
-  const found = findCreatureById(creatures, creatureId);
-  if (!found) {
-    throw new Error('Can not found a creature.');
-  }
-  return found;
 }
 
 export function areGlobalMatrixPositionsEqual(a: GlobalMatrixPosition, b: GlobalMatrixPosition): boolean {
