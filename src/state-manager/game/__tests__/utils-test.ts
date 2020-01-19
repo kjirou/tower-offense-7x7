@@ -7,11 +7,21 @@ import {
   GlobalMatrixPosition,
   MatrixPosition,
   createBattleFieldMatrix,
+  findBattleFieldElementByCreatureId,
   findBattleFieldElementsByDistance,
   measureDistance,
 } from '../utils'
 
 describe('state-manager/game/utils', function() {
+  describe('findBattleFieldElementByCreatureId', function() {
+    it('works', function() {
+      const matrix = createBattleFieldMatrix(3, 4)
+      const destination = matrix[1][2]
+      destination.creatureId = 'a'
+      assert.strictEqual(findBattleFieldElementByCreatureId(matrix, 'a'), destination)
+    })
+  })
+
   describe('measureDistance', function() {
     const testCases: {
       from: [number, number],  // [y, x]

@@ -1,4 +1,7 @@
+// TODO: Change to another words
 type FactionId = 'ally' | 'enemy';
+
+type FactionRelationshipId = 'ally' | 'enemy';
 
 export type Creature = {
   attackPoint: number,
@@ -51,6 +54,10 @@ export function identifyMatrixId(matrixIdLike: string): MatrixId {
   throw new Error('It is not a MatrixId.');
 }
 
+export function determineRelationshipBetweenFactions(a: FactionId, b: FactionId): FactionRelationshipId {
+  return a === b ? 'ally' : 'enemy'
+}
+
 function findCreatureById(creatures: Creature[], creatureId: Creature['id']): Creature | void {
   return creatures.find(creature => creature.id === creatureId);
 }
@@ -85,6 +92,20 @@ export function createBattleFieldMatrix(rowLength: number, columnLength: number)
     battleFieldMatrix.push(row)
   }
   return battleFieldMatrix;
+}
+
+export function findBattleFieldElementByCreatureId(
+  matrix: BattleFieldMatrix,
+  creatureId: Creature['id']
+): BattleFieldElement {
+  for (let y = 0; y < matrix.length; y++) {
+    for (let x = 0; x < matrix[y].length; x++) {
+      if (matrix[y][x].creatureId === creatureId) {
+        return matrix[y][x]
+      }
+    }
+  }
+  throw new Error('Can not find the `creatureId` on the `BattleFieldMatrix`.')
 }
 
 export function measureDistance(
