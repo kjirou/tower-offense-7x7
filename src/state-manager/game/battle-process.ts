@@ -3,4 +3,5 @@ import {
 } from './utils';
 
 export function invokeNormalAttack(context: NormalAttackContext): NormalAttackContext {
+  return context
 }
