@@ -12,12 +12,19 @@ export type Party = {
   creatureIds: Creature['id'][],
 }
 
-export type MatrixId = 'battleField' | 'barrack';
-
-export type GlobalMatrixPosition = {
-  matrixId: MatrixId,
+export type MatrixPosition = {
   x: number,
   y: number,
+}
+
+export type MatrixId = 'battleField' | 'barrack';
+
+// TODO: 手札がマトリックスではなくなったことからマトリックスはひとつになったので
+//       GlobalPosition への変更が必要そう。
+export type GlobalMatrixPosition = {
+  matrixId: MatrixId,
+  x: MatrixPosition['x'],
+  y: MatrixPosition['y'],
 }
 
 export type BattleFieldElement = {
@@ -75,7 +82,10 @@ export function createBattleFieldMatrix(rowLength: number, columnLength: number)
   return battleFieldMatrix;
 }
 
-export function measureDistance(from: GlobalMatrixPosition, to: GlobalMatrixPosition): number {
+export function measureDistance(
+  from: MatrixPosition | GlobalMatrixPosition,
+  to: MatrixPosition | GlobalMatrixPosition
+): number {
   const deltaY = from.y > to.y ? from.y - to.y : to.y - from.y
   const deltaX = from.x > to.x ? from.x - to.x : to.x - from.x
   return Math.abs(deltaY) + Math.abs(deltaX)
