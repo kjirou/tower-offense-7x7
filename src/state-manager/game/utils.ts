@@ -28,9 +28,10 @@ export type BattleFieldElement = {
 export type BattleFieldMatrix = BattleFieldElement[][];
 
 export type NormalAttackContext = {
-  attackerCreatureId: string,
+  attackerCreatureId: Creature['id'],
   battleFieldMatrix: BattleFieldMatrix,
   creatures: Creature[],
+  parties: Party[],
 }
 
 export function identifyMatrixId(matrixIdLike: string): MatrixId {
