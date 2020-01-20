@@ -1,50 +1,26 @@
-type FactionId = 'ally' | 'enemy';
-type MatrixId = 'battleField' | 'barrack';
+import {
+  BattleFieldElement,
+  BattleFieldMatrix,
+  Creature,
+  GlobalMatrixPosition,
+  MatrixId,
+  Party,
+  createBattleFieldMatrix,
+  findCreatureById as findCreatureById_,
+} from './utils';
 
-export function identifyMatrixId(matrixIdLike: string): MatrixId {
-  if (matrixIdLike === 'barrack') {
-    return 'barrack';
-  } else if (matrixIdLike === 'battleField') {
-    return 'battleField';
-  }
-  throw new Error('It is not a MatrixId');
-}
-
-type Creature = {
-  attackPoint: number,
-  lifePoint: number,
-  id: string,
-  jobId: string,
-}
-
-type GlobalMatrixPosition = {
-  matrixId: MatrixId,
-  x: number,
-  y: number,
-};
+export const findCreatureById = findCreatureById_;
 
 // A selection data of the square
 //
 // The "square" means an element of some matrices.
 type SquareCursor = {
-  position: {
+  globalPosition: {
     matrixId: 'battleField' | 'barrack',
     x: GlobalMatrixPosition['x'],
     y: GlobalMatrixPosition['y'],
   },
 };
-
-type Party = {
-  factionId: FactionId,
-  creatureIds: Creature['id'][],
-}
-
-type BattleFieldElementState = {
-  creatureId: Creature['id'] | undefined,
-  position: GlobalMatrixPosition,
-}
-
-type BattleFieldMatrixState = BattleFieldElementState[][];
 
 type CreatureCard = {
   creatureId: Creature['id'],
@@ -71,23 +47,11 @@ type CardsOnYourHandState = {
 };
 
 export type GameState = {
-  battleFieldMatrix: BattleFieldMatrixState,
+  battleFieldMatrix: BattleFieldMatrix,
   cardsOnYourHand: CardsOnYourHandState,
   creatures: Creature[],
   parties: Party[],
   squareCursor: SquareCursor | undefined,
-}
-
-function findCreatureById(creatures: Creature[], creatureId: Creature['id']): Creature | void {
-  return creatures.find(creature => creature.id === creatureId);
-}
-
-export function findCreatureByIdOrError(creatures: Creature[], creatureId: Creature['id']): Creature {
-  const found = findCreatureById(creatures, creatureId);
-  if (!found) {
-    throw new Error('Can not found a creature.');
-  }
-  return found;
 }
 
 export function areGlobalMatrixPositionsEqual(a: GlobalMatrixPosition, b: GlobalMatrixPosition): boolean {
@@ -136,28 +100,14 @@ const dummyAllCreatures: Creature[] = [
 ];
 const dummyAllCreatureIds = dummyAllCreatures.map(e => e.id);
 const dummyAllyParty: Party = {
-  factionId: 'ally',
+  factionId: 'player',
   creatureIds: dummyAllCreatures
     .filter(e => /^ally-/.test(e.id))
     .map(e => e.id),
 };
 
 export function createInitialGameState(): GameState {
-  const battleFieldMatrix: BattleFieldMatrixState = [];
-  for (let y = 0; y < 7; y++) {
-    const row: BattleFieldElementState[] = [];
-    for (let x = 0; x < 7; x++) {
-      row.push({
-        position: {
-          matrixId: 'battleField',
-          y,
-          x,
-        },
-        creatureId: undefined,
-      });
-    }
-    battleFieldMatrix.push(row);
-  }
+  const battleFieldMatrix = createBattleFieldMatrix(7, 7)
 
   battleFieldMatrix[2][1].creatureId = dummyAllCreatures[5].id;
   battleFieldMatrix[3][2].creatureId = dummyAllCreatures[4].id;

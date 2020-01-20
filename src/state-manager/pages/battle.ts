@@ -3,7 +3,6 @@ import produce from 'immer';
 import {
   GameState,
   createInitialGameState,
-  identifyMatrixId,
 } from '../game';
 
 export type BattlePageState = {
@@ -18,18 +17,20 @@ export function createInitialBattlePageState(): BattlePageState {
 
 export function selectBattleFieldSquare(state: BattlePageState, y: number, x: number): BattlePageState {
   return produce(state, draft => {
-    const nextSquareCursor = draft.game.squareCursor &&
-        y === draft.game.squareCursor.position.y &&
-        x === draft.game.squareCursor.position.x
-      ? undefined
-      : {
-        position: {
-          matrixId: identifyMatrixId('battleField'),
+    if (
+      draft.game.squareCursor &&
+      y === draft.game.squareCursor.globalPosition.y &&
+      x === draft.game.squareCursor.globalPosition.x
+    ) {
+      draft.game.squareCursor = undefined;
+    } else {
+      draft.game.squareCursor = {
+        globalPosition: {
+          matrixId: 'battleField',
           y,
           x,
         },
       }
-    ;
-    draft.game.squareCursor = nextSquareCursor;
+    }
   });
 }
