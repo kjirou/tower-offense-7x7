@@ -7,7 +7,6 @@ import {
   Party,
   createBattleFieldMatrix,
   findCreatureById as findCreatureById_,
-  identifyMatrixId,
 } from './utils';
 
 export const findCreatureById = findCreatureById_;

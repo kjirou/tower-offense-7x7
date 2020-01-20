@@ -44,15 +44,6 @@ export type NormalAttackContext = {
   parties: Party[],
 }
 
-export function identifyMatrixId(matrixIdLike: string): MatrixId {
-  if (matrixIdLike === 'barrack') {
-    return 'barrack';
-  } else if (matrixIdLike === 'battleField') {
-    return 'battleField';
-  }
-  throw new Error('It is not a MatrixId.');
-}
-
 export function determineRelationshipBetweenFactions(a: FactionId, b: FactionId): FactionRelationshipId {
   return a === b ? 'ally' : 'enemy'
 }
