@@ -58,13 +58,13 @@ export function determineRelationshipBetweenFactions(a: FactionId, b: FactionId)
   return a === b ? 'ally' : 'enemy'
 }
 
-function findCreatureById(creatures: Creature[], creatureId: Creature['id']): Creature | void {
+export function findCreatureByIdIfPossible(creatures: Creature[], creatureId: Creature['id']): Creature | undefined {
   return creatures.find(creature => creature.id === creatureId);
 }
 
-// TODO: Rename to `findCreatureById` (and change the one above)
+// TODO: Rename to `findCreatureById`
 export function findCreatureByIdOrError(creatures: Creature[], creatureId: Creature['id']): Creature {
-  const found = findCreatureById(creatures, creatureId);
+  const found = findCreatureByIdIfPossible(creatures, creatureId);
   if (!found) {
     throw new Error('Can not found a creature.');
   }
