@@ -7,7 +7,7 @@ import {
 import {
   NormalAttackContext,
   createBattleFieldMatrix,
-  findCreatureByIdOrError,
+  findCreatureById,
 } from '../utils'
 
 describe('state-manager/game/battle-process', function() {
@@ -46,7 +46,7 @@ describe('state-manager/game/battle-process', function() {
 
       it('can attack the enemy', function() {
         const newContext = invokeNormalAttack(context)
-        const newEnemy = findCreatureByIdOrError(newContext.creatures, enemy.id)
+        const newEnemy = findCreatureById(newContext.creatures, enemy.id)
         assert.strictEqual(newEnemy.lifePoint, 0)
       })
     })
@@ -85,7 +85,7 @@ describe('state-manager/game/battle-process', function() {
 
       it('can not attack the enemy', function() {
         const newContext = invokeNormalAttack(context)
-        const newEnemy = findCreatureByIdOrError(newContext.creatures, enemy.id)
+        const newEnemy = findCreatureById(newContext.creatures, enemy.id)
         assert.strictEqual(newEnemy.lifePoint, 1)
       })
     })

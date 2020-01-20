@@ -6,11 +6,11 @@ import {
   MatrixId,
   Party,
   createBattleFieldMatrix,
-  findCreatureByIdOrError as findCreatureByIdOrError_,
+  findCreatureById as findCreatureById_,
   identifyMatrixId,
 } from './utils';
 
-export const findCreatureByIdOrError = findCreatureByIdOrError_;
+export const findCreatureById = findCreatureById_;
 
 // A selection data of the square
 //

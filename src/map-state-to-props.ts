@@ -13,7 +13,7 @@ import {
 import {
   Card as CardState,
   areGlobalMatrixPositionsEqual,
-  findCreatureByIdOrError,
+  findCreatureById,
   isCreatureCardType,
   isSkillCardType,
 } from './state-manager/game';
@@ -65,7 +65,7 @@ function mapBattlePageStateToProps(
   const battleFieldBoard: BattlePageProps['battleFieldBoard'] = gameState.battleFieldMatrix.map(row => {
     return row.map(element => {
       const creature = element.creatureId ?
-        findCreatureByIdOrError(gameState.creatures, element.creatureId) : undefined;
+        findCreatureById(gameState.creatures, element.creatureId) : undefined;
 
       return {
         y: element.position.y,

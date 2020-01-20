@@ -4,8 +4,8 @@ import {
   Party,
   NormalAttackContext,
   determineRelationshipBetweenFactions,
+  findCreatureById,
   findCreatureByIdIfPossible,
-  findCreatureByIdOrError,
   findBattleFieldElementByCreatureId,
   findBattleFieldElementsByDistance,
 } from './utils';
@@ -31,7 +31,7 @@ function findCreatureWithParty(
     for (let creatureIdIndex = 0; creatureIdIndex < party.creatureIds.length; creatureIdIndex++) {
       const creatureIdInLoop = party.creatureIds[creatureIdIndex]
       if (creatureId === creatureIdInLoop) {
-        const creature = findCreatureByIdOrError(creatures, creatureIdInLoop)
+        const creature = findCreatureById(creatures, creatureIdInLoop)
         return {
           creature,
           party,

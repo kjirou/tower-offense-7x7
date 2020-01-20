@@ -62,8 +62,7 @@ export function findCreatureByIdIfPossible(creatures: Creature[], creatureId: Cr
   return creatures.find(creature => creature.id === creatureId);
 }
 
-// TODO: Rename to `findCreatureById`
-export function findCreatureByIdOrError(creatures: Creature[], creatureId: Creature['id']): Creature {
+export function findCreatureById(creatures: Creature[], creatureId: Creature['id']): Creature {
   const found = findCreatureByIdIfPossible(creatures, creatureId);
   if (!found) {
     throw new Error('Can not found a creature.');
