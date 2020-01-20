@@ -1,5 +1,4 @@
-// TODO: Change to another words
-type FactionId = 'ally' | 'enemy';
+type FactionId = 'player' | 'computer';
 
 type FactionRelationshipId = 'ally' | 'enemy';
 

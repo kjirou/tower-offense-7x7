@@ -101,7 +101,7 @@ const dummyAllCreatures: Creature[] = [
 ];
 const dummyAllCreatureIds = dummyAllCreatures.map(e => e.id);
 const dummyAllyParty: Party = {
-  factionId: 'ally',
+  factionId: 'player',
   creatureIds: dummyAllCreatures
     .filter(e => /^ally-/.test(e.id))
     .map(e => e.id),

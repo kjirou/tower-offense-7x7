@@ -32,11 +32,11 @@ describe('state-manager/game/battle-process', function() {
         creatures: [attacker, enemy],
         parties: [
           {
-            factionId: 'ally',
+            factionId: 'player',
             creatureIds: [attacker.id],
           },
           {
-            factionId: 'enemy',
+            factionId: 'computer',
             creatureIds: [enemy.id],
           }
         ],
@@ -71,11 +71,11 @@ describe('state-manager/game/battle-process', function() {
         creatures: [attacker, enemy],
         parties: [
           {
-            factionId: 'ally',
+            factionId: 'player',
             creatureIds: [attacker.id],
           },
           {
-            factionId: 'enemy',
+            factionId: 'computer',
             creatureIds: [enemy.id],
           }
         ],
