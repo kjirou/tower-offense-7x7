@@ -1,10 +1,11 @@
+import produce from 'immer'
+
 import {
   MatrixPosition,
-} from '../utils';
+} from '../utils'
 import {
   BattlePageState,
   createInitialBattlePageState,
-  selectBattleFieldSquare,
 } from './pages/battle';
 
 export type ApplicationState = {
@@ -32,6 +33,7 @@ function updateBattlePageState(
   throw new Error('The `applicationState.pages.battle` does not exist.');
 }
 
+// TODO: Move to another place
 export function createInitialApplicationState(): ApplicationState {
   return {
     pages: {
@@ -47,6 +49,24 @@ export function touchBattleFieldElement(
 ): ApplicationState {
   return updateBattlePageState(
     applicationState,
-    battlePageState => selectBattleFieldSquare(battlePageState, y, x)
-  );
+    battlePageState => {
+      return produce(battlePageState, draft => {
+        if (
+          draft.game.squareCursor &&
+          y === draft.game.squareCursor.globalPosition.y &&
+          x === draft.game.squareCursor.globalPosition.x
+        ) {
+          draft.game.squareCursor = undefined;
+        } else {
+          draft.game.squareCursor = {
+            globalPosition: {
+              matrixId: 'battleField',
+              y,
+              x,
+            },
+          }
+        }
+      })
+    }
+  )
 }
