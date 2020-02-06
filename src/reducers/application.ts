@@ -1,7 +1,11 @@
 import {
   BattlePageState,
   createInitialBattlePageState,
+  selectBattleFieldSquare,
 } from './pages/battle';
+import {
+  MatrixPosition,
+} from './game/utils';
 
 export type ApplicationState = {
   pages: {
@@ -9,15 +13,7 @@ export type ApplicationState = {
   },
 }
 
-export function createInitialApplicationState(): ApplicationState {
-  return {
-    pages: {
-      battle: createInitialBattlePageState(),
-    },
-  };
-}
-
-export function updateBattlePageState(
+function updateBattlePageState(
   applicationState: ApplicationState,
   updater: (battlePageState: BattlePageState) => BattlePageState
 ): ApplicationState {
@@ -34,4 +30,23 @@ export function updateBattlePageState(
     );
   }
   throw new Error('The `applicationState.pages.battle` does not exist.');
+}
+
+export function createInitialApplicationState(): ApplicationState {
+  return {
+    pages: {
+      battle: createInitialBattlePageState(),
+    },
+  };
+}
+
+export function touchBattleFieldElement(
+  applicationState: ApplicationState,
+  y: MatrixPosition['y'],
+  x: MatrixPosition['x']
+): ApplicationState {
+  return updateBattlePageState(
+    applicationState,
+    battlePageState => selectBattleFieldSquare(battlePageState, y, x)
+  );
 }

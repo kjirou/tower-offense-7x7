@@ -8,7 +8,7 @@ import {
 } from './components/pages/BattlePage';
 import {
   ApplicationState,
-  updateBattlePageState,
+  touchBattleFieldElement,
 } from './reducers/application';
 import {
   Card as CardState,
@@ -19,7 +19,6 @@ import {
 } from './reducers/game';
 import {
   BattlePageState,
-  selectBattleFieldSquare,
 } from './reducers/pages/battle';
 
 type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>;
@@ -79,12 +78,7 @@ function mapBattlePageStateToProps(
           ? areGlobalMatrixPositionsEqual(element.globalPosition, gameState.squareCursor.globalPosition)
           : false,
         handleTouch({y, x}) {
-          setState(applicationState_ => {
-            return updateBattlePageState(
-              applicationState_,
-              battlePageState_ => selectBattleFieldSquare(battlePageState_, y, x)
-            );
-          });
+          setState(s => touchBattleFieldElement(s, y, x));
         },
       };
     });
