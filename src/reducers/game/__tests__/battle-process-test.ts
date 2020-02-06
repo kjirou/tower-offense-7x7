@@ -2,13 +2,13 @@ import * as assert from 'assert'
 import {describe, it} from 'mocha'
 
 import {
-  invokeNormalAttack,
-} from '../battle-process'
-import {
   NormalAttackContext,
   createBattleFieldMatrix,
   findCreatureById,
-} from '../utils'
+} from '../../../utils'
+import {
+  invokeNormalAttack,
+} from '../battle-process'
 
 describe('reducers/game/battle-process', function() {
   describe('invokeNormalAttack', function() {

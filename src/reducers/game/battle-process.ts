@@ -8,7 +8,7 @@ import {
   findCreatureByIdIfPossible,
   findBattleFieldElementByCreatureId,
   findBattleFieldElementsByDistance,
-} from './utils';
+} from '../../utils';
 
 type CreatureWithParty = {
   creature: Creature,

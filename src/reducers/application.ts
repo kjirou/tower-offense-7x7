@@ -1,11 +1,11 @@
 import {
+  MatrixPosition,
+} from '../utils';
+import {
   BattlePageState,
   createInitialBattlePageState,
   selectBattleFieldSquare,
 } from './pages/battle';
-import {
-  MatrixPosition,
-} from './game/utils';
 
 export type ApplicationState = {
   pages: {
