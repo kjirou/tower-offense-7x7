@@ -1,22 +1,11 @@
 import produce from 'immer'
 
 import {
+  ApplicationState,
+  BattlePageState,
   GameState,
   MatrixPosition,
 } from '../utils'
-import {
-  createInitialGameState,
-} from './game';
-
-export type BattlePageState = {
-  game: GameState,
-};
-
-export type ApplicationState = {
-  pages: {
-    battle?: BattlePageState,
-  },
-}
 
 function updateBattlePageState(
   applicationState: ApplicationState,
@@ -35,17 +24,6 @@ function updateBattlePageState(
     );
   }
   throw new Error('The `applicationState.pages.battle` does not exist.');
-}
-
-// TODO: Move to another place
-export function createInitialApplicationState(): ApplicationState {
-  return {
-    pages: {
-      battle: {
-        game: createInitialGameState(),
-      },
-    },
-  };
 }
 
 export function touchBattleFieldElement(
