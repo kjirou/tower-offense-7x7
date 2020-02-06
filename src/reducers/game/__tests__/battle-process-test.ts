@@ -10,7 +10,7 @@ import {
   findCreatureById,
 } from '../utils'
 
-describe('state-manager/game/battle-process', function() {
+describe('reducers/game/battle-process', function() {
   describe('invokeNormalAttack', function() {
     describe('An attacker is adjacent to a single enemy', function() {
       const matrix = createBattleFieldMatrix(3, 3)

@@ -12,7 +12,7 @@ import {
   measureDistance,
 } from '../utils'
 
-describe('state-manager/game/utils', function() {
+describe('reducers/game/utils', function() {
   describe('findBattleFieldElementByCreatureId', function() {
     it('works', function() {
       const matrix = createBattleFieldMatrix(3, 4)

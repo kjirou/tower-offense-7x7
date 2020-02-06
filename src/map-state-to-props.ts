@@ -9,18 +9,18 @@ import {
 import {
   ApplicationState,
   updateBattlePageState,
-} from './state-manager/application';
+} from './reducers/application';
 import {
   Card as CardState,
   areGlobalMatrixPositionsEqual,
   findCreatureById,
   isCreatureCardType,
   isSkillCardType,
-} from './state-manager/game';
+} from './reducers/game';
 import {
   BattlePageState,
   selectBattleFieldSquare,
-} from './state-manager/pages/battle';
+} from './reducers/pages/battle';
 
 type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>;
 
