@@ -4,8 +4,10 @@ import {
   MatrixPosition,
 } from '../utils'
 import {
+  createInitialGameState,
+} from './game';
+import {
   BattlePageState,
-  createInitialBattlePageState,
 } from './pages/battle';
 
 export type ApplicationState = {
@@ -37,7 +39,9 @@ function updateBattlePageState(
 export function createInitialApplicationState(): ApplicationState {
   return {
     pages: {
-      battle: createInitialBattlePageState(),
+      battle: {
+        game: createInitialGameState(),
+      },
     },
   };
 }
