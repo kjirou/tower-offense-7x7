@@ -2,15 +2,15 @@ import * as assert from 'assert'
 import {describe, it} from 'mocha'
 
 import {
-  invokeNormalAttack,
-} from '../battle-process'
-import {
   NormalAttackContext,
   createBattleFieldMatrix,
   findCreatureById,
-} from '../utils'
+} from '../../../utils'
+import {
+  invokeNormalAttack,
+} from '../battle-process'
 
-describe('state-manager/game/battle-process', function() {
+describe('reducers/game/battle-process', function() {
   describe('invokeNormalAttack', function() {
     describe('An attacker is adjacent to a single enemy', function() {
       const matrix = createBattleFieldMatrix(3, 3)

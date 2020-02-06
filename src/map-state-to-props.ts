@@ -7,20 +7,17 @@ import {
   CardProps,
 } from './components/pages/BattlePage';
 import {
-  ApplicationState,
-  updateBattlePageState,
-} from './state-manager/application';
-import {
   Card as CardState,
-  areGlobalMatrixPositionsEqual,
   findCreatureById,
   isCreatureCardType,
   isSkillCardType,
-} from './state-manager/game';
+  areGlobalMatrixPositionsEqual,
+} from './utils';
 import {
+  ApplicationState,
   BattlePageState,
-  selectBattleFieldSquare,
-} from './state-manager/pages/battle';
+  touchBattleFieldElement,
+} from './reducers';
 
 type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>;
 
@@ -79,12 +76,7 @@ function mapBattlePageStateToProps(
           ? areGlobalMatrixPositionsEqual(element.globalPosition, gameState.squareCursor.globalPosition)
           : false,
         handleTouch({y, x}) {
-          setState(applicationState_ => {
-            return updateBattlePageState(
-              applicationState_,
-              battlePageState_ => selectBattleFieldSquare(battlePageState_, y, x)
-            );
-          });
+          setState(s => touchBattleFieldElement(s, y, x));
         },
       };
     });
