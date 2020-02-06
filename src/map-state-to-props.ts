@@ -1,10 +1,12 @@
 import produce, {Draft} from 'immer';
 import * as React from 'react';
 
-import {RootProps} from './components/Root';
 import {
-  BattlePageProps,
+  Props as RootProps,
+} from './components/Root';
+import {
   CardProps,
+  Props as BattlePageProps,
 } from './components/pages/BattlePage';
 import {
   ApplicationState,
