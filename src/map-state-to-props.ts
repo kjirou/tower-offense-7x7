@@ -9,7 +9,7 @@ import {
 import {
   ApplicationState,
   touchBattleFieldElement,
-} from './reducers/application';
+} from './reducers';
 import {
   Card as CardState,
   areGlobalMatrixPositionsEqual,
