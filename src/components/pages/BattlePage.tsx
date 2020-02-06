@@ -30,7 +30,7 @@ type CardsOnYourHandProps = {
   cards: [CardProps, CardProps, CardProps, CardProps, CardProps],
 };
 
-export type BattlePageProps = {
+export type Props = {
   battleFieldBoard: BattleFieldSquareProps[][],
   cardsOnYourHand: CardsOnYourHandProps,
 };
@@ -158,7 +158,7 @@ function CardsOnYourHand(props: CardsOnYourHandProps): JSX.Element {
   );
 }
 
-export function BattlePage(props: BattlePageProps): JSX.Element {
+export const BattlePage: React.FC<Props> = (props) => {
   const style = {
     position: 'relative',
     width: '360px',

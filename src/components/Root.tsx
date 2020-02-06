@@ -1,17 +1,17 @@
 import * as React from 'react';
 
 import {
-  BattlePageProps,
   BattlePage,
+  Props as BattlePageProps,
 } from './pages/BattlePage';
 
-export type RootProps = {
+export type Props = {
   pages: {
     battle?: BattlePageProps,
   },
 };
 
-export function Root(props: RootProps): JSX.Element {
+export const Root: React.FC<Props> = (props) => {
   const style = {
     position: 'relative',
     margin: '0 auto',
