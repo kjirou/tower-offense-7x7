@@ -8,6 +8,7 @@ import {
 } from './components/pages/BattlePage';
 import {
   ApplicationState,
+  BattlePageState,
   touchBattleFieldElement,
 } from './reducers';
 import {
@@ -17,9 +18,6 @@ import {
   isCreatureCardType,
   isSkillCardType,
 } from './reducers/game';
-import {
-  BattlePageState,
-} from './reducers/pages/battle';
 
 type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>;
 

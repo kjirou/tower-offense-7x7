@@ -4,11 +4,13 @@ import {
   MatrixPosition,
 } from '../utils'
 import {
+  GameState,
   createInitialGameState,
 } from './game';
-import {
-  BattlePageState,
-} from './pages/battle';
+
+export type BattlePageState = {
+  game: GameState,
+};
 
 export type ApplicationState = {
   pages: {
