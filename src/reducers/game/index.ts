@@ -2,13 +2,8 @@ import {
   Creature,
   GameState,
   Party,
-  areGlobalMatrixPositionsEqual,
   createBattleFieldMatrix,
-  findCreatureById as findCreatureById_,
 } from '../../utils';
-
-// TODO: ?
-export const findCreatureById = findCreatureById_;
 
 const dummyAllCreatures: Creature[] = [
   {

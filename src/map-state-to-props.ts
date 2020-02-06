@@ -8,6 +8,7 @@ import {
 } from './components/pages/BattlePage';
 import {
   Card as CardState,
+  findCreatureById,
   isCreatureCardType,
   isSkillCardType,
   areGlobalMatrixPositionsEqual,
@@ -17,9 +18,6 @@ import {
   BattlePageState,
   touchBattleFieldElement,
 } from './reducers';
-import {
-  findCreatureById,
-} from './reducers/game';
 
 type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>;
 
