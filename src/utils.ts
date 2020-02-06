@@ -81,6 +81,16 @@ export type GameState = {
   squareCursor: SquareCursor | undefined,
 }
 
+export type BattlePageState = {
+  game: GameState,
+};
+
+export type ApplicationState = {
+  pages: {
+    battle?: BattlePageState,
+  },
+}
+
 /**
  * Validate that the matrix is not empty and is rectangular
  */

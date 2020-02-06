@@ -7,6 +7,8 @@ import {
   CardProps,
 } from './components/pages/BattlePage';
 import {
+  ApplicationState,
+  BattlePageState,
   Card as CardState,
   findCreatureById,
   isCreatureCardType,
@@ -14,8 +16,6 @@ import {
   areGlobalMatrixPositionsEqual,
 } from './utils';
 import {
-  ApplicationState,
-  BattlePageState,
   touchBattleFieldElement,
 } from './reducers';
 
