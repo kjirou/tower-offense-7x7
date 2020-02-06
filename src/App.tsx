@@ -14,7 +14,7 @@ type Props = {
   initialState: ApplicationState,
 }
 
-export function App(props: Props): JSX.Element {
+export const App: React.FC<Props> = (props) => {
   const [state, setState] = React.useState(props.initialState);
   console.log('state:', state);
 

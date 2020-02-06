@@ -158,7 +158,7 @@ function CardsOnYourHand(props: CardsOnYourHandProps): JSX.Element {
   );
 }
 
-export function BattlePage(props: BattlePageProps): JSX.Element {
+export const BattlePage: React.FC<BattlePageProps> = (props) => {
   const style = {
     position: 'relative',
     width: '360px',

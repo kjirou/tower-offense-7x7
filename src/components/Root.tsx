@@ -11,7 +11,7 @@ export type RootProps = {
   },
 };
 
-export function Root(props: RootProps): JSX.Element {
+export const Root: React.FC<RootProps> = (props) => {
   const style = {
     position: 'relative',
     margin: '0 auto',
