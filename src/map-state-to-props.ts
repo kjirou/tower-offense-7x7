@@ -7,16 +7,18 @@ import {
   CardProps,
 } from './components/pages/BattlePage';
 import {
+  Card as CardState,
+  isCreatureCardType,
+  isSkillCardType,
+  areGlobalMatrixPositionsEqual,
+} from './utils';
+import {
   ApplicationState,
   BattlePageState,
   touchBattleFieldElement,
 } from './reducers';
 import {
-  Card as CardState,
-  areGlobalMatrixPositionsEqual,
   findCreatureById,
-  isCreatureCardType,
-  isSkillCardType,
 } from './reducers/game';
 
 type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>;

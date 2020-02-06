@@ -1,64 +1,14 @@
 import {
-  BattleFieldElement,
-  BattleFieldMatrix,
   Creature,
-  GlobalMatrixPosition,
-  MatrixId,
+  GameState,
   Party,
+  areGlobalMatrixPositionsEqual,
   createBattleFieldMatrix,
   findCreatureById as findCreatureById_,
 } from '../../utils';
 
+// TODO: ?
 export const findCreatureById = findCreatureById_;
-
-// A selection data of the square
-//
-// The "square" means an element of some matrices.
-type SquareCursor = {
-  globalPosition: {
-    matrixId: 'battleField' | 'barrack',
-    x: GlobalMatrixPosition['x'],
-    y: GlobalMatrixPosition['y'],
-  },
-};
-
-type CreatureCard = {
-  creatureId: Creature['id'],
-  uid: string,
-}
-
-type SkillCard = {
-  skillId: 'attack' | 'healing' | 'support',
-  uid: string,
-}
-
-export type Card = CreatureCard | SkillCard;
-
-export function isCreatureCardType(card: Card): card is CreatureCard {
-  return 'creatureId' in card;
-}
-
-export function isSkillCardType(card: Card): card is SkillCard {
-  return 'skillId' in card;
-}
-
-type CardsOnYourHandState = {
-  cards: [Card, Card, Card, Card, Card],
-};
-
-export type GameState = {
-  battleFieldMatrix: BattleFieldMatrix,
-  cardsOnYourHand: CardsOnYourHandState,
-  creatures: Creature[],
-  parties: Party[],
-  squareCursor: SquareCursor | undefined,
-}
-
-export function areGlobalMatrixPositionsEqual(a: GlobalMatrixPosition, b: GlobalMatrixPosition): boolean {
-  return a.matrixId === b.matrixId &&
-    a.y === b.y &&
-    a.x === b.x;
-}
 
 const dummyAllCreatures: Creature[] = [
   {
@@ -112,7 +62,7 @@ export function createInitialGameState(): GameState {
   battleFieldMatrix[2][1].creatureId = dummyAllCreatures[5].id;
   battleFieldMatrix[3][2].creatureId = dummyAllCreatures[4].id;
 
-  const cardsOnYourHand: CardsOnYourHandState = {
+  const cardsOnYourHand: GameState['cardsOnYourHand'] = {
     cards: [
       {
         uid: 'card-1',

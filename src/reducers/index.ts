@@ -1,10 +1,10 @@
 import produce from 'immer'
 
 import {
+  GameState,
   MatrixPosition,
 } from '../utils'
 import {
-  GameState,
   createInitialGameState,
 } from './game';
 

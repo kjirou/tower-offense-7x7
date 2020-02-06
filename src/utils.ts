@@ -18,6 +18,18 @@ export type Party = {
   creatureIds: Creature['id'][],
 }
 
+type CreatureCard = {
+  creatureId: Creature['id'],
+  uid: string,
+}
+
+type SkillCard = {
+  skillId: 'attack' | 'healing' | 'support',
+  uid: string,
+}
+
+export type Card = CreatureCard | SkillCard;
+
 export type MatrixPosition = {
   x: number,
   y: number,
@@ -41,11 +53,32 @@ export type BattleFieldElement = {
 
 export type BattleFieldMatrix = BattleFieldElement[][];
 
+// A selection data of the square
+//
+// The "square" means an element of some matrices.
+type SquareCursor = {
+  globalPosition: {
+    matrixId: 'battleField' | 'barrack',
+    x: GlobalMatrixPosition['x'],
+    y: GlobalMatrixPosition['y'],
+  },
+};
+
 export type NormalAttackContext = {
   attackerCreatureId: Creature['id'],
   battleFieldMatrix: BattleFieldMatrix,
   creatures: Creature[],
   parties: Party[],
+}
+
+export type GameState = {
+  battleFieldMatrix: BattleFieldMatrix,
+  cardsOnYourHand: {
+    cards: [Card, Card, Card, Card, Card],
+  },
+  creatures: Creature[],
+  parties: Party[],
+  squareCursor: SquareCursor | undefined,
 }
 
 /**
@@ -70,6 +103,20 @@ export function flattenMatrix<Element>(matrix: Element[][]): Element[] {
     });
   });
   return flattened;
+}
+
+export function isCreatureCardType(card: Card): card is CreatureCard {
+  return 'creatureId' in card;
+}
+
+export function isSkillCardType(card: Card): card is SkillCard {
+  return 'skillId' in card;
+}
+
+export function areGlobalMatrixPositionsEqual(a: GlobalMatrixPosition, b: GlobalMatrixPosition): boolean {
+  return a.matrixId === b.matrixId &&
+    a.y === b.y &&
+    a.x === b.x;
 }
 
 export function determineRelationshipBetweenFactions(a: FactionId, b: FactionId): FactionRelationshipId {
