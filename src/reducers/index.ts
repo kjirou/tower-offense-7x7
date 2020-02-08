@@ -64,6 +64,7 @@ export function touchBattleFieldElement(
   )
 }
 
+// TODO: state なのは自明だから、applicationState -> state で他は ~state 不要。
 export function proceedTurn(
   applicationState: ApplicationState,
 ): ApplicationState {
