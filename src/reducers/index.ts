@@ -8,6 +8,8 @@ import {
   CreatureWithPartyOnBattleFieldElement,
   GameState,
   MatrixPosition,
+  NormalAttackContext,
+  Party,
   findCreatureWithParty,
   pickBattleFieldElementsWhereCreatureExists,
 } from '../utils'
@@ -90,10 +92,32 @@ export function proceedTurn(
             )
           })
 
-        // 攻撃者リストを発動順に整列する。
+        // TODO: 攻撃者リストを発動順に整列する。
+
+        let creaturesBeingUpdated: Creature[] = game.creatures
+        let partiesBeingUpdated: Party[] = game.parties
+        let battleFieldMatrixBeingUpdated: BattleFieldMatrix = game.battleFieldMatrix
 
         // 攻撃者リストをループしてそれぞれの通常攻撃を発動する。
-          // 通常攻撃コンテキストを生成する。
+        attackerDataList.forEach((attackerData) => {
+          // Only the "creature.id" should be referred because other properties may be updated.
+          const attackerCreatureId = attackerData.creature.id
+
+          const result = invokeNormalAttack({
+            attackerCreatureId,
+            creatures: creaturesBeingUpdated,
+            parties: partiesBeingUpdated,
+            battleFieldMatrix: battleFieldMatrixBeingUpdated,
+          })
+
+          creaturesBeingUpdated = result.creatures
+          partiesBeingUpdated = result.parties
+          battleFieldMatrixBeingUpdated = result.battleFieldMatrix
+        })
+
+        draft.game.creatures = creaturesBeingUpdated
+        draft.game.parties = partiesBeingUpdated
+        draft.game.battleFieldMatrix = battleFieldMatrixBeingUpdated
       })
     }
   )
