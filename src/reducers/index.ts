@@ -6,6 +6,9 @@ import {
   GameState,
   MatrixPosition,
 } from '../utils'
+import {
+  invokeNormalAttack,
+} from './game/battle-process'
 
 function updateBattlePageState(
   applicationState: ApplicationState,
@@ -53,4 +56,16 @@ export function touchBattleFieldElement(
       })
     }
   )
+}
+
+export function proceedTurn(
+  applicationState: ApplicationState,
+): ApplicationState {
+  // TODO: ターン数を増加する。
+  // TODO: アニメーション用の情報を生成する。
+
+  // 攻撃者リストを抽出する。
+  // 攻撃者リストを発動順に整列する。
+  // 攻撃者リストをループしてそれぞれの通常攻撃を発動する。
+    // 通常攻撃コンテキストを生成する。
 }
