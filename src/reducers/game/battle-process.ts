@@ -1,6 +1,8 @@
 import {
   BattleFieldElement,
   Creature,
+  CreatureWithParty,
+  CreatureWithPartyOnBattleFieldElement,
   Party,
   NormalAttackContext,
   determineRelationshipBetweenFactions,
@@ -8,39 +10,8 @@ import {
   findCreatureByIdIfPossible,
   findBattleFieldElementByCreatureId,
   findBattleFieldElementsByDistance,
+  findCreatureWithParty,
 } from '../../utils';
-
-type CreatureWithParty = {
-  creature: Creature,
-  party: Party,
-}
-
-type CreatureWithPartyOnBattleFieldElement = {
-  creature: Creature,
-  party: Party,
-  battleFieldElement: BattleFieldElement,
-}
-
-function findCreatureWithParty(
-  creatures: Creature[],
-  parties: Party[],
-  creatureId: Creature['id']
-): CreatureWithParty {
-  for (let partyIndex = 0; partyIndex < parties.length; partyIndex++) {
-    const party = parties[partyIndex]
-    for (let creatureIdIndex = 0; creatureIdIndex < party.creatureIds.length; creatureIdIndex++) {
-      const creatureIdInLoop = party.creatureIds[creatureIdIndex]
-      if (creatureId === creatureIdInLoop) {
-        const creature = findCreatureById(creatures, creatureIdInLoop)
-        return {
-          creature,
-          party,
-        }
-      }
-    }
-  }
-  throw new Error('Can not find the `creatureId` from `parties`.')
-}
 
 export function invokeNormalAttack(context: NormalAttackContext): NormalAttackContext {
   const attackerWithParty = findCreatureWithParty(context.creatures, context.parties, context.attackerCreatureId)

@@ -2,14 +2,20 @@ import produce from 'immer'
 
 import {
   ApplicationState,
+  BattleFieldMatrix,
   BattlePageState,
+  Creature,
+  CreatureWithPartyOnBattleFieldElement,
   GameState,
   MatrixPosition,
+  findCreatureWithParty,
+  pickBattleFieldElementsWhereCreatureExists,
 } from '../utils'
 import {
   invokeNormalAttack,
 } from './game/battle-process'
 
+// TODO: battlePageState を type guard して抽出すればいいだけっぽい
 function updateBattlePageState(
   applicationState: ApplicationState,
   updater: (battlePageState: BattlePageState) => BattlePageState
@@ -61,11 +67,32 @@ export function touchBattleFieldElement(
 export function proceedTurn(
   applicationState: ApplicationState,
 ): ApplicationState {
-  // TODO: ターン数を増加する。
-  // TODO: アニメーション用の情報を生成する。
+  return updateBattlePageState(
+    applicationState,
+    battlePageState => {
+      return produce(battlePageState, draft => {
+        const game = battlePageState.game
 
-  // 攻撃者リストを抽出する。
-  // 攻撃者リストを発動順に整列する。
-  // 攻撃者リストをループしてそれぞれの通常攻撃を発動する。
-    // 通常攻撃コンテキストを生成する。
+        // TODO: ターン数を増加する。
+        // TODO: アニメーション用の情報を生成する。
+
+        // 攻撃者リストを抽出する。
+        const elementsWhereCreatureExists =
+          pickBattleFieldElementsWhereCreatureExists(game.battleFieldMatrix)
+        const attackerDataList: CreatureWithPartyOnBattleFieldElement[] = elementsWhereCreatureExists
+          .map((battleFieldElement) => {
+            // `pickBattleFieldElementsWhereCreatureExists` guarantees that each creature exists.
+            const creatureId = battleFieldElement.creatureId as Creature['id']
+            return Object.assign(
+              findCreatureWithParty(game.creatures, game.parties, creatureId),
+              {battleFieldElement}
+            )
+          })
+
+        // 攻撃者リストを発動順に整列する。
+        // 攻撃者リストをループしてそれぞれの通常攻撃を発動する。
+          // 通常攻撃コンテキストを生成する。
+      })
+    }
+  )
 }

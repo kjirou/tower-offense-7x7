@@ -53,6 +53,17 @@ export type BattleFieldElement = {
 
 export type BattleFieldMatrix = BattleFieldElement[][];
 
+export type CreatureWithParty = {
+  creature: Creature,
+  party: Party,
+}
+
+export type CreatureWithPartyOnBattleFieldElement = {
+  creature: Creature,
+  party: Party,
+  battleFieldElement: BattleFieldElement,
+}
+
 // A selection data of the square
 //
 // The "square" means an element of some matrices.
@@ -145,6 +156,27 @@ export function findCreatureById(creatures: Creature[], creatureId: Creature['id
   return found;
 }
 
+export function findCreatureWithParty(
+  creatures: Creature[],
+  parties: Party[],
+  creatureId: Creature['id']
+): CreatureWithParty {
+  for (let partyIndex = 0; partyIndex < parties.length; partyIndex++) {
+    const party = parties[partyIndex]
+    for (let creatureIdIndex = 0; creatureIdIndex < party.creatureIds.length; creatureIdIndex++) {
+      const creatureIdInLoop = party.creatureIds[creatureIdIndex]
+      if (creatureId === creatureIdInLoop) {
+        const creature = findCreatureById(creatures, creatureIdInLoop)
+        return {
+          creature,
+          party,
+        }
+      }
+    }
+  }
+  throw new Error('Can not find the `creatureId` from `parties`.')
+}
+
 export function createBattleFieldMatrix(rowLength: number, columnLength: number): BattleFieldMatrix {
   const battleFieldMatrix: BattleFieldMatrix = []
   for (let y = 0; y < rowLength; y++) {
@@ -201,6 +233,20 @@ export function findBattleFieldElementsByDistance(
     for (let x = 0; x < matrix[y].length; x++) {
       if (measureDistance(startPoint, matrix[y][x].position) <= distance) {
         elements.push(matrix[y][x])
+      }
+    }
+  }
+  return elements
+}
+
+export function pickBattleFieldElementsWhereCreatureExists(
+  battleFieldMatrix: BattleFieldMatrix
+): BattleFieldElement[] {
+  const elements = []
+  for (const row of battleFieldMatrix) {
+    for (const element of row) {
+      if (element.creatureId !== undefined) {
+        elements.push(element)
       }
     }
   }
