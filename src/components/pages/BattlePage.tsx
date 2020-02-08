@@ -17,7 +17,7 @@ type BattleFieldSquareProps = {
   y: number,
 };
 
-type BattleFieldProps = {
+type BattleFieldBoardProps = {
   board: BattleFieldSquareProps[][],
 };
 
@@ -85,7 +85,7 @@ const BattleFieldSquare: React.FC<BattleFieldSquareProps> = (props) => {
   );
 }
 
-const BattleFieldBoard: React.FC<BattleFieldProps> = (props) => {
+const BattleFieldBoard: React.FC<BattleFieldBoardProps> = (props) => {
   const style = {
     position: 'relative',
     width: '360px',
