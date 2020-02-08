@@ -72,7 +72,7 @@ export function proceedTurn(
     applicationState,
     battlePageState => {
       return produce(battlePageState, draft => {
-        const game = battlePageState.game
+        const game = draft.game
 
         // TODO: ターン数を増加する。
         // TODO: アニメーション用の情報を生成する。
@@ -91,6 +91,7 @@ export function proceedTurn(
           })
 
         // 攻撃者リストを発動順に整列する。
+
         // 攻撃者リストをループしてそれぞれの通常攻撃を発動する。
           // 通常攻撃コンテキストを生成する。
       })
