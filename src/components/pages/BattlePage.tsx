@@ -158,6 +158,58 @@ const CardsOnYourHand: React.FC<CardsOnYourHandProps> = (props) => {
   );
 }
 
+const Footer: React.FC<{}> = () => {
+  const style = {
+    display: 'flex',
+    width: '360px',
+    height: '56px',
+    padding: '4px',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'aqua',
+  };
+
+  return (
+    <div style={style}>
+      <div style={{
+        width: '136px',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'lime',
+      }}>
+        <div style={{
+          fontSize: '24px',
+        }}>Back</div>
+      </div>
+      <div style={{
+        width: '72px',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontSize: '32px',
+        backgroundColor: 'silver',
+      }}>
+        <div>5</div>
+      </div>
+      <div style={{
+        width: '136px',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'lime',
+      }}>
+        <div style={{
+          fontSize: '24px',
+        }}>Next</div>
+      </div>
+    </div>
+  );
+}
+
 export const BattlePage: React.FC<Props> = (props) => {
   const style = {
     position: 'relative',
@@ -172,6 +224,7 @@ export const BattlePage: React.FC<Props> = (props) => {
       <BattleFieldBoard board={props.battleFieldBoard} />
       <SquareMonitor />
       <CardsOnYourHand {...props.cardsOnYourHand} />
+      <Footer />
     </div>
   );
 }
