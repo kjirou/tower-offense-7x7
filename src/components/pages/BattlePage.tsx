@@ -35,7 +35,7 @@ export type Props = {
   cardsOnYourHand: CardsOnYourHandProps,
 };
 
-function MetaInformationBar(): JSX.Element {
+const MetaInformationBar: React.FC<{}> = () => {
   const style = {
     position: 'relative',
     width: '360px',
@@ -48,7 +48,7 @@ function MetaInformationBar(): JSX.Element {
   );
 }
 
-function CreatureOnSquare(props: CreatureOnSquareProps): JSX.Element {
+const CreatureOnSquare: React.FC<CreatureOnSquareProps> = (props) => {
   const style = {
     position: 'absolute',
     top: '0',
@@ -63,7 +63,7 @@ function CreatureOnSquare(props: CreatureOnSquareProps): JSX.Element {
   return <div style={style}>{props.image}</div>
 }
 
-function BattleFieldSquare(props: BattleFieldSquareProps): JSX.Element {
+const BattleFieldSquare: React.FC<BattleFieldSquareProps> = (props) => {
   const style = {
     position: 'absolute',
     top: `${6 + props.y * 48 + props.y * 2}px`,
@@ -85,7 +85,7 @@ function BattleFieldSquare(props: BattleFieldSquareProps): JSX.Element {
   );
 }
 
-function BattleFieldBoard(props: BattleFieldProps): JSX.Element {
+const BattleFieldBoard: React.FC<BattleFieldProps> = (props) => {
   const style = {
     position: 'relative',
     width: '360px',
@@ -107,7 +107,7 @@ function BattleFieldBoard(props: BattleFieldProps): JSX.Element {
   );
 }
 
-function SquareMonitor(): JSX.Element {
+const SquareMonitor: React.FC<{}> = () => {
   const style = {
     position: 'relative',
     width: '360px',
@@ -120,7 +120,7 @@ function SquareMonitor(): JSX.Element {
   );
 }
 
-function Card(props: CardProps): JSX.Element {
+const Card: React.FC<CardProps> = (props) => {
   const style = {
     width: '68px',
     height: '100px',
@@ -136,7 +136,7 @@ function Card(props: CardProps): JSX.Element {
   );
 }
 
-function CardsOnYourHand(props: CardsOnYourHandProps): JSX.Element {
+const CardsOnYourHand: React.FC<CardsOnYourHandProps> = (props) => {
   const style = {
     display: 'flex',
     width: '360px',
