@@ -18,6 +18,7 @@ import {
   areGlobalMatrixPositionsEqual,
 } from './utils';
 import {
+  proceedTurn,
   touchBattleFieldElement,
 } from './reducers';
 
@@ -100,7 +101,9 @@ function mapBattlePageStateToProps(
   return {
     battleFieldBoard,
     cardsOnYourHand,
-    handleClickNextButton: () => {},
+    handleClickNextButton: () => {
+      setState(s => proceedTurn(s))
+    },
   };
 }
 
