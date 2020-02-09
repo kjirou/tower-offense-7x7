@@ -1,10 +1,10 @@
-import * as React from 'react';
+import * as React from 'react'
 
-import {flattenMatrix} from '../../utils';
+import {flattenMatrix} from '../../utils'
 
 type CreatureOnSquareProps = {
   image: string,
-};
+}
 
 type BattleFieldSquareProps = {
   creature: CreatureOnSquareProps | void,
@@ -15,25 +15,30 @@ type BattleFieldSquareProps = {
   isSelected: boolean,
   x: number,
   y: number,
-};
+}
 
 type BattleFieldBoardProps = {
   board: BattleFieldSquareProps[][],
-};
+}
 
 export type CardProps = {
   label: string,
   uid: string,
-};
+}
 
 type CardsOnYourHandProps = {
   cards: [CardProps, CardProps, CardProps, CardProps, CardProps],
-};
+}
+
+type FooterProps = {
+  handleClickNextButton: () => void,
+}
 
 export type Props = {
   battleFieldBoard: BattleFieldSquareProps[][],
   cardsOnYourHand: CardsOnYourHandProps,
-};
+  handleClickNextButton: FooterProps['handleClickNextButton'],
+}
 
 const MetaInformationBar: React.FC<{}> = () => {
   const style = {
@@ -41,11 +46,11 @@ const MetaInformationBar: React.FC<{}> = () => {
     width: '360px',
     height: '48px',
     backgroundColor: 'yellow',
-  };
+  }
 
   return (
     <div style={style}>MetaInformationBar!</div>
-  );
+  )
 }
 
 const CreatureOnSquare: React.FC<CreatureOnSquareProps> = (props) => {
@@ -58,7 +63,7 @@ const CreatureOnSquare: React.FC<CreatureOnSquareProps> = (props) => {
     lineHeight: '48px',
     fontSize: '24px',
     textAlign: 'center',
-  };
+  }
 
   return <div style={style}>{props.image}</div>
 }
@@ -71,7 +76,7 @@ const BattleFieldSquare: React.FC<BattleFieldSquareProps> = (props) => {
     width: '48px',
     height: '48px',
     backgroundColor: props.isSelected ? 'yellow' : 'lime',
-  };
+  }
 
   return (
     <div
@@ -82,7 +87,7 @@ const BattleFieldSquare: React.FC<BattleFieldSquareProps> = (props) => {
       props.creature ? <CreatureOnSquare {...props.creature} /> : undefined
     }
     </div>
-  );
+  )
 }
 
 const BattleFieldBoard: React.FC<BattleFieldBoardProps> = (props) => {
@@ -91,9 +96,9 @@ const BattleFieldBoard: React.FC<BattleFieldBoardProps> = (props) => {
     width: '360px',
     height: '360px',
     backgroundColor: 'green',
-  };
+  }
 
-  const squares = flattenMatrix<BattleFieldSquareProps>(props.board);
+  const squares = flattenMatrix<BattleFieldSquareProps>(props.board)
 
   return (
     <div style={style}>
@@ -104,7 +109,7 @@ const BattleFieldBoard: React.FC<BattleFieldBoardProps> = (props) => {
       })
     }
     </div>
-  );
+  )
 }
 
 const SquareMonitor: React.FC<{}> = () => {
@@ -117,7 +122,7 @@ const SquareMonitor: React.FC<{}> = () => {
 
   return (
     <div style={style}>SquareMonitor!</div>
-  );
+  )
 }
 
 const Card: React.FC<CardProps> = (props) => {
@@ -125,7 +130,7 @@ const Card: React.FC<CardProps> = (props) => {
     width: '68px',
     height: '100px',
     backgroundColor: 'lime',
-  };
+  }
 
   return (
     <div
@@ -133,7 +138,7 @@ const Card: React.FC<CardProps> = (props) => {
     >
       {props.label}
     </div>
-  );
+  )
 }
 
 const CardsOnYourHand: React.FC<CardsOnYourHandProps> = (props) => {
@@ -144,7 +149,7 @@ const CardsOnYourHand: React.FC<CardsOnYourHandProps> = (props) => {
     padding: '6px',
     justifyContent: 'space-between',
     backgroundColor: 'green',
-  };
+  }
 
   return (
     <div style={style}>
@@ -155,10 +160,10 @@ const CardsOnYourHand: React.FC<CardsOnYourHandProps> = (props) => {
       })
     }
     </div>
-  );
+  )
 }
 
-const Footer: React.FC<{}> = () => {
+const Footer: React.FC<FooterProps> = (props) => {
   const style = {
     display: 'flex',
     width: '360px',
@@ -167,7 +172,7 @@ const Footer: React.FC<{}> = () => {
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: 'aqua',
-  };
+  }
 
   return (
     <div style={style}>
@@ -194,20 +199,25 @@ const Footer: React.FC<{}> = () => {
       }}>
         <div>5</div>
       </div>
-      <div style={{
-        width: '136px',
-        height: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'lime',
-      }}>
-        <div style={{
-          fontSize: '24px',
-        }}>Next</div>
+      <div
+        style={{
+          width: '136px',
+          height: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'lime',
+        }}
+        onClick={props.handleClickNextButton}
+      >
+        <div
+          style={{
+            fontSize: '24px',
+          }}
+        >Next</div>
       </div>
     </div>
-  );
+  )
 }
 
 export const BattlePage: React.FC<Props> = (props) => {
@@ -216,7 +226,7 @@ export const BattlePage: React.FC<Props> = (props) => {
     width: '360px',
     height: '640px',
     backgroundColor: 'silver',
-  };
+  }
 
   return (
     <div style={style}>
@@ -224,7 +234,9 @@ export const BattlePage: React.FC<Props> = (props) => {
       <BattleFieldBoard board={props.battleFieldBoard} />
       <SquareMonitor />
       <CardsOnYourHand {...props.cardsOnYourHand} />
-      <Footer />
+      <Footer
+        handleClickNextButton={props.handleClickNextButton}
+      />
     </div>
-  );
+  )
 }

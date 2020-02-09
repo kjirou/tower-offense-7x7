@@ -23,6 +23,8 @@ import {
 
 type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>;
 
+// TODO: Memoize some props for React.memo
+
 function mapBattlePageStateToProps(
   battlePageState: BattlePageState,
   setState: ReactSetState
@@ -98,6 +100,7 @@ function mapBattlePageStateToProps(
   return {
     battleFieldBoard,
     cardsOnYourHand,
+    handleClickNextButton: () => {},
   };
 }
 
