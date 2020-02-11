@@ -21,9 +21,9 @@
   "private": true,
   "devDependencies": {
     "@types/mocha": "^5.2.7",
-    "@types/node": "^13.1.7",
-    "@types/react": "^16.9.17",
-    "@types/react-dom": "^16.9.4",
+    "@types/node": "^13.7.0",
+    "@types/react": "^16.9.19",
+    "@types/react-dom": "^16.9.5",
     "ejs": "^3.0.1",
     "mocha": "^7.0.1",
     "ts-loader": "^6.2.1",
