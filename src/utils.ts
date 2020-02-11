@@ -80,9 +80,6 @@ export type CreatureWithPartyOnBattleFieldElement = {
   battleFieldElement: BattleFieldElement,
 }
 
-// A selection data of the square
-//
-// The "square" means an element of some matrices.
 type SquareCursor = {
   globalPosition: GlobalPosition,
 }
