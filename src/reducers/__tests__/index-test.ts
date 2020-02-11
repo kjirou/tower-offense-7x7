@@ -47,6 +47,8 @@ describe('reducers/index', function() {
                 ],
                 battleFieldMatrix,
                 squareCursor: undefined,
+                cards: [],
+                cardIdsOnYourHand: [],
                 cardsOnYourHand: {
                   cards: [
                     {uid: 'c1', skillId: 'attack', creatureId: ''},
@@ -115,6 +117,8 @@ describe('reducers/index', function() {
                 ],
                 battleFieldMatrix,
                 squareCursor: undefined,
+                cards: [],
+                cardIdsOnYourHand: [],
                 cardsOnYourHand: {
                   cards: [
                     {uid: 'c1', skillId: 'attack', creatureId: ''},

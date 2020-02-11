@@ -6,6 +6,8 @@ type FactionId = 'player' | 'computer'
 
 export type FactionRelationshipId = 'ally' | 'enemy'
 
+export type SkillCategoryId = 'attack' | 'healing' | 'support'
+
 export type Creature = {
   attackPoint: number,
   lifePoint: number,
@@ -20,7 +22,9 @@ export type Party = {
 
 export type Card = {
   creatureId: Creature['id'],
-  skillId: 'attack' | 'healing' | 'support',
+  // TODO: -> skillCategoryId
+  skillId: SkillCategoryId,
+  // TODO: -> id
   uid: string,
 }
 
@@ -78,6 +82,8 @@ export type NormalAttackContext = {
 
 export type GameState = {
   battleFieldMatrix: BattleFieldMatrix,
+  cards: Card[],
+  cardIdsOnYourHand: Card['uid'][],
   cardsOnYourHand: {
     // TODO: Max 5 cards
     cards: Card[],

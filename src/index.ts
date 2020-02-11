@@ -6,9 +6,11 @@ import {
 } from './App'
 import {
   ApplicationState,
+  Card,
   Creature,
   GameState,
   Party,
+  SkillCategoryId,
   createBattleFieldMatrix,
 } from './utils'
 
@@ -68,6 +70,16 @@ const dummyAllCreatures: Creature[] = [
     attackPoint: 3,
   },
 ]
+const dummyAllCards: Card[] = dummyAllCreatures
+  .filter(e => /^ally-/.test(e.id))
+  .map((creature, index) => {
+    const skillCategoryId = ['attack', 'healing', 'support'][index % 3] as SkillCategoryId
+    return {
+      uid: `card-${index + 1}`,
+      skillId: skillCategoryId,
+      creatureId: creature.id,
+    }
+  })
 
 function createInitialGameState(): GameState {
   const battleFieldMatrix = createBattleFieldMatrix(7, 7)
@@ -124,6 +136,10 @@ function createInitialGameState(): GameState {
       },
     ],
     battleFieldMatrix,
+    cards: dummyAllCards,
+    cardIdsOnYourHand: dummyAllCards
+      .slice(5)
+      .map(card => card.uid),
     cardsOnYourHand,
     squareCursor: undefined,
   }
