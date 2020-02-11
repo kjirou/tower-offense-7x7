@@ -23,8 +23,7 @@ export type Party = {
 export type Card = {
   creatureId: Creature['id'],
   id: string,
-  // TODO: -> skillCategoryId
-  skillId: SkillCategoryId,
+  skillCategoryId: SkillCategoryId,
 }
 
 export type MatrixPosition = {

@@ -76,7 +76,7 @@ const dummyAllCards: Card[] = dummyAllCreatures
     const skillCategoryId = ['attack', 'healing', 'support'][index % 3] as SkillCategoryId
     return {
       id: `card-${index + 1}`,
-      skillId: skillCategoryId,
+      skillCategoryId,
       creatureId: creature.id,
     }
   })

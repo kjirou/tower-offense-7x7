@@ -54,7 +54,7 @@ function cardStateToProps(cardsState: CardState[], cardIdState: CardState['id'])
     support: 'S',
   }
 
-  cardProps.label = skillMapping[cardState.skillId]
+  cardProps.label = skillMapping[cardState.skillCategoryId]
 
   return cardProps
 }
