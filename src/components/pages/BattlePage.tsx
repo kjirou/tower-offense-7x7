@@ -1,10 +1,61 @@
-import * as React from 'react';
+import * as React from 'react'
 
-import {flattenMatrix} from '../../utils';
+import {
+  FactionRelationshipId,
+  flattenMatrix,
+} from '../../utils'
 
-type CreatureOnSquareProps = {
+const MetaInformationBar: React.FC<{}> = () => {
+  const style = {
+    position: 'relative',
+    width: '360px',
+    height: '48px',
+    backgroundColor: 'yellow',
+  }
+
+  return (
+    <div style={style}>MetaInformationBar!</div>
+  )
+}
+
+export type CreatureOnSquareProps = {
+  factionRelationshipId: FactionRelationshipId,
   image: string,
-};
+  lifePoint: string,
+}
+
+const CreatureOnSquare: React.FC<CreatureOnSquareProps> = (props) => {
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        top: '0',
+        left: '0',
+        width: '48px',
+        height: '48px',
+        color: props.factionRelationshipId == 'ally' ? 'black' : 'red'
+      }}
+    >
+      <div
+        style={{
+          lineHeight: '48px',
+          fontSize: '24px',
+          textAlign: 'center',
+        }}
+      >{props.image}</div>
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '0',
+          right: '1px',
+          fontSize: '10px',
+          lineHeight: '12px',
+          textAlign: 'right',
+        }}
+      >{props.lifePoint}</div>
+    </div>
+  )
+}
 
 type BattleFieldSquareProps = {
   creature: CreatureOnSquareProps | void,
@@ -15,55 +66,9 @@ type BattleFieldSquareProps = {
   isSelected: boolean,
   x: number,
   y: number,
-};
-
-type BattleFieldProps = {
-  board: BattleFieldSquareProps[][],
-};
-
-export type CardProps = {
-  label: string,
-  uid: string,
-};
-
-type CardsOnYourHandProps = {
-  cards: [CardProps, CardProps, CardProps, CardProps, CardProps],
-};
-
-export type Props = {
-  battleFieldBoard: BattleFieldSquareProps[][],
-  cardsOnYourHand: CardsOnYourHandProps,
-};
-
-function MetaInformationBar(): JSX.Element {
-  const style = {
-    position: 'relative',
-    width: '360px',
-    height: '48px',
-    backgroundColor: 'yellow',
-  };
-
-  return (
-    <div style={style}>MetaInformationBar!</div>
-  );
 }
 
-function CreatureOnSquare(props: CreatureOnSquareProps): JSX.Element {
-  const style = {
-    position: 'absolute',
-    top: '0',
-    left: '0',
-    width: '48px',
-    height: '48px',
-    lineHeight: '48px',
-    fontSize: '24px',
-    textAlign: 'center',
-  };
-
-  return <div style={style}>{props.image}</div>
-}
-
-function BattleFieldSquare(props: BattleFieldSquareProps): JSX.Element {
+const BattleFieldSquare: React.FC<BattleFieldSquareProps> = (props) => {
   const style = {
     position: 'absolute',
     top: `${6 + props.y * 48 + props.y * 2}px`,
@@ -71,7 +76,7 @@ function BattleFieldSquare(props: BattleFieldSquareProps): JSX.Element {
     width: '48px',
     height: '48px',
     backgroundColor: props.isSelected ? 'yellow' : 'lime',
-  };
+  }
 
   return (
     <div
@@ -82,18 +87,22 @@ function BattleFieldSquare(props: BattleFieldSquareProps): JSX.Element {
       props.creature ? <CreatureOnSquare {...props.creature} /> : undefined
     }
     </div>
-  );
+  )
 }
 
-function BattleFieldBoard(props: BattleFieldProps): JSX.Element {
+type BattleFieldBoardProps = {
+  board: BattleFieldSquareProps[][],
+}
+
+const BattleFieldBoard: React.FC<BattleFieldBoardProps> = (props) => {
   const style = {
     position: 'relative',
     width: '360px',
     height: '360px',
     backgroundColor: 'green',
-  };
+  }
 
-  const squares = flattenMatrix<BattleFieldSquareProps>(props.board);
+  const squares = flattenMatrix<BattleFieldSquareProps>(props.board)
 
   return (
     <div style={style}>
@@ -104,10 +113,10 @@ function BattleFieldBoard(props: BattleFieldProps): JSX.Element {
       })
     }
     </div>
-  );
+  )
 }
 
-function SquareMonitor(): JSX.Element {
+const SquareMonitor: React.FC<{}> = () => {
   const style = {
     position: 'relative',
     width: '360px',
@@ -117,15 +126,20 @@ function SquareMonitor(): JSX.Element {
 
   return (
     <div style={style}>SquareMonitor!</div>
-  );
+  )
 }
 
-function Card(props: CardProps): JSX.Element {
+export type CardProps = {
+  label: string,
+  uid: string,
+}
+
+const Card: React.FC<CardProps> = (props) => {
   const style = {
     width: '68px',
     height: '100px',
     backgroundColor: 'lime',
-  };
+  }
 
   return (
     <div
@@ -133,10 +147,14 @@ function Card(props: CardProps): JSX.Element {
     >
       {props.label}
     </div>
-  );
+  )
 }
 
-function CardsOnYourHand(props: CardsOnYourHandProps): JSX.Element {
+type CardsOnYourHandProps = {
+  cards: [CardProps, CardProps, CardProps, CardProps, CardProps],
+}
+
+const CardsOnYourHand: React.FC<CardsOnYourHandProps> = (props) => {
   const style = {
     display: 'flex',
     width: '360px',
@@ -144,7 +162,7 @@ function CardsOnYourHand(props: CardsOnYourHandProps): JSX.Element {
     padding: '6px',
     justifyContent: 'space-between',
     backgroundColor: 'green',
-  };
+  }
 
   return (
     <div style={style}>
@@ -155,7 +173,74 @@ function CardsOnYourHand(props: CardsOnYourHandProps): JSX.Element {
       })
     }
     </div>
-  );
+  )
+}
+
+type FooterProps = {
+  handleClickNextButton: () => void,
+}
+
+const Footer: React.FC<FooterProps> = (props) => {
+  const style = {
+    display: 'flex',
+    width: '360px',
+    height: '56px',
+    padding: '4px',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'aqua',
+  }
+
+  return (
+    <div style={style}>
+      <div style={{
+        width: '136px',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'lime',
+      }}>
+        <div style={{
+          fontSize: '24px',
+        }}>Back</div>
+      </div>
+      <div style={{
+        width: '72px',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontSize: '32px',
+        backgroundColor: 'silver',
+      }}>
+        <div>5</div>
+      </div>
+      <div
+        style={{
+          width: '136px',
+          height: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'lime',
+        }}
+        onClick={props.handleClickNextButton}
+      >
+        <div
+          style={{
+            fontSize: '24px',
+          }}
+        >Next</div>
+      </div>
+    </div>
+  )
+}
+
+export type Props = {
+  battleFieldBoard: BattleFieldSquareProps[][],
+  cardsOnYourHand: CardsOnYourHandProps,
+  handleClickNextButton: FooterProps['handleClickNextButton'],
 }
 
 export const BattlePage: React.FC<Props> = (props) => {
@@ -164,7 +249,7 @@ export const BattlePage: React.FC<Props> = (props) => {
     width: '360px',
     height: '640px',
     backgroundColor: 'silver',
-  };
+  }
 
   return (
     <div style={style}>
@@ -172,6 +257,9 @@ export const BattlePage: React.FC<Props> = (props) => {
       <BattleFieldBoard board={props.battleFieldBoard} />
       <SquareMonitor />
       <CardsOnYourHand {...props.cardsOnYourHand} />
+      <Footer
+        handleClickNextButton={props.handleClickNextButton}
+      />
     </div>
-  );
+  )
 }

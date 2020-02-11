@@ -11,6 +11,7 @@ import {
   findBattleFieldElementsByDistance,
   flattenMatrix,
   measureDistance,
+  pickBattleFieldElementsWhereCreatureExists,
   validateMatrix,
 } from '../utils';
 
@@ -205,6 +206,18 @@ describe('utils', function() {
       assert.strictEqual(elements[2].position.x, 0)
       assert.strictEqual(elements[3].position.y, 1)
       assert.strictEqual(elements[3].position.x, 1)
+    })
+  })
+
+  describe('pickBattleFieldElementsWhereCreatureExists', function() {
+    it('can pick elements where the creature exists', function() {
+      const matrix = createBattleFieldMatrix(2, 3)
+      matrix[0][0].creatureId = 'a'
+      matrix[1][2].creatureId = 'b'
+      const elements = pickBattleFieldElementsWhereCreatureExists(matrix)
+      assert.strictEqual(elements.length, 2)
+      assert.strictEqual(elements[0].creatureId, 'a')
+      assert.strictEqual(elements[1].creatureId, 'b')
     })
   })
 });
