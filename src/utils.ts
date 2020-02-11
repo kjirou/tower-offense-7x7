@@ -22,10 +22,9 @@ export type Party = {
 
 export type Card = {
   creatureId: Creature['id'],
+  id: string,
   // TODO: -> skillCategoryId
   skillId: SkillCategoryId,
-  // TODO: -> id
-  uid: string,
 }
 
 export type MatrixPosition = {
@@ -84,7 +83,7 @@ export type GameState = {
   battleFieldMatrix: BattleFieldMatrix,
   cards: Card[],
   // TODO: Max 5 cards
-  cardIdsOnYourHand: Card['uid'][],
+  cardIdsOnYourHand: Card['id'][],
   creatures: Creature[],
   parties: Party[],
   squareCursor: SquareCursor | undefined,
@@ -204,9 +203,9 @@ export function findBattleFieldElementByCreatureId(
   throw new Error('Can not find the `creatureId` on the `BattleFieldMatrix`.')
 }
 
-export function findCardById(cards: Card[], cardId: Card['uid']): Card {
+export function findCardById(cards: Card[], cardId: Card['id']): Card {
   for (const card of cards) {
-    if (card.uid === cardId) {
+    if (card.id === cardId) {
       return card
     }
   }

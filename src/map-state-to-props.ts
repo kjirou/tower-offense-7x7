@@ -39,11 +39,11 @@ const jobIdToDummyImage = (jobId: string): string => {
   return mapping[jobId] || '？'
 }
 
-function cardStateToProps(cardsState: CardState[], cardIdState: CardState['uid']): CardProps {
+function cardStateToProps(cardsState: CardState[], cardIdState: CardState['id']): CardProps {
   const cardState = findCardById(cardsState, cardIdState)
 
   const cardProps = {
-    uid: cardState.uid,
+    uid: cardState.id,
     label: '？',
   };
   const skillMapping: {

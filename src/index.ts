@@ -75,7 +75,7 @@ const dummyAllCards: Card[] = dummyAllCreatures
   .map((creature, index) => {
     const skillCategoryId = ['attack', 'healing', 'support'][index % 3] as SkillCategoryId
     return {
-      uid: `card-${index + 1}`,
+      id: `card-${index + 1}`,
       skillId: skillCategoryId,
       creatureId: creature.id,
     }
@@ -109,7 +109,7 @@ function createInitialGameState(): GameState {
     cards: dummyAllCards,
     cardIdsOnYourHand: dummyAllCards
       .slice(0, 5)
-      .map(card => card.uid),
+      .map(card => card.id),
     squareCursor: undefined,
   }
 }
