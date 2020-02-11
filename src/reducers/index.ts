@@ -7,11 +7,12 @@ import {
   Creature,
   CreatureWithPartyOnBattleFieldElement,
   GameState,
+  GlobalPosition,
   MatrixPosition,
   NormalAttackContext,
   Party,
+  areGlobalPositionsEqual,
   findCreatureWithParty,
-  isBattleFieldMatrixPositionType,
   pickBattleFieldElementsWhereCreatureExists,
 } from '../utils'
 import {
@@ -32,11 +33,14 @@ export function touchBattleFieldElement(
   x: MatrixPosition['x']
 ): ApplicationState {
   const newBattlePage = produce(ensureBattlePage(state), draft => {
+    const touchedPosition: GlobalPosition = {
+      globalPlacementId: 'battleFieldMatrix',
+      y,
+      x,
+    }
     if (
       draft.game.squareCursor &&
-      isBattleFieldMatrixPositionType(draft.game.squareCursor.globalPosition) &&
-      y === draft.game.squareCursor.globalPosition.y &&
-      x === draft.game.squareCursor.globalPosition.x
+      areGlobalPositionsEqual(touchedPosition, draft.game.squareCursor.globalPosition)
     ) {
       draft.game.squareCursor = undefined;
     } else {

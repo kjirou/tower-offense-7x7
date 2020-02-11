@@ -44,7 +44,7 @@ type CardsOnYourHandPosition = {
   globalPlacementId: 'cardsOnYourHand',
 }
 
-type GlobalPosition = BattleFieldMatrixPosition | CardsOnYourHandPosition
+export type GlobalPosition = BattleFieldMatrixPosition | CardsOnYourHandPosition
 
 export function isBattleFieldMatrixPositionType(
   globalPosition: GlobalPosition
