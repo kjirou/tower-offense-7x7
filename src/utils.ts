@@ -18,17 +18,11 @@ export type Party = {
   creatureIds: Creature['id'][],
 }
 
-type CreatureCard = {
+export type Card = {
   creatureId: Creature['id'],
-  uid: string,
-}
-
-type SkillCard = {
   skillId: 'attack' | 'healing' | 'support',
   uid: string,
 }
-
-export type Card = CreatureCard | SkillCard;
 
 export type MatrixPosition = {
   x: number,
@@ -124,14 +118,6 @@ export function flattenMatrix<Element>(matrix: Element[][]): Element[] {
     });
   });
   return flattened;
-}
-
-export function isCreatureCardType(card: Card): card is CreatureCard {
-  return 'creatureId' in card;
-}
-
-export function isSkillCardType(card: Card): card is SkillCard {
-  return 'skillId' in card;
 }
 
 export function areGlobalMatrixPositionsEqual(a: GlobalMatrixPosition, b: GlobalMatrixPosition): boolean {

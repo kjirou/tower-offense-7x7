@@ -16,8 +16,6 @@ import {
   areGlobalMatrixPositionsEqual,
   determineRelationshipBetweenFactions,
   findCreatureWithParty,
-  isCreatureCardType,
-  isSkillCardType,
 } from './utils'
 import {
   proceedTurn,
@@ -51,17 +49,15 @@ function mapBattlePageStateToProps(
       uid: cardState.uid,
       label: '？',
     };
-
-    if (isSkillCardType(cardState)) {
-      const mapping: {
-        [key: string]: string,
-      } = {
-        attack: 'A',
-        healing: 'H',
-        support: 'S',
-      }
-      cardProps.label = mapping[cardState.skillId]
+    const skillMapping: {
+      [key: string]: string,
+    } = {
+      attack: 'A',
+      healing: 'H',
+      support: 'S',
     }
+
+    cardProps.label = skillMapping[cardState.skillId]
 
     return cardProps
   }

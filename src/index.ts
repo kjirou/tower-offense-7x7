@@ -82,22 +82,27 @@ function createInitialGameState(): GameState {
       {
         uid: 'card-1',
         skillId: 'attack',
+        creatureId: '',
       },
       {
         uid: 'card-2',
         skillId: 'healing',
+        creatureId: '',
       },
       {
         uid: 'card-3',
         skillId: 'attack',
+        creatureId: '',
       },
       {
         uid: 'card-4',
         skillId: 'attack',
+        creatureId: '',
       },
       {
         uid: 'card-5',
         skillId: 'support',
+        creatureId: '',
       },
     ],
   }

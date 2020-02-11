@@ -49,11 +49,11 @@ describe('reducers/index', function() {
                 squareCursor: undefined,
                 cardsOnYourHand: {
                   cards: [
-                    {uid: 'c1', skillId: 'attack'},
-                    {uid: 'c2', skillId: 'attack'},
-                    {uid: 'c3', skillId: 'attack'},
-                    {uid: 'c4', skillId: 'attack'},
-                    {uid: 'c5', skillId: 'attack'},
+                    {uid: 'c1', skillId: 'attack', creatureId: ''},
+                    {uid: 'c2', skillId: 'attack', creatureId: ''},
+                    {uid: 'c3', skillId: 'attack', creatureId: ''},
+                    {uid: 'c4', skillId: 'attack', creatureId: ''},
+                    {uid: 'c5', skillId: 'attack', creatureId: ''},
                   ],
                 },
               },
@@ -117,11 +117,11 @@ describe('reducers/index', function() {
                 squareCursor: undefined,
                 cardsOnYourHand: {
                   cards: [
-                    {uid: 'c1', skillId: 'attack'},
-                    {uid: 'c2', skillId: 'attack'},
-                    {uid: 'c3', skillId: 'attack'},
-                    {uid: 'c4', skillId: 'attack'},
-                    {uid: 'c5', skillId: 'attack'},
+                    {uid: 'c1', skillId: 'attack', creatureId: ''},
+                    {uid: 'c2', skillId: 'attack', creatureId: ''},
+                    {uid: 'c3', skillId: 'attack', creatureId: ''},
+                    {uid: 'c4', skillId: 'attack', creatureId: ''},
+                    {uid: 'c5', skillId: 'attack', creatureId: ''},
                   ],
                 },
               },
