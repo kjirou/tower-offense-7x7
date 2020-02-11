@@ -151,7 +151,8 @@ const Card: React.FC<CardProps> = (props) => {
 }
 
 type CardsOnYourHandProps = {
-  cards: [CardProps, CardProps, CardProps, CardProps, CardProps],
+  // 0 to 5 cards.
+  cards: CardProps[],
 }
 
 const CardsOnYourHand: React.FC<CardsOnYourHandProps> = (props) => {

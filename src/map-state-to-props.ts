@@ -15,9 +15,8 @@ import {
   Card as CardState,
   areGlobalMatrixPositionsEqual,
   determineRelationshipBetweenFactions,
+  findCardById,
   findCreatureWithParty,
-  isCreatureCardType,
-  isSkillCardType,
 } from './utils'
 import {
   proceedTurn,
@@ -40,32 +39,33 @@ const jobIdToDummyImage = (jobId: string): string => {
   return mapping[jobId] || '？'
 }
 
+function cardStateToProps(cardsState: CardState[], cardIdState: CardState['id']): CardProps {
+  const cardState = findCardById(cardsState, cardIdState)
+
+  const cardProps = {
+    uid: cardState.id,
+    label: '？',
+  };
+  const skillMapping: {
+    [key: string]: string,
+  } = {
+    attack: 'A',
+    healing: 'H',
+    support: 'S',
+  }
+
+  cardProps.label = skillMapping[cardState.skillCategoryId]
+
+  return cardProps
+}
+
+
 // TODO: Memoize some props for React.memo
 
 function mapBattlePageStateToProps(
   battlePageState: BattlePageState,
   setState: ReactSetState
 ): BattlePageProps {
-  function cardStateToProps(cardState: CardState): CardProps {
-    const cardProps = {
-      uid: cardState.uid,
-      label: '？',
-    };
-
-    if (isSkillCardType(cardState)) {
-      const mapping: {
-        [key: string]: string,
-      } = {
-        attack: 'A',
-        healing: 'H',
-        support: 'S',
-      }
-      cardProps.label = mapping[cardState.skillId]
-    }
-
-    return cardProps
-  }
-
   const gameState = battlePageState.game
 
   const battleFieldBoard: BattlePageProps['battleFieldBoard'] = gameState.battleFieldMatrix.map(rowState => {
@@ -97,20 +97,12 @@ function mapBattlePageStateToProps(
     })
   })
 
-  const cardsState = gameState.cardsOnYourHand.cards
-  const cardsOnYourHand: BattlePageProps['cardsOnYourHand'] = {
-    cards: [
-      cardStateToProps(cardsState[0]),
-      cardStateToProps(cardsState[1]),
-      cardStateToProps(cardsState[2]),
-      cardStateToProps(cardsState[3]),
-      cardStateToProps(cardsState[4]),
-    ],
-  }
-
   return {
     battleFieldBoard,
-    cardsOnYourHand,
+    cardsOnYourHand: {
+      cards: gameState.cardIdsOnYourHand
+        .map(cardIdState => cardStateToProps(gameState.cards, cardIdState)),
+    },
     handleClickNextButton: () => {
       setState(s => proceedTurn(s))
     },

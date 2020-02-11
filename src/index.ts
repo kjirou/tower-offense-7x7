@@ -6,9 +6,11 @@ import {
 } from './App'
 import {
   ApplicationState,
+  Card,
   Creature,
   GameState,
   Party,
+  SkillCategoryId,
   createBattleFieldMatrix,
 } from './utils'
 
@@ -68,6 +70,16 @@ const dummyAllCreatures: Creature[] = [
     attackPoint: 3,
   },
 ]
+const dummyAllCards: Card[] = dummyAllCreatures
+  .filter(e => /^ally-/.test(e.id))
+  .map((creature, index) => {
+    const skillCategoryId = ['attack', 'healing', 'support'][index % 3] as SkillCategoryId
+    return {
+      id: `card-${index + 1}`,
+      skillCategoryId,
+      creatureId: creature.id,
+    }
+  })
 
 function createInitialGameState(): GameState {
   const battleFieldMatrix = createBattleFieldMatrix(7, 7)
@@ -76,31 +88,6 @@ function createInitialGameState(): GameState {
   battleFieldMatrix[3][2].creatureId = dummyAllCreatures[4].id
   battleFieldMatrix[3][3].creatureId = dummyAllCreatures[6].id
   battleFieldMatrix[4][3].creatureId = dummyAllCreatures[8].id
-
-  const cardsOnYourHand: GameState['cardsOnYourHand'] = {
-    cards: [
-      {
-        uid: 'card-1',
-        skillId: 'attack',
-      },
-      {
-        uid: 'card-2',
-        skillId: 'healing',
-      },
-      {
-        uid: 'card-3',
-        skillId: 'attack',
-      },
-      {
-        uid: 'card-4',
-        skillId: 'attack',
-      },
-      {
-        uid: 'card-5',
-        skillId: 'support',
-      },
-    ],
-  }
 
   return {
     creatures: dummyAllCreatures,
@@ -119,7 +106,10 @@ function createInitialGameState(): GameState {
       },
     ],
     battleFieldMatrix,
-    cardsOnYourHand,
+    cards: dummyAllCards,
+    cardIdsOnYourHand: dummyAllCards
+      .slice(0, 5)
+      .map(card => card.id),
     squareCursor: undefined,
   }
 }

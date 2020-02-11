@@ -6,6 +6,8 @@ type FactionId = 'player' | 'computer'
 
 export type FactionRelationshipId = 'ally' | 'enemy'
 
+export type SkillCategoryId = 'attack' | 'healing' | 'support'
+
 export type Creature = {
   attackPoint: number,
   lifePoint: number,
@@ -18,17 +20,11 @@ export type Party = {
   creatureIds: Creature['id'][],
 }
 
-type CreatureCard = {
+export type Card = {
   creatureId: Creature['id'],
-  uid: string,
+  id: string,
+  skillCategoryId: SkillCategoryId,
 }
-
-type SkillCard = {
-  skillId: 'attack' | 'healing' | 'support',
-  uid: string,
-}
-
-export type Card = CreatureCard | SkillCard;
 
 export type MatrixPosition = {
   x: number,
@@ -84,9 +80,9 @@ export type NormalAttackContext = {
 
 export type GameState = {
   battleFieldMatrix: BattleFieldMatrix,
-  cardsOnYourHand: {
-    cards: [Card, Card, Card, Card, Card],
-  },
+  cards: Card[],
+  // TODO: Max 5 cards
+  cardIdsOnYourHand: Card['id'][],
   creatures: Creature[],
   parties: Party[],
   squareCursor: SquareCursor | undefined,
@@ -124,14 +120,6 @@ export function flattenMatrix<Element>(matrix: Element[][]): Element[] {
     });
   });
   return flattened;
-}
-
-export function isCreatureCardType(card: Card): card is CreatureCard {
-  return 'creatureId' in card;
-}
-
-export function isSkillCardType(card: Card): card is SkillCard {
-  return 'skillId' in card;
 }
 
 export function areGlobalMatrixPositionsEqual(a: GlobalMatrixPosition, b: GlobalMatrixPosition): boolean {
@@ -212,6 +200,15 @@ export function findBattleFieldElementByCreatureId(
     }
   }
   throw new Error('Can not find the `creatureId` on the `BattleFieldMatrix`.')
+}
+
+export function findCardById(cards: Card[], cardId: Card['id']): Card {
+  for (const card of cards) {
+    if (card.id === cardId) {
+      return card
+    }
+  }
+  throw new Error('Can not find the card.')
 }
 
 export function measureDistance(
