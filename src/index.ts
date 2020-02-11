@@ -1,16 +1,16 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import * as React from 'react'
+import * as ReactDOM from 'react-dom'
 
 import {
   App,
-} from './App';
+} from './App'
 import {
   ApplicationState,
   Creature,
   GameState,
   Party,
   createBattleFieldMatrix,
-} from './utils';
+} from './utils'
 
 const dummyAllCreatures: Creature[] = [
   {
@@ -49,20 +49,33 @@ const dummyAllCreatures: Creature[] = [
     lifePoint: 3,
     attackPoint: 3,
   },
-];
-const dummyAllCreatureIds = dummyAllCreatures.map(e => e.id);
-const dummyAllyParty: Party = {
-  factionId: 'player',
-  creatureIds: dummyAllCreatures
-    .filter(e => /^ally-/.test(e.id))
-    .map(e => e.id),
-};
+  {
+    id: 'enemy-1',
+    jobId: 'goblin',
+    lifePoint: 4,
+    attackPoint: 1,
+  },
+  {
+    id: 'enemy-2',
+    jobId: 'goblin',
+    lifePoint: 4,
+    attackPoint: 1,
+  },
+  {
+    id: 'enemy-3',
+    jobId: 'orc',
+    lifePoint: 8,
+    attackPoint: 3,
+  },
+]
 
 function createInitialGameState(): GameState {
   const battleFieldMatrix = createBattleFieldMatrix(7, 7)
 
-  battleFieldMatrix[2][1].creatureId = dummyAllCreatures[5].id;
-  battleFieldMatrix[3][2].creatureId = dummyAllCreatures[4].id;
+  battleFieldMatrix[2][1].creatureId = dummyAllCreatures[5].id
+  battleFieldMatrix[3][2].creatureId = dummyAllCreatures[4].id
+  battleFieldMatrix[3][3].creatureId = dummyAllCreatures[6].id
+  battleFieldMatrix[4][3].creatureId = dummyAllCreatures[8].id
 
   const cardsOnYourHand: GameState['cardsOnYourHand'] = {
     cards: [
@@ -87,17 +100,28 @@ function createInitialGameState(): GameState {
         skillId: 'support',
       },
     ],
-  };
+  }
 
   return {
     creatures: dummyAllCreatures,
     parties: [
-      dummyAllyParty,
+      {
+        factionId: 'player',
+        creatureIds: dummyAllCreatures
+          .filter(e => /^ally-/.test(e.id))
+          .map(e => e.id),
+      },
+      {
+        factionId: 'computer',
+        creatureIds: dummyAllCreatures
+          .filter(e => /^enemy-/.test(e.id))
+          .map(e => e.id),
+      },
     ],
     battleFieldMatrix,
     cardsOnYourHand,
     squareCursor: undefined,
-  };
+  }
 }
 
 function createInitialApplicationState(): ApplicationState {
@@ -107,18 +131,18 @@ function createInitialApplicationState(): ApplicationState {
         game: createInitialGameState(),
       },
     },
-  };
+  }
 }
 
 window.addEventListener('DOMContentLoaded', function() {
-  const appDestination = document.querySelector('.js-app');
+  const appDestination = document.querySelector('.js-app')
 
   if (appDestination) {
-    const applicationState = createInitialApplicationState();
+    const applicationState = createInitialApplicationState()
 
     ReactDOM.render(
       React.createElement(App, {initialState: applicationState}),
       appDestination
-    );
+    )
   }
-});
+})

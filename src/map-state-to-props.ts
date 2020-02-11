@@ -24,24 +24,26 @@ import {
 
 type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>;
 
+const jobIdToDummyImage = (jobId: string): string => {
+  const mapping: {
+    [key: string]: string,
+  } = {
+    archer: '弓',
+    fighter: '戦',
+    goblin: 'ゴ',
+    knight: '重',
+    mage: '魔',
+    orc: 'オ',
+  }
+  return mapping[jobId] || '？'
+}
+
 // TODO: Memoize some props for React.memo
 
 function mapBattlePageStateToProps(
   battlePageState: BattlePageState,
   setState: ReactSetState
 ): BattlePageProps {
-  function jobIdToDummyImage(jobId: string): string {
-    const mapping: {
-      [key: string]: string,
-    } = {
-      archer: '弓',
-      fighter: '戦',
-      knight: '重',
-      mage: '魔',
-    };
-    return mapping[jobId] || '？';
-  }
-
   function cardStateToProps(cardState: CardState): CardProps {
     const cardProps = {
       uid: cardState.uid,
