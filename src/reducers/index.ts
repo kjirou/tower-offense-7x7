@@ -50,7 +50,6 @@ export function touchBattleFieldElement(
   return Object.assign({}, state, {pages: {battle: newBattlePage}})
 }
 
-// TODO: state なのは自明だから、applicationState -> state で他は ~state 不要。
 export function proceedTurn(
   state: ApplicationState,
 ): ApplicationState {
