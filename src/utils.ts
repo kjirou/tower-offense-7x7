@@ -33,12 +33,14 @@ export type MatrixPosition = {
 
 type GlobalPlacementId = 'battleFieldMatrix' | 'cardsOnYourHand'
 
+// TODO: -> "BattleFieldElementPosition" ?
 type BattleFieldMatrixPosition = {
   globalPlacementId: 'battleFieldMatrix',
   x: MatrixPosition['x'],
   y: MatrixPosition['y'],
 }
 
+// TODO: -> "CardPosition" ?
 type CardsOnYourHandPosition = {
   // TODO: -> "creatureId" ?
   cardCreatureId: Creature['id'],
