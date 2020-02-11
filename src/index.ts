@@ -52,6 +52,12 @@ const dummyAllCreatures: Creature[] = [
     attackPoint: 3,
   },
   {
+    id: 'ally-7',
+    jobId: 'archer',
+    lifePoint: 6,
+    attackPoint: 3,
+  },
+  {
     id: 'enemy-1',
     jobId: 'goblin',
     lifePoint: 4,
@@ -84,10 +90,10 @@ const dummyAllCards: Card[] = dummyAllCreatures
 function createInitialGameState(): GameState {
   const battleFieldMatrix = createBattleFieldMatrix(7, 7)
 
-  battleFieldMatrix[2][1].creatureId = dummyAllCreatures[5].id
-  battleFieldMatrix[3][2].creatureId = dummyAllCreatures[4].id
-  battleFieldMatrix[3][3].creatureId = dummyAllCreatures[6].id
-  battleFieldMatrix[4][3].creatureId = dummyAllCreatures[8].id
+  battleFieldMatrix[3][2].creatureId = dummyAllCreatures[0].id
+  battleFieldMatrix[2][1].creatureId = dummyAllCreatures[3].id
+  battleFieldMatrix[3][3].creatureId = dummyAllCreatures[7].id
+  battleFieldMatrix[4][3].creatureId = dummyAllCreatures[9].id
 
   return {
     creatures: dummyAllCreatures,
