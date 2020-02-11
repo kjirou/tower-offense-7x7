@@ -53,6 +53,7 @@ function cardStateToProps(
     uid: cardState.creatureId,
     skillCategorySymbol: '？',
     creatureImage: jobIdToDummyImage(creatureState.jobId),
+    isSelected: false,
   };
 
 
