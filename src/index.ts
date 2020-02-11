@@ -52,6 +52,12 @@ const dummyAllCreatures: Creature[] = [
     attackPoint: 3,
   },
   {
+    id: 'ally-7',
+    jobId: 'archer',
+    lifePoint: 6,
+    attackPoint: 3,
+  },
+  {
     id: 'enemy-1',
     jobId: 'goblin',
     lifePoint: 4,
@@ -75,7 +81,6 @@ const dummyAllCards: Card[] = dummyAllCreatures
   .map((creature, index) => {
     const skillCategoryId = ['attack', 'healing', 'support'][index % 3] as SkillCategoryId
     return {
-      id: `card-${index + 1}`,
       skillCategoryId,
       creatureId: creature.id,
     }
@@ -84,10 +89,12 @@ const dummyAllCards: Card[] = dummyAllCreatures
 function createInitialGameState(): GameState {
   const battleFieldMatrix = createBattleFieldMatrix(7, 7)
 
-  battleFieldMatrix[2][1].creatureId = dummyAllCreatures[5].id
-  battleFieldMatrix[3][2].creatureId = dummyAllCreatures[4].id
-  battleFieldMatrix[3][3].creatureId = dummyAllCreatures[6].id
-  battleFieldMatrix[4][3].creatureId = dummyAllCreatures[8].id
+  // "ally-1"
+  battleFieldMatrix[3][2].creatureId = dummyAllCreatures[0].id
+  // "ally-4"
+  battleFieldMatrix[2][1].creatureId = dummyAllCreatures[3].id
+  battleFieldMatrix[3][3].creatureId = dummyAllCreatures[7].id
+  battleFieldMatrix[4][3].creatureId = dummyAllCreatures[9].id
 
   return {
     creatures: dummyAllCreatures,
@@ -107,9 +114,13 @@ function createInitialGameState(): GameState {
     ],
     battleFieldMatrix,
     cards: dummyAllCards,
-    cardIdsOnYourHand: dummyAllCards
-      .slice(0, 5)
-      .map(card => card.id),
+    cardCreatureIdsOnYourHand: [
+      'ally-2',
+      'ally-3',
+      'ally-5',
+      'ally-6',
+      'ally-7',
+    ],
     squareCursor: undefined,
   }
 }

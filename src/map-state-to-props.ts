@@ -13,9 +13,11 @@ import {
   ApplicationState,
   BattlePageState,
   Card as CardState,
+  Creature as CreatureState,
   areGlobalMatrixPositionsEqual,
   determineRelationshipBetweenFactions,
-  findCardById,
+  findCardByCreatureId,
+  findCreatureById,
   findCreatureWithParty,
 } from './utils'
 import {
@@ -39,22 +41,29 @@ const jobIdToDummyImage = (jobId: string): string => {
   return mapping[jobId] || '？'
 }
 
-function cardStateToProps(cardsState: CardState[], cardIdState: CardState['id']): CardProps {
-  const cardState = findCardById(cardsState, cardIdState)
+function cardStateToProps(
+  creaturesState: CreatureState[],
+  cardsState: CardState[],
+  creatureIdState: CreatureState['id']
+): CardProps {
+  const cardState = findCardByCreatureId(cardsState, creatureIdState)
+  const creatureState = findCreatureById(creaturesState, creatureIdState)
 
   const cardProps = {
-    uid: cardState.id,
-    label: '？',
+    uid: cardState.creatureId,
+    skillCategorySymbol: '？',
+    creatureImage: jobIdToDummyImage(creatureState.jobId),
   };
-  const skillMapping: {
+
+
+  const skillCategoryMapping: {
     [key: string]: string,
   } = {
     attack: 'A',
     healing: 'H',
     support: 'S',
   }
-
-  cardProps.label = skillMapping[cardState.skillCategoryId]
+  cardProps.skillCategorySymbol = skillCategoryMapping[cardState.skillCategoryId]
 
   return cardProps
 }
@@ -100,8 +109,8 @@ function mapBattlePageStateToProps(
   return {
     battleFieldBoard,
     cardsOnYourHand: {
-      cards: gameState.cardIdsOnYourHand
-        .map(cardIdState => cardStateToProps(gameState.cards, cardIdState)),
+      cards: gameState.cardCreatureIdsOnYourHand
+        .map(creatureIdState => cardStateToProps(gameState.creatures, gameState.cards, creatureIdState)),
     },
     handleClickNextButton: () => {
       setState(s => proceedTurn(s))
