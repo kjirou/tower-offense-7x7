@@ -14,7 +14,7 @@ import {
   BattlePageState,
   Card as CardState,
   Creature as CreatureState,
-  areGlobalMatrixPositionsEqual,
+  areGlobalPositionsEqual,
   determineRelationshipBetweenFactions,
   findCardByCreatureId,
   findCreatureById,
@@ -97,7 +97,7 @@ function mapBattlePageStateToProps(
         x: elementState.position.x,
         creature,
         isSelected: gameState.squareCursor
-          ? areGlobalMatrixPositionsEqual(elementState.globalPosition, gameState.squareCursor.globalPosition)
+          ? areGlobalPositionsEqual(elementState.globalPosition, gameState.squareCursor.globalPosition)
           : false,
         handleTouch({y, x}) {
           setState(s => touchBattleFieldElement(s, y, x))

@@ -4,7 +4,6 @@ import {describe, it} from 'mocha';
 import {
   BattleFieldElement,
   BattleFieldMatrix,
-  GlobalMatrixPosition,
   MatrixPosition,
   createBattleFieldMatrix,
   findBattleFieldElementByCreatureId,

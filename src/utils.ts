@@ -33,9 +33,7 @@ export type MatrixPosition = {
 
 export type MatrixId = 'battleField' | 'barrack';
 
-// TODO: 手札がマトリックスではなくなったことからマトリックスはひとつになったので
-//       GlobalPosition への変更が必要そう。
-export type GlobalMatrixPosition = {
+export type GlobalPosition = {
   matrixId: MatrixId,
   x: MatrixPosition['x'],
   y: MatrixPosition['y'],
@@ -43,7 +41,7 @@ export type GlobalMatrixPosition = {
 
 export type BattleFieldElement = {
   creatureId: Creature['id'] | undefined,
-  globalPosition: GlobalMatrixPosition,
+  globalPosition: GlobalPosition,
   position: MatrixPosition,
 }
 
@@ -66,8 +64,8 @@ export type CreatureWithPartyOnBattleFieldElement = {
 type SquareCursor = {
   globalPosition: {
     matrixId: 'battleField' | 'barrack',
-    x: GlobalMatrixPosition['x'],
-    y: GlobalMatrixPosition['y'],
+    x: GlobalPosition['x'],
+    y: GlobalPosition['y'],
   },
 };
 
@@ -122,7 +120,7 @@ export function flattenMatrix<Element>(matrix: Element[][]): Element[] {
   return flattened;
 }
 
-export function areGlobalMatrixPositionsEqual(a: GlobalMatrixPosition, b: GlobalMatrixPosition): boolean {
+export function areGlobalPositionsEqual(a: GlobalPosition, b: GlobalPosition): boolean {
   return a.matrixId === b.matrixId &&
     a.y === b.y &&
     a.x === b.x;
@@ -212,8 +210,8 @@ export function findCardByCreatureId(cards: Card[], creatureId: Creature['id']):
 }
 
 export function measureDistance(
-  from: MatrixPosition | GlobalMatrixPosition,
-  to: MatrixPosition | GlobalMatrixPosition
+  from: MatrixPosition | GlobalPosition,
+  to: MatrixPosition | GlobalPosition
 ): number {
   const deltaY = from.y > to.y ? from.y - to.y : to.y - from.y
   const deltaX = from.x > to.x ? from.x - to.x : to.x - from.x
@@ -222,7 +220,7 @@ export function measureDistance(
 
 export function findBattleFieldElementsByDistance(
   matrix: BattleFieldMatrix,
-  startPoint: MatrixPosition | GlobalMatrixPosition,
+  startPoint: MatrixPosition | GlobalPosition,
   distance: number
 ): BattleFieldElement[] {
   const elements: BattleFieldElement[] = []
