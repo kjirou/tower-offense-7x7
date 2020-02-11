@@ -40,6 +40,7 @@ type BattleFieldMatrixPosition = {
 }
 
 type CardsOnYourHandPosition = {
+  // TODO: -> "creatureId" ?
   cardCreatureId: Creature['id'],
   globalPlacementId: 'cardsOnYourHand',
 }

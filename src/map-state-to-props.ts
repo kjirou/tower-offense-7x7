@@ -23,6 +23,7 @@ import {
 import {
   proceedTurn,
   touchBattleFieldElement,
+  touchCardOnYourHand,
 } from './reducers'
 
 type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>
@@ -44,7 +45,8 @@ const jobIdToDummyImage = (jobId: string): string => {
 function cardStateToProps(
   creaturesState: CreatureState[],
   cardsState: CardState[],
-  creatureIdState: CreatureState['id']
+  creatureIdState: CreatureState['id'],
+  setState: ReactSetState
 ): CardProps {
   const cardState = findCardByCreatureId(cardsState, creatureIdState)
   const creatureState = findCreatureById(creaturesState, creatureIdState)
@@ -52,8 +54,12 @@ function cardStateToProps(
   const cardProps = {
     uid: cardState.creatureId,
     skillCategorySymbol: '？',
+    creatureId: cardState.creatureId,
     creatureImage: jobIdToDummyImage(creatureState.jobId),
     isSelected: false,
+    handleTouch: (creatureId: string) => {
+      setState(s => touchCardOnYourHand(s, creatureId))
+    },
   };
 
 
@@ -111,7 +117,8 @@ function mapBattlePageStateToProps(
     battleFieldBoard,
     cardsOnYourHand: {
       cards: gameState.cardCreatureIdsOnYourHand
-        .map(creatureIdState => cardStateToProps(gameState.creatures, gameState.cards, creatureIdState)),
+        .map(creatureIdState => cardStateToProps(
+          gameState.creatures, gameState.cards, creatureIdState, setState)),
     },
     handleClickNextButton: () => {
       setState(s => proceedTurn(s))

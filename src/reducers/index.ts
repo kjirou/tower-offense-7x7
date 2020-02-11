@@ -56,6 +56,32 @@ export function touchBattleFieldElement(
   return Object.assign({}, state, {pages: {battle: newBattlePage}})
 }
 
+export function touchCardOnYourHand(
+  state: ApplicationState,
+  creatureId: Creature['id'],
+): ApplicationState {
+  const newBattlePage = produce(ensureBattlePage(state), draft => {
+    const touchedPosition: GlobalPosition = {
+      globalPlacementId: 'cardsOnYourHand',
+      cardCreatureId: creatureId,
+    }
+    if (
+      draft.game.squareCursor &&
+      areGlobalPositionsEqual(touchedPosition, draft.game.squareCursor.globalPosition)
+    ) {
+      draft.game.squareCursor = undefined;
+    } else {
+      draft.game.squareCursor = {
+        globalPosition: {
+          globalPlacementId: 'cardsOnYourHand',
+          cardCreatureId: creatureId,
+        },
+      }
+    }
+  })
+  return Object.assign({}, state, {pages: {battle: newBattlePage}})
+}
+
 export function proceedTurn(
   state: ApplicationState,
 ): ApplicationState {
