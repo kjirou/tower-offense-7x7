@@ -89,7 +89,9 @@ const dummyAllCards: Card[] = dummyAllCreatures
 function createInitialGameState(): GameState {
   const battleFieldMatrix = createBattleFieldMatrix(7, 7)
 
+  // "ally-1"
   battleFieldMatrix[3][2].creatureId = dummyAllCreatures[0].id
+  // "ally-4"
   battleFieldMatrix[2][1].creatureId = dummyAllCreatures[3].id
   battleFieldMatrix[3][3].creatureId = dummyAllCreatures[7].id
   battleFieldMatrix[4][3].creatureId = dummyAllCreatures[9].id
@@ -112,9 +114,13 @@ function createInitialGameState(): GameState {
     ],
     battleFieldMatrix,
     cards: dummyAllCards,
-    cardCreatureIdsOnYourHand: dummyAllCards
-      .slice(0, 5)
-      .map(card => card.creatureId),
+    cardCreatureIdsOnYourHand: [
+      'ally-2',
+      'ally-3',
+      'ally-5',
+      'ally-6',
+      'ally-7',
+    ],
     squareCursor: undefined,
   }
 }
