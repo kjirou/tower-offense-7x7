@@ -7,9 +7,11 @@ import {
   Creature,
   CreatureWithPartyOnBattleFieldElement,
   GameState,
+  GlobalPosition,
   MatrixPosition,
   NormalAttackContext,
   Party,
+  areGlobalPositionsEqual,
   findCreatureWithParty,
   pickBattleFieldElementsWhereCreatureExists,
 } from '../utils'
@@ -31,18 +33,48 @@ export function touchBattleFieldElement(
   x: MatrixPosition['x']
 ): ApplicationState {
   const newBattlePage = produce(ensureBattlePage(state), draft => {
+    const touchedPosition: GlobalPosition = {
+      globalPlacementId: 'battleFieldMatrix',
+      y,
+      x,
+    }
     if (
       draft.game.squareCursor &&
-      y === draft.game.squareCursor.globalPosition.y &&
-      x === draft.game.squareCursor.globalPosition.x
+      areGlobalPositionsEqual(touchedPosition, draft.game.squareCursor.globalPosition)
     ) {
       draft.game.squareCursor = undefined;
     } else {
       draft.game.squareCursor = {
         globalPosition: {
-          matrixId: 'battleField',
+          globalPlacementId: 'battleFieldMatrix',
           y,
           x,
+        },
+      }
+    }
+  })
+  return Object.assign({}, state, {pages: {battle: newBattlePage}})
+}
+
+export function touchCardOnYourHand(
+  state: ApplicationState,
+  creatureId: Creature['id'],
+): ApplicationState {
+  const newBattlePage = produce(ensureBattlePage(state), draft => {
+    const touchedPosition: GlobalPosition = {
+      globalPlacementId: 'cardsOnYourHand',
+      cardCreatureId: creatureId,
+    }
+    if (
+      draft.game.squareCursor &&
+      areGlobalPositionsEqual(touchedPosition, draft.game.squareCursor.globalPosition)
+    ) {
+      draft.game.squareCursor = undefined;
+    } else {
+      draft.game.squareCursor = {
+        globalPosition: {
+          globalPlacementId: 'cardsOnYourHand',
+          cardCreatureId: creatureId,
         },
       }
     }

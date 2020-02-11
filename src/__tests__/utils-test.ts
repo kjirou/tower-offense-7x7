@@ -4,8 +4,8 @@ import {describe, it} from 'mocha';
 import {
   BattleFieldElement,
   BattleFieldMatrix,
-  GlobalMatrixPosition,
   MatrixPosition,
+  areGlobalPositionsEqual,
   createBattleFieldMatrix,
   findBattleFieldElementByCreatureId,
   findBattleFieldElementsByDistance,
@@ -86,6 +86,99 @@ describe('utils', function() {
       );
     });
   });
+
+  describe('areGlobalPositionsEqual', function() {
+    describe('a=BattleFieldMatrixPosition, b=BattleFieldMatrixPosition', function() {
+      it('can return true if args are equal', function() {
+        assert.strictEqual(
+          areGlobalPositionsEqual(
+            {
+              globalPlacementId: 'battleFieldMatrix',
+              y: 1,
+              x: 2,
+            },
+            {
+              globalPlacementId: 'battleFieldMatrix',
+              y: 1,
+              x: 2,
+            }
+          ),
+          true
+        )
+      })
+
+      it('can return false if args are not equal', function() {
+        assert.strictEqual(
+          areGlobalPositionsEqual(
+            {
+              globalPlacementId: 'battleFieldMatrix',
+              y: 1,
+              x: 2,
+            },
+            {
+              globalPlacementId: 'battleFieldMatrix',
+              y: 2,
+              x: 2,
+            }
+          ),
+          false
+        )
+      })
+    })
+
+    describe('a=CardsOnYourHandPosition, b=CardsOnYourHandPosition', function() {
+      it('can return true if args are equal', function() {
+        assert.strictEqual(
+          areGlobalPositionsEqual(
+            {
+              globalPlacementId: 'cardsOnYourHand',
+              cardCreatureId: 'foo',
+            },
+            {
+              globalPlacementId: 'cardsOnYourHand',
+              cardCreatureId: 'foo',
+            }
+          ),
+          true
+        )
+      })
+
+      it('can return false if args are not equal', function() {
+        assert.strictEqual(
+          areGlobalPositionsEqual(
+            {
+              globalPlacementId: 'cardsOnYourHand',
+              cardCreatureId: 'foo',
+            },
+            {
+              globalPlacementId: 'cardsOnYourHand',
+              cardCreatureId: 'bar',
+            }
+          ),
+          false
+        )
+      })
+    })
+
+    describe('a=BattleFieldMatrixPosition, b=CardsOnYourHandPosition', function() {
+      it('can return false', function() {
+        assert.strictEqual(
+          areGlobalPositionsEqual(
+            {
+              globalPlacementId: 'cardsOnYourHand',
+              cardCreatureId: 'foo',
+            },
+            {
+              globalPlacementId: 'battleFieldMatrix',
+              y: 1,
+              x: 2,
+            }
+          ),
+          false
+        )
+      })
+    })
+  })
 
   describe('findBattleFieldElementByCreatureId', function() {
     it('works', function() {

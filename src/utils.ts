@@ -31,19 +31,39 @@ export type MatrixPosition = {
   y: number,
 }
 
-export type MatrixId = 'battleField' | 'barrack';
+type GlobalPlacementId = 'battleFieldMatrix' | 'cardsOnYourHand'
 
-// TODO: 手札がマトリックスではなくなったことからマトリックスはひとつになったので
-//       GlobalPosition への変更が必要そう。
-export type GlobalMatrixPosition = {
-  matrixId: MatrixId,
+// TODO: -> "BattleFieldElementPosition" ?
+type BattleFieldMatrixPosition = {
+  globalPlacementId: 'battleFieldMatrix',
   x: MatrixPosition['x'],
   y: MatrixPosition['y'],
 }
 
+// TODO: -> "CardPosition" ?
+type CardsOnYourHandPosition = {
+  // TODO: -> "creatureId" ?
+  cardCreatureId: Creature['id'],
+  globalPlacementId: 'cardsOnYourHand',
+}
+
+export type GlobalPosition = BattleFieldMatrixPosition | CardsOnYourHandPosition
+
+export function isBattleFieldMatrixPositionType(
+  globalPosition: GlobalPosition
+): globalPosition is BattleFieldMatrixPosition  {
+  return globalPosition.globalPlacementId === 'battleFieldMatrix'
+}
+
+export function isCardsOnYourHandPositionType(
+  globalPosition: GlobalPosition
+): globalPosition is CardsOnYourHandPosition {
+  return globalPosition.globalPlacementId === 'cardsOnYourHand'
+}
+
 export type BattleFieldElement = {
   creatureId: Creature['id'] | undefined,
-  globalPosition: GlobalMatrixPosition,
+  globalPosition: GlobalPosition,
   position: MatrixPosition,
 }
 
@@ -60,16 +80,9 @@ export type CreatureWithPartyOnBattleFieldElement = {
   battleFieldElement: BattleFieldElement,
 }
 
-// A selection data of the square
-//
-// The "square" means an element of some matrices.
 type SquareCursor = {
-  globalPosition: {
-    matrixId: 'battleField' | 'barrack',
-    x: GlobalMatrixPosition['x'],
-    y: GlobalMatrixPosition['y'],
-  },
-};
+  globalPosition: GlobalPosition,
+}
 
 export type NormalAttackContext = {
   attackerCreatureId: Creature['id'],
@@ -122,10 +135,13 @@ export function flattenMatrix<Element>(matrix: Element[][]): Element[] {
   return flattened;
 }
 
-export function areGlobalMatrixPositionsEqual(a: GlobalMatrixPosition, b: GlobalMatrixPosition): boolean {
-  return a.matrixId === b.matrixId &&
-    a.y === b.y &&
-    a.x === b.x;
+export function areGlobalPositionsEqual(a: GlobalPosition, b: GlobalPosition): boolean {
+  if (isBattleFieldMatrixPositionType(a) && isBattleFieldMatrixPositionType(b)) {
+    return a.y === b.y && a.x === b.x
+  } else if (isCardsOnYourHandPositionType(a) && isCardsOnYourHandPositionType(b)) {
+    return a.cardCreatureId === b.cardCreatureId
+  }
+  return false
 }
 
 export function determineRelationshipBetweenFactions(a: FactionId, b: FactionId): FactionRelationshipId {
@@ -176,7 +192,7 @@ export function createBattleFieldMatrix(rowLength: number, columnLength: number)
           x,
         },
         globalPosition: {
-          matrixId: 'battleField',
+          globalPlacementId: 'battleFieldMatrix',
           y,
           x,
         },
@@ -211,10 +227,7 @@ export function findCardByCreatureId(cards: Card[], creatureId: Creature['id']):
   throw new Error('Can not find the card.')
 }
 
-export function measureDistance(
-  from: MatrixPosition | GlobalMatrixPosition,
-  to: MatrixPosition | GlobalMatrixPosition
-): number {
+export function measureDistance(from: MatrixPosition, to: MatrixPosition): number {
   const deltaY = from.y > to.y ? from.y - to.y : to.y - from.y
   const deltaX = from.x > to.x ? from.x - to.x : to.x - from.x
   return Math.abs(deltaY) + Math.abs(deltaX)
@@ -222,7 +235,7 @@ export function measureDistance(
 
 export function findBattleFieldElementsByDistance(
   matrix: BattleFieldMatrix,
-  startPoint: MatrixPosition | GlobalMatrixPosition,
+  startPoint: MatrixPosition,
   distance: number
 ): BattleFieldElement[] {
   const elements: BattleFieldElement[] = []

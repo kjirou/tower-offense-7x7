@@ -130,7 +130,10 @@ const SquareMonitor: React.FC<{}> = () => {
 }
 
 export type CardProps = {
+  creatureId: string,
   creatureImage: string,
+  handleTouch: (creatureId: string) => void,
+  isSelected: boolean,
   skillCategorySymbol: string,
   uid: string,
 }
@@ -144,7 +147,24 @@ const Card: React.FC<CardProps> = (props) => {
         height: '100px',
         backgroundColor: 'lime',
       }}
+      onTouchStart={() => {
+        props.handleTouch(props.creatureId)
+      }}
     >
+      {
+        props.isSelected
+          ? <div
+            style={{
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+              zIndex: 1,
+              border: 'solid 4px yellow',
+              opacity: '0.8',
+            }}
+          />
+          : null
+      }
       <div
         style={{
           position: 'absolute',

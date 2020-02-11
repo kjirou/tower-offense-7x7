@@ -14,7 +14,8 @@ import {
   BattlePageState,
   Card as CardState,
   Creature as CreatureState,
-  areGlobalMatrixPositionsEqual,
+  GlobalPosition as GlobalPositionState,
+  areGlobalPositionsEqual,
   determineRelationshipBetweenFactions,
   findCardByCreatureId,
   findCreatureById,
@@ -23,6 +24,7 @@ import {
 import {
   proceedTurn,
   touchBattleFieldElement,
+  touchCardOnYourHand,
 } from './reducers'
 
 type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>
@@ -41,10 +43,13 @@ const jobIdToDummyImage = (jobId: string): string => {
   return mapping[jobId] || '？'
 }
 
+// TODO: この関数不要でベタ書きで良さそう
 function cardStateToProps(
   creaturesState: CreatureState[],
   cardsState: CardState[],
-  creatureIdState: CreatureState['id']
+  creatureIdState: CreatureState['id'],
+  isSelected: boolean,
+  setState: ReactSetState
 ): CardProps {
   const cardState = findCardByCreatureId(cardsState, creatureIdState)
   const creatureState = findCreatureById(creaturesState, creatureIdState)
@@ -52,7 +57,12 @@ function cardStateToProps(
   const cardProps = {
     uid: cardState.creatureId,
     skillCategorySymbol: '？',
+    creatureId: cardState.creatureId,
     creatureImage: jobIdToDummyImage(creatureState.jobId),
+    isSelected,
+    handleTouch: (creatureId: string) => {
+      setState(s => touchCardOnYourHand(s, creatureId))
+    },
   };
 
 
@@ -97,7 +107,7 @@ function mapBattlePageStateToProps(
         x: elementState.position.x,
         creature,
         isSelected: gameState.squareCursor
-          ? areGlobalMatrixPositionsEqual(elementState.globalPosition, gameState.squareCursor.globalPosition)
+          ? areGlobalPositionsEqual(elementState.globalPosition, gameState.squareCursor.globalPosition)
           : false,
         handleTouch({y, x}) {
           setState(s => touchBattleFieldElement(s, y, x))
@@ -110,7 +120,16 @@ function mapBattlePageStateToProps(
     battleFieldBoard,
     cardsOnYourHand: {
       cards: gameState.cardCreatureIdsOnYourHand
-        .map(creatureIdState => cardStateToProps(gameState.creatures, gameState.cards, creatureIdState)),
+        .map(creatureIdState => {
+          const asGlobalPosition: GlobalPositionState = {
+            globalPlacementId: 'cardsOnYourHand',
+            cardCreatureId: creatureIdState,
+          }
+          const isSelected = gameState.squareCursor
+            ? areGlobalPositionsEqual(asGlobalPosition, gameState.squareCursor.globalPosition)
+            : false
+          return cardStateToProps(gameState.creatures, gameState.cards, creatureIdState, isSelected, setState)
+        }),
     },
     handleClickNextButton: () => {
       setState(s => proceedTurn(s))
