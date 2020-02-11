@@ -130,22 +130,47 @@ const SquareMonitor: React.FC<{}> = () => {
 }
 
 export type CardProps = {
-  label: string,
+  creatureImage: string,
+  skillCategorySymbol: string,
   uid: string,
 }
 
 const Card: React.FC<CardProps> = (props) => {
-  const style = {
-    width: '68px',
-    height: '100px',
-    backgroundColor: 'lime',
-  }
-
   return (
     <div
-      style={style}
+      style={{
+        position: 'relative',
+        width: '68px',
+        height: '100px',
+        backgroundColor: 'lime',
+      }}
     >
-      {props.label}
+      <div
+        style={{
+          position: 'absolute',
+          top: '2px',
+          right: '2px',
+          width: '100%',
+          height: '16px',
+          fontSize: '16px',
+          lineHeight: '16px',
+          textAlign: 'right',
+        }}
+      >
+        {props.skillCategorySymbol}
+      </div>
+      <div
+        style={{
+          position: 'absolute',
+          top: '28px',
+          left: '0',
+          width: '100%',
+          height: '24px',
+          lineHeight: '24px',
+          fontSize: '24px',
+          textAlign: 'center',
+        }}
+      >{props.creatureImage}</div>
     </div>
   )
 }
