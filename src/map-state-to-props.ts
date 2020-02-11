@@ -93,20 +93,11 @@ function mapBattlePageStateToProps(
     })
   })
 
-  const cardsState = gameState.cardsOnYourHand.cards
-  const cardsOnYourHand: BattlePageProps['cardsOnYourHand'] = {
-    cards: [
-      cardStateToProps(cardsState[0]),
-      cardStateToProps(cardsState[1]),
-      cardStateToProps(cardsState[2]),
-      cardStateToProps(cardsState[3]),
-      cardStateToProps(cardsState[4]),
-    ],
-  }
-
   return {
     battleFieldBoard,
-    cardsOnYourHand,
+    cardsOnYourHand: {
+      cards: gameState.cardsOnYourHand.cards.map(cardState => cardStateToProps(cardState)),
+    },
     handleClickNextButton: () => {
       setState(s => proceedTurn(s))
     },

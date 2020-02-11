@@ -79,7 +79,8 @@ export type NormalAttackContext = {
 export type GameState = {
   battleFieldMatrix: BattleFieldMatrix,
   cardsOnYourHand: {
-    cards: [Card, Card, Card, Card, Card],
+    // TODO: Max 5 cards
+    cards: Card[],
   },
   creatures: Creature[],
   parties: Party[],
