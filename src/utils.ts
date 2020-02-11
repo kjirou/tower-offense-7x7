@@ -33,10 +33,29 @@ export type MatrixPosition = {
 
 type GlobalPlacementId = 'battleFieldMatrix' | 'cardsOnYourHand'
 
-type GlobalPosition = {
-  globalPlacementId: GlobalPlacementId,
+type BattleFieldMatrixPosition = {
+  globalPlacementId: 'battleFieldMatrix',
   x: MatrixPosition['x'],
   y: MatrixPosition['y'],
+}
+
+type CardsOnYourHandPosition = {
+  cardCreatureId: Creature['id'],
+  globalPlacementId: 'cardsOnYourHand',
+}
+
+type GlobalPosition = BattleFieldMatrixPosition | CardsOnYourHandPosition
+
+export function isBattleFieldMatrixPositionType(
+  globalPosition: GlobalPosition
+): globalPosition is BattleFieldMatrixPosition  {
+  return globalPosition.globalPlacementId === 'battleFieldMatrix'
+}
+
+export function isCardsOnYourHandPositionType(
+  globalPosition: GlobalPosition
+): globalPosition is CardsOnYourHandPosition {
+  return globalPosition.globalPlacementId === 'cardsOnYourHand'
 }
 
 export type BattleFieldElement = {
@@ -117,9 +136,12 @@ export function flattenMatrix<Element>(matrix: Element[][]): Element[] {
 }
 
 export function areGlobalPositionsEqual(a: GlobalPosition, b: GlobalPosition): boolean {
-  return a.globalPlacementId === b.globalPlacementId &&
-    a.y === b.y &&
-    a.x === b.x;
+  if (isBattleFieldMatrixPositionType(a) && isBattleFieldMatrixPositionType(b)) {
+    return a.y === b.y && a.x === b.x
+  } else if (isCardsOnYourHandPositionType(a) && isCardsOnYourHandPositionType(b)) {
+    return a.cardCreatureId === b.cardCreatureId
+  }
+  return false
 }
 
 export function determineRelationshipBetweenFactions(a: FactionId, b: FactionId): FactionRelationshipId {

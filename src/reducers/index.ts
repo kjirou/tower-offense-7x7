@@ -11,6 +11,7 @@ import {
   NormalAttackContext,
   Party,
   findCreatureWithParty,
+  isBattleFieldMatrixPositionType,
   pickBattleFieldElementsWhereCreatureExists,
 } from '../utils'
 import {
@@ -33,6 +34,7 @@ export function touchBattleFieldElement(
   const newBattlePage = produce(ensureBattlePage(state), draft => {
     if (
       draft.game.squareCursor &&
+      isBattleFieldMatrixPositionType(draft.game.squareCursor.globalPosition) &&
       y === draft.game.squareCursor.globalPosition.y &&
       x === draft.game.squareCursor.globalPosition.x
     ) {
