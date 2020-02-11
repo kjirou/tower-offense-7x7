@@ -1,13 +1,13 @@
-import produce, {Draft} from 'immer';
-import * as React from 'react';
+import produce, {Draft} from 'immer'
+import * as React from 'react'
 
 import {
   Props as RootProps,
-} from './components/Root';
+} from './components/Root'
 import {
   CardProps,
   Props as BattlePageProps,
-} from './components/pages/BattlePage';
+} from './components/pages/BattlePage'
 import {
   ApplicationState,
   BattlePageState,
@@ -17,13 +17,13 @@ import {
   findCreatureWithParty,
   isCreatureCardType,
   isSkillCardType,
-} from './utils';
+} from './utils'
 import {
   proceedTurn,
   touchBattleFieldElement,
-} from './reducers';
+} from './reducers'
 
-type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>;
+type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>
 
 const jobIdToDummyImage = (jobId: string): string => {
   const mapping: {
@@ -58,14 +58,14 @@ function mapBattlePageStateToProps(
         attack: 'A',
         healing: 'H',
         support: 'S',
-      };
-      cardProps.label = mapping[cardState.skillId];
+      }
+      cardProps.label = mapping[cardState.skillId]
     }
 
-    return cardProps;
+    return cardProps
   }
 
-  const gameState = battlePageState.game;
+  const gameState = battlePageState.game
 
   const battleFieldBoard: BattlePageProps['battleFieldBoard'] = gameState.battleFieldMatrix.map(rowState => {
     return rowState.map(elementState => {
@@ -86,13 +86,13 @@ function mapBattlePageStateToProps(
           ? areGlobalMatrixPositionsEqual(elementState.globalPosition, gameState.squareCursor.globalPosition)
           : false,
         handleTouch({y, x}) {
-          setState(s => touchBattleFieldElement(s, y, x));
+          setState(s => touchBattleFieldElement(s, y, x))
         },
-      };
-    });
-  });
+      }
+    })
+  })
 
-  const cardsState = gameState.cardsOnYourHand.cards;
+  const cardsState = gameState.cardsOnYourHand.cards
   const cardsOnYourHand: BattlePageProps['cardsOnYourHand'] = {
     cards: [
       cardStateToProps(cardsState[0]),
@@ -101,7 +101,7 @@ function mapBattlePageStateToProps(
       cardStateToProps(cardsState[3]),
       cardStateToProps(cardsState[4]),
     ],
-  };
+  }
 
   return {
     battleFieldBoard,
@@ -109,7 +109,7 @@ function mapBattlePageStateToProps(
     handleClickNextButton: () => {
       setState(s => proceedTurn(s))
     },
-  };
+  }
 }
 
 export function mapStateToProps(
@@ -121,8 +121,8 @@ export function mapStateToProps(
       pages: {
         battle: mapBattlePageStateToProps(state.pages.battle, setState),
       },
-    };
+    }
   }
 
-  throw new Error('Received invalid state.');
+  throw new Error('Received invalid state.')
 }
