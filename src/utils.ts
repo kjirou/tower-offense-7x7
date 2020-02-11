@@ -205,10 +205,7 @@ export function findCardByCreatureId(cards: Card[], creatureId: Creature['id']):
   throw new Error('Can not find the card.')
 }
 
-export function measureDistance(
-  from: MatrixPosition | GlobalPosition,
-  to: MatrixPosition | GlobalPosition
-): number {
+export function measureDistance(from: MatrixPosition, to: MatrixPosition): number {
   const deltaY = from.y > to.y ? from.y - to.y : to.y - from.y
   const deltaX = from.x > to.x ? from.x - to.x : to.x - from.x
   return Math.abs(deltaY) + Math.abs(deltaX)
@@ -216,7 +213,7 @@ export function measureDistance(
 
 export function findBattleFieldElementsByDistance(
   matrix: BattleFieldMatrix,
-  startPoint: MatrixPosition | GlobalPosition,
+  startPoint: MatrixPosition,
   distance: number
 ): BattleFieldElement[] {
   const elements: BattleFieldElement[] = []
