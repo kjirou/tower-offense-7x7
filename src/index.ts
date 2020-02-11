@@ -89,36 +89,6 @@ function createInitialGameState(): GameState {
   battleFieldMatrix[3][3].creatureId = dummyAllCreatures[6].id
   battleFieldMatrix[4][3].creatureId = dummyAllCreatures[8].id
 
-  const cardsOnYourHand: GameState['cardsOnYourHand'] = {
-    cards: [
-      {
-        uid: 'card-1',
-        skillId: 'attack',
-        creatureId: '',
-      },
-      {
-        uid: 'card-2',
-        skillId: 'healing',
-        creatureId: '',
-      },
-      {
-        uid: 'card-3',
-        skillId: 'attack',
-        creatureId: '',
-      },
-      {
-        uid: 'card-4',
-        skillId: 'attack',
-        creatureId: '',
-      },
-      {
-        uid: 'card-5',
-        skillId: 'support',
-        creatureId: '',
-      },
-    ],
-  }
-
   return {
     creatures: dummyAllCreatures,
     parties: [
@@ -140,7 +110,6 @@ function createInitialGameState(): GameState {
     cardIdsOnYourHand: dummyAllCards
       .slice(0, 5)
       .map(card => card.uid),
-    cardsOnYourHand,
     squareCursor: undefined,
   }
 }

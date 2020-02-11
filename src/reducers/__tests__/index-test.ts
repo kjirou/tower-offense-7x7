@@ -49,15 +49,6 @@ describe('reducers/index', function() {
                 squareCursor: undefined,
                 cards: [],
                 cardIdsOnYourHand: [],
-                cardsOnYourHand: {
-                  cards: [
-                    {uid: 'c1', skillId: 'attack', creatureId: ''},
-                    {uid: 'c2', skillId: 'attack', creatureId: ''},
-                    {uid: 'c3', skillId: 'attack', creatureId: ''},
-                    {uid: 'c4', skillId: 'attack', creatureId: ''},
-                    {uid: 'c5', skillId: 'attack', creatureId: ''},
-                  ],
-                },
               },
             },
           },
@@ -119,15 +110,6 @@ describe('reducers/index', function() {
                 squareCursor: undefined,
                 cards: [],
                 cardIdsOnYourHand: [],
-                cardsOnYourHand: {
-                  cards: [
-                    {uid: 'c1', skillId: 'attack', creatureId: ''},
-                    {uid: 'c2', skillId: 'attack', creatureId: ''},
-                    {uid: 'c3', skillId: 'attack', creatureId: ''},
-                    {uid: 'c4', skillId: 'attack', creatureId: ''},
-                    {uid: 'c5', skillId: 'attack', creatureId: ''},
-                  ],
-                },
               },
             },
           },
