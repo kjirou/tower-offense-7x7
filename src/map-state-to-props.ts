@@ -67,14 +67,14 @@ function mapBattlePageStateToProps(
 
   const gameState = battlePageState.game;
 
-  const battleFieldBoard: BattlePageProps['battleFieldBoard'] = gameState.battleFieldMatrix.map(row => {
-    return row.map(element => {
-      const creatureWithPartyState = element.creatureId ?
-        findCreatureWithParty(gameState.creatures, gameState.parties, element.creatureId) : undefined
+  const battleFieldBoard: BattlePageProps['battleFieldBoard'] = gameState.battleFieldMatrix.map(rowState => {
+    return rowState.map(elementState => {
+      const creatureWithPartyState = elementState.creatureId ?
+        findCreatureWithParty(gameState.creatures, gameState.parties, elementState.creatureId) : undefined
 
       return {
-        y: element.position.y,
-        x: element.position.x,
+        y: elementState.position.y,
+        x: elementState.position.x,
         creature: creatureWithPartyState
           ? {
             image: jobIdToDummyImage(creatureWithPartyState.creature.jobId),
@@ -83,7 +83,7 @@ function mapBattlePageStateToProps(
           }
           : undefined,
         isSelected: gameState.squareCursor
-          ? areGlobalMatrixPositionsEqual(element.globalPosition, gameState.squareCursor.globalPosition)
+          ? areGlobalMatrixPositionsEqual(elementState.globalPosition, gameState.squareCursor.globalPosition)
           : false,
         handleTouch({y, x}) {
           setState(s => touchBattleFieldElement(s, y, x));
