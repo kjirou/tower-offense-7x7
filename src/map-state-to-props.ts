@@ -13,9 +13,10 @@ import {
   ApplicationState,
   BattlePageState,
   Card as CardState,
+  Creature as CreatureState,
   areGlobalMatrixPositionsEqual,
   determineRelationshipBetweenFactions,
-  findCardById,
+  findCardByCreatureId,
   findCreatureWithParty,
 } from './utils'
 import {
@@ -39,11 +40,11 @@ const jobIdToDummyImage = (jobId: string): string => {
   return mapping[jobId] || '？'
 }
 
-function cardStateToProps(cardsState: CardState[], cardIdState: CardState['id']): CardProps {
-  const cardState = findCardById(cardsState, cardIdState)
+function cardStateToProps(cardsState: CardState[], creatureIdState: CreatureState['id']): CardProps {
+  const cardState = findCardByCreatureId(cardsState, creatureIdState)
 
   const cardProps = {
-    uid: cardState.id,
+    uid: cardState.creatureId,
     label: '？',
   };
   const skillMapping: {
