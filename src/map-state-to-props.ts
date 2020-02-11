@@ -15,6 +15,7 @@ import {
   Card as CardState,
   areGlobalMatrixPositionsEqual,
   determineRelationshipBetweenFactions,
+  findCardById,
   findCreatureWithParty,
 } from './utils'
 import {
@@ -38,30 +39,33 @@ const jobIdToDummyImage = (jobId: string): string => {
   return mapping[jobId] || '？'
 }
 
+function cardStateToProps(cardsState: CardState[], cardIdState: CardState['uid']): CardProps {
+  const cardState = findCardById(cardsState, cardIdState)
+
+  const cardProps = {
+    uid: cardState.uid,
+    label: '？',
+  };
+  const skillMapping: {
+    [key: string]: string,
+  } = {
+    attack: 'A',
+    healing: 'H',
+    support: 'S',
+  }
+
+  cardProps.label = skillMapping[cardState.skillId]
+
+  return cardProps
+}
+
+
 // TODO: Memoize some props for React.memo
 
 function mapBattlePageStateToProps(
   battlePageState: BattlePageState,
   setState: ReactSetState
 ): BattlePageProps {
-  function cardStateToProps(cardState: CardState): CardProps {
-    const cardProps = {
-      uid: cardState.uid,
-      label: '？',
-    };
-    const skillMapping: {
-      [key: string]: string,
-    } = {
-      attack: 'A',
-      healing: 'H',
-      support: 'S',
-    }
-
-    cardProps.label = skillMapping[cardState.skillId]
-
-    return cardProps
-  }
-
   const gameState = battlePageState.game
 
   const battleFieldBoard: BattlePageProps['battleFieldBoard'] = gameState.battleFieldMatrix.map(rowState => {
@@ -96,7 +100,8 @@ function mapBattlePageStateToProps(
   return {
     battleFieldBoard,
     cardsOnYourHand: {
-      cards: gameState.cardsOnYourHand.cards.map(cardState => cardStateToProps(cardState)),
+      cards: gameState.cardIdsOnYourHand
+        .map(cardIdState => cardStateToProps(gameState.cards, cardIdState)),
     },
     handleClickNextButton: () => {
       setState(s => proceedTurn(s))

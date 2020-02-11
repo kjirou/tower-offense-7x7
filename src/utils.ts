@@ -207,6 +207,15 @@ export function findBattleFieldElementByCreatureId(
   throw new Error('Can not find the `creatureId` on the `BattleFieldMatrix`.')
 }
 
+export function findCardById(cards: Card[], cardId: Card['uid']): Card {
+  for (const card of cards) {
+    if (card.uid === cardId) {
+      return card
+    }
+  }
+  throw new Error('Can not find the card.')
+}
+
 export function measureDistance(
   from: MatrixPosition | GlobalMatrixPosition,
   to: MatrixPosition | GlobalMatrixPosition

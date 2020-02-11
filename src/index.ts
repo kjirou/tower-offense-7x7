@@ -138,7 +138,7 @@ function createInitialGameState(): GameState {
     battleFieldMatrix,
     cards: dummyAllCards,
     cardIdsOnYourHand: dummyAllCards
-      .slice(5)
+      .slice(0, 5)
       .map(card => card.uid),
     cardsOnYourHand,
     squareCursor: undefined,
