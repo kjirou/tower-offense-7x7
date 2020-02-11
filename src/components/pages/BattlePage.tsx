@@ -1,8 +1,12 @@
 import * as React from 'react'
 
-import {flattenMatrix} from '../../utils'
+import {
+  FactionRelationshipId,
+  flattenMatrix,
+} from '../../utils'
 
 type CreatureOnSquareProps = {
+  factionRelationshipId: FactionRelationshipId,
   image: string,
 }
 
@@ -63,6 +67,7 @@ const CreatureOnSquare: React.FC<CreatureOnSquareProps> = (props) => {
     lineHeight: '48px',
     fontSize: '24px',
     textAlign: 'center',
+    color: props.factionRelationshipId == 'ally' ? 'black' : 'red'
   }
 
   return <div style={style}>{props.image}</div>

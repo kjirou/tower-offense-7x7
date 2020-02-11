@@ -12,10 +12,11 @@ import {
   ApplicationState,
   BattlePageState,
   Card as CardState,
-  findCreatureById,
+  areGlobalMatrixPositionsEqual,
+  determineRelationshipBetweenFactions,
+  findCreatureWithParty,
   isCreatureCardType,
   isSkillCardType,
-  areGlobalMatrixPositionsEqual,
 } from './utils';
 import {
   proceedTurn,
@@ -68,15 +69,17 @@ function mapBattlePageStateToProps(
 
   const battleFieldBoard: BattlePageProps['battleFieldBoard'] = gameState.battleFieldMatrix.map(row => {
     return row.map(element => {
-      const creature = element.creatureId ?
-        findCreatureById(gameState.creatures, element.creatureId) : undefined;
+      const creatureWithPartyState = element.creatureId ?
+        findCreatureWithParty(gameState.creatures, gameState.parties, element.creatureId) : undefined
 
       return {
         y: element.position.y,
         x: element.position.x,
-        creature: creature
+        creature: creatureWithPartyState
           ? {
-            image: jobIdToDummyImage(creature.jobId),
+            image: jobIdToDummyImage(creatureWithPartyState.creature.jobId),
+            factionRelationshipId: determineRelationshipBetweenFactions(
+              'player', creatureWithPartyState.party.factionId),
           }
           : undefined,
         isSelected: gameState.squareCursor

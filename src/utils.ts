@@ -2,9 +2,9 @@
  * This file MUST NOT depend on any file in the project.
  */
 
-type FactionId = 'player' | 'computer';
+type FactionId = 'player' | 'computer'
 
-type FactionRelationshipId = 'ally' | 'enemy';
+export type FactionRelationshipId = 'ally' | 'enemy'
 
 export type Creature = {
   attackPoint: number,
