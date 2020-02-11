@@ -101,8 +101,8 @@ function mapBattlePageStateToProps(
   return {
     battleFieldBoard,
     cardsOnYourHand: {
-      cards: gameState.cardIdsOnYourHand
-        .map(cardIdState => cardStateToProps(gameState.cards, cardIdState)),
+      cards: gameState.cardCreatureIdsOnYourHand
+        .map(creatureIdState => cardStateToProps(gameState.cards, creatureIdState)),
     },
     handleClickNextButton: () => {
       setState(s => proceedTurn(s))
