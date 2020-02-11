@@ -31,10 +31,10 @@ export type MatrixPosition = {
   y: number,
 }
 
-export type MatrixId = 'battleField' | 'barrack';
+type GlobalPlacementId = 'battleFieldMatrix' | 'cardsOnYourHand'
 
-export type GlobalPosition = {
-  matrixId: MatrixId,
+type GlobalPosition = {
+  globalPlacementId: GlobalPlacementId,
   x: MatrixPosition['x'],
   y: MatrixPosition['y'],
 }
@@ -62,12 +62,8 @@ export type CreatureWithPartyOnBattleFieldElement = {
 //
 // The "square" means an element of some matrices.
 type SquareCursor = {
-  globalPosition: {
-    matrixId: 'battleField' | 'barrack',
-    x: GlobalPosition['x'],
-    y: GlobalPosition['y'],
-  },
-};
+  globalPosition: GlobalPosition,
+}
 
 export type NormalAttackContext = {
   attackerCreatureId: Creature['id'],
@@ -121,7 +117,7 @@ export function flattenMatrix<Element>(matrix: Element[][]): Element[] {
 }
 
 export function areGlobalPositionsEqual(a: GlobalPosition, b: GlobalPosition): boolean {
-  return a.matrixId === b.matrixId &&
+  return a.globalPlacementId === b.globalPlacementId &&
     a.y === b.y &&
     a.x === b.x;
 }
@@ -174,7 +170,7 @@ export function createBattleFieldMatrix(rowLength: number, columnLength: number)
           x,
         },
         globalPosition: {
-          matrixId: 'battleField',
+          globalPlacementId: 'battleFieldMatrix',
           y,
           x,
         },

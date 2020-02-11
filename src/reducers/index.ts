@@ -40,7 +40,7 @@ export function touchBattleFieldElement(
     } else {
       draft.game.squareCursor = {
         globalPosition: {
-          matrixId: 'battleField',
+          globalPlacementId: 'battleFieldMatrix',
           y,
           x,
         },
