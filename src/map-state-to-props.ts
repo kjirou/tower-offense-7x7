@@ -6,6 +6,7 @@ import {
 } from './components/Root'
 import {
   CardProps,
+  CreatureOnSquareProps,
   Props as BattlePageProps,
 } from './components/pages/BattlePage'
 import {
@@ -72,16 +73,20 @@ function mapBattlePageStateToProps(
       const creatureWithPartyState = elementState.creatureId ?
         findCreatureWithParty(gameState.creatures, gameState.parties, elementState.creatureId) : undefined
 
+      let creature: CreatureOnSquareProps | undefined = undefined
+      if (creatureWithPartyState) {
+        creature = {
+          image: jobIdToDummyImage(creatureWithPartyState.creature.jobId),
+          factionRelationshipId: determineRelationshipBetweenFactions(
+            'player', creatureWithPartyState.party.factionId),
+          lifePoint: creatureWithPartyState.creature.lifePoint.toString(),
+        }
+      }
+
       return {
         y: elementState.position.y,
         x: elementState.position.x,
-        creature: creatureWithPartyState
-          ? {
-            image: jobIdToDummyImage(creatureWithPartyState.creature.jobId),
-            factionRelationshipId: determineRelationshipBetweenFactions(
-              'player', creatureWithPartyState.party.factionId),
-          }
-          : undefined,
+        creature,
         isSelected: gameState.squareCursor
           ? areGlobalMatrixPositionsEqual(elementState.globalPosition, gameState.squareCursor.globalPosition)
           : false,

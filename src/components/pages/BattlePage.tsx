@@ -18,25 +18,43 @@ const MetaInformationBar: React.FC<{}> = () => {
   )
 }
 
-type CreatureOnSquareProps = {
+export type CreatureOnSquareProps = {
   factionRelationshipId: FactionRelationshipId,
   image: string,
+  lifePoint: string,
 }
 
 const CreatureOnSquare: React.FC<CreatureOnSquareProps> = (props) => {
-  const style = {
-    position: 'absolute',
-    top: '0',
-    left: '0',
-    width: '48px',
-    height: '48px',
-    lineHeight: '48px',
-    fontSize: '24px',
-    textAlign: 'center',
-    color: props.factionRelationshipId == 'ally' ? 'black' : 'red'
-  }
-
-  return <div style={style}>{props.image}</div>
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        top: '0',
+        left: '0',
+        width: '48px',
+        height: '48px',
+        color: props.factionRelationshipId == 'ally' ? 'black' : 'red'
+      }}
+    >
+      <div
+        style={{
+          lineHeight: '48px',
+          fontSize: '24px',
+          textAlign: 'center',
+        }}
+      >{props.image}</div>
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '0',
+          right: '1px',
+          fontSize: '10px',
+          lineHeight: '12px',
+          textAlign: 'right',
+        }}
+      >{props.lifePoint}</div>
+    </div>
+  )
 }
 
 type BattleFieldSquareProps = {
