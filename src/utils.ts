@@ -101,13 +101,13 @@ export type GameState = {
   squareCursor: SquareCursor | undefined,
 }
 
-export type BattlePageState = {
+export type BattlePage = {
   game: GameState,
-};
+}
 
 export type ApplicationState = {
   pages: {
-    battle?: BattlePageState,
+    battle?: BattlePage,
   },
 }
 

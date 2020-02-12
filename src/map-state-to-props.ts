@@ -11,7 +11,7 @@ import {
 } from './components/pages/BattlePage'
 import {
   ApplicationState,
-  BattlePageState,
+  BattlePage,
   GlobalPosition,
   SkillCategoryId,
   areGlobalPositionsEqual,
@@ -56,7 +56,7 @@ const skillCategoryIdToDummyImage = (skillCategoryId: SkillCategoryId): string =
 // TODO: Memoize some props for React.memo
 
 function mapBattlePageStateToProps(
-  battlePage: BattlePageState,
+  battlePage: BattlePage,
   setState: ReactSetState
 ): BattlePageProps {
   const game = battlePage.game
