@@ -33,31 +33,29 @@ export type MatrixPosition = {
 
 type GlobalPlacementId = 'battleFieldMatrix' | 'cardsOnYourHand'
 
-// TODO: -> "BattleFieldElementPosition" ?
-type BattleFieldMatrixPosition = {
+type BattleFieldElementPosition = {
   globalPlacementId: 'battleFieldMatrix',
   x: MatrixPosition['x'],
   y: MatrixPosition['y'],
 }
 
-// TODO: -> "CardPosition" ?
-type CardsOnYourHandPosition = {
+type CardOnYourHandPosition = {
   // TODO: -> "creatureId" ?
   cardCreatureId: Creature['id'],
   globalPlacementId: 'cardsOnYourHand',
 }
 
-export type GlobalPosition = BattleFieldMatrixPosition | CardsOnYourHandPosition
+export type GlobalPosition = BattleFieldElementPosition | CardOnYourHandPosition
 
 export function isBattleFieldMatrixPositionType(
   globalPosition: GlobalPosition
-): globalPosition is BattleFieldMatrixPosition  {
+): globalPosition is BattleFieldElementPosition  {
   return globalPosition.globalPlacementId === 'battleFieldMatrix'
 }
 
 export function isCardsOnYourHandPositionType(
   globalPosition: GlobalPosition
-): globalPosition is CardsOnYourHandPosition {
+): globalPosition is CardOnYourHandPosition {
   return globalPosition.globalPlacementId === 'cardsOnYourHand'
 }
 
