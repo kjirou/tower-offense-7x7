@@ -12,8 +12,6 @@ import {
 import {
   ApplicationState,
   BattlePageState,
-  Card as CardState,
-  Creature as CreatureState,
   GlobalPosition as GlobalPositionState,
   SkillCategoryId,
   areGlobalPositionsEqual,
