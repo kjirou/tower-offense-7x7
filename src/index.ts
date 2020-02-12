@@ -114,12 +114,12 @@ function createInitialGame(): Game {
     ],
     battleFieldMatrix,
     cards: dummyAllCards,
-    cardCreatureIdsOnYourHand: [
-      'ally-2',
-      'ally-3',
-      'ally-5',
-      'ally-6',
-      'ally-7',
+    cardsOnYourHand: [
+      {creatureId: 'ally-2'},
+      {creatureId: 'ally-3'},
+      {creatureId: 'ally-5'},
+      {creatureId: 'ally-6'},
+      {creatureId: 'ally-7'},
     ],
     squareCursor: undefined,
   }

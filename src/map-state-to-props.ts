@@ -90,8 +90,8 @@ function mapBattlePageStateToProps(
     })
   })
 
-  const cardsProps: CardProps[] = game.cardCreatureIdsOnYourHand
-    .map(creatureId => {
+  const cardsProps: CardProps[] = game.cardsOnYourHand
+    .map(({creatureId}) => {
       const card = findCardByCreatureId(game.cards, creatureId)
       const creature = findCreatureById(game.creatures, creatureId)
       const asGlobalPosition: GlobalPosition = {

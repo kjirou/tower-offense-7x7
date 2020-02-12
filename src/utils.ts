@@ -91,7 +91,9 @@ export type NormalAttackContext = {
 export type Game = {
   battleFieldMatrix: BattleFieldMatrix,
   // TODO: Max 5 cards
-  cardCreatureIdsOnYourHand: Creature['id'][],
+  cardsOnYourHand: {
+    creatureId: Creature['id'],
+  }[],
   cards: Card[],
   creatures: Creature[],
   parties: Party[],
