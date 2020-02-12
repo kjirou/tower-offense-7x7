@@ -6,7 +6,6 @@ import {
   BattlePage,
   Creature,
   CreatureWithPartyOnBattleFieldElement,
-  GameState,
   GlobalPosition,
   MatrixPosition,
   NormalAttackContext,

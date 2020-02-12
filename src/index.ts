@@ -8,7 +8,7 @@ import {
   ApplicationState,
   Card,
   Creature,
-  GameState,
+  Game,
   Party,
   SkillCategoryId,
   createBattleFieldMatrix,
@@ -86,7 +86,7 @@ const dummyAllCards: Card[] = dummyAllCreatures
     }
   })
 
-function createInitialGameState(): GameState {
+function createInitialGame(): Game {
   const battleFieldMatrix = createBattleFieldMatrix(7, 7)
 
   // "ally-1"
@@ -129,7 +129,7 @@ function createInitialApplicationState(): ApplicationState {
   return {
     pages: {
       battle: {
-        game: createInitialGameState(),
+        game: createInitialGame(),
       },
     },
   }

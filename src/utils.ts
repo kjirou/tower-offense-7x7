@@ -88,7 +88,7 @@ export type NormalAttackContext = {
   parties: Party[],
 }
 
-export type GameState = {
+export type Game = {
   battleFieldMatrix: BattleFieldMatrix,
   // TODO: Max 5 cards
   cardCreatureIdsOnYourHand: Creature['id'][],
@@ -99,7 +99,7 @@ export type GameState = {
 }
 
 export type BattlePage = {
-  game: GameState,
+  game: Game,
 }
 
 export type ApplicationState = {
