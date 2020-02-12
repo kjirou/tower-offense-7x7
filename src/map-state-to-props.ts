@@ -15,6 +15,7 @@ import {
   Card as CardState,
   Creature as CreatureState,
   GlobalPosition as GlobalPositionState,
+  SkillCategoryId,
   areGlobalPositionsEqual,
   determineRelationshipBetweenFactions,
   findCardByCreatureId,
@@ -43,29 +44,7 @@ const jobIdToDummyImage = (jobId: string): string => {
   return mapping[jobId] || '？'
 }
 
-// TODO: この関数不要でベタ書きで良さそう
-function cardStateToProps(
-  creaturesState: CreatureState[],
-  cardsState: CardState[],
-  creatureIdState: CreatureState['id'],
-  isSelected: boolean,
-  setState: ReactSetState
-): CardProps {
-  const cardState = findCardByCreatureId(cardsState, creatureIdState)
-  const creatureState = findCreatureById(creaturesState, creatureIdState)
-
-  const cardProps = {
-    uid: cardState.creatureId,
-    skillCategorySymbol: '？',
-    creatureId: cardState.creatureId,
-    creatureImage: jobIdToDummyImage(creatureState.jobId),
-    isSelected,
-    handleTouch: (creatureId: string) => {
-      setState(s => touchCardOnYourHand(s, creatureId))
-    },
-  };
-
-
+const skillCategoryIdToDummyImage = (skillCategoryId: SkillCategoryId): string => {
   const skillCategoryMapping: {
     [key: string]: string,
   } = {
@@ -73,11 +52,8 @@ function cardStateToProps(
     healing: 'H',
     support: 'S',
   }
-  cardProps.skillCategorySymbol = skillCategoryMapping[cardState.skillCategoryId]
-
-  return cardProps
+  return skillCategoryMapping[skillCategoryId]
 }
-
 
 // TODO: Memoize some props for React.memo
 
@@ -116,20 +92,33 @@ function mapBattlePageStateToProps(
     })
   })
 
+  const cardsProps: CardProps[] = game.cardCreatureIdsOnYourHand
+    .map(creatureId => {
+      const card = findCardByCreatureId(game.cards, creatureId)
+      const creature = findCreatureById(game.creatures, creatureId)
+      const asGlobalPosition: GlobalPositionState = {
+        globalPlacementId: 'cardsOnYourHand',
+        cardCreatureId: creatureId,
+      }
+      const isSelected = game.squareCursor
+        ? areGlobalPositionsEqual(asGlobalPosition, game.squareCursor.globalPosition)
+        : false
+      return {
+        uid: card.creatureId,
+        creatureId,
+        creatureImage: jobIdToDummyImage(creature.jobId),
+        skillCategorySymbol: skillCategoryIdToDummyImage(card.skillCategoryId),
+        isSelected,
+        handleTouch: (creatureId: string) => {
+          setState(s => touchCardOnYourHand(s, creatureId))
+        },
+      }
+    })
+
   return {
     battleFieldBoard,
     cardsOnYourHand: {
-      cards: game.cardCreatureIdsOnYourHand
-        .map(creatureId => {
-          const asGlobalPosition: GlobalPositionState = {
-            globalPlacementId: 'cardsOnYourHand',
-            cardCreatureId: creatureId,
-          }
-          const isSelected = game.squareCursor
-            ? areGlobalPositionsEqual(asGlobalPosition, game.squareCursor.globalPosition)
-            : false
-          return cardStateToProps(game.creatures, game.cards, creatureId, isSelected, setState)
-        }),
+      cards: cardsProps
     },
     handleClickNextButton: () => {
       setState(s => proceedTurn(s))
