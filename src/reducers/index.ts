@@ -3,7 +3,7 @@ import produce from 'immer'
 import {
   ApplicationState,
   BattleFieldMatrix,
-  BattlePageState,
+  BattlePage,
   Creature,
   CreatureWithPartyOnBattleFieldElement,
   GameState,
@@ -19,7 +19,7 @@ import {
   invokeNormalAttack,
 } from './game/battle-process'
 
-const ensureBattlePage = (state: ApplicationState): BattlePageState => {
+const ensureBattlePage = (state: ApplicationState): BattlePage => {
   const battlePage = state.pages.battle
   if (battlePage === undefined) {
     throw new Error('`state.pages.battle` does not exist.')

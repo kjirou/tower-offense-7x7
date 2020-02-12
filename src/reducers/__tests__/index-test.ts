@@ -3,7 +3,7 @@ import {describe, it} from 'mocha'
 
 import {
   ApplicationState,
-  BattlePageState,
+  BattlePage,
   createBattleFieldMatrix,
 } from '../../utils'
 import {
@@ -57,9 +57,9 @@ describe('reducers/index', function() {
 
       it('can update the result that creatures attack to each other', function() {
         const state = createApplicationState()
-        const battlePage = state.pages.battle as BattlePageState
+        const battlePage = state.pages.battle as BattlePage
         const newState = proceedTurn(state)
-        const newBattlePage = newState.pages.battle as BattlePageState
+        const newBattlePage = newState.pages.battle as BattlePage
         assert.notStrictEqual(battlePage.game.creatures[0].lifePoint, newBattlePage.game.creatures[0].lifePoint)
         assert.strictEqual(
           battlePage.game.creatures[0].lifePoint > newBattlePage.game.creatures[0].lifePoint,
@@ -118,9 +118,9 @@ describe('reducers/index', function() {
 
       it('can update the result that creatures does not attack to each other', function() {
         const state = createApplicationState()
-        const battlePage = state.pages.battle as BattlePageState
+        const battlePage = state.pages.battle as BattlePage
         const newState = proceedTurn(state)
-        const newBattlePage = newState.pages.battle as BattlePageState
+        const newBattlePage = newState.pages.battle as BattlePage
         assert.strictEqual(battlePage.game.creatures[0].lifePoint, newBattlePage.game.creatures[0].lifePoint)
         assert.strictEqual(battlePage.game.creatures[1].lifePoint, newBattlePage.game.creatures[1].lifePoint)
       })
