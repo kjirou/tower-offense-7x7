@@ -12,7 +12,7 @@ import {
 import {
   ApplicationState,
   BattlePageState,
-  GlobalPosition as GlobalPositionState,
+  GlobalPosition,
   SkillCategoryId,
   areGlobalPositionsEqual,
   determineRelationshipBetweenFactions,
@@ -94,7 +94,7 @@ function mapBattlePageStateToProps(
     .map(creatureId => {
       const card = findCardByCreatureId(game.cards, creatureId)
       const creature = findCreatureById(game.creatures, creatureId)
-      const asGlobalPosition: GlobalPositionState = {
+      const asGlobalPosition: GlobalPosition = {
         globalPlacementId: 'cardsOnYourHand',
         cardCreatureId: creatureId,
       }
