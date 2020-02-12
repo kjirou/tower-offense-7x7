@@ -80,8 +80,8 @@ function mapBattlePageStateToProps(
         y: element.position.y,
         x: element.position.x,
         creature: creatureProps,
-        isSelected: game.squareCursor
-          ? areGlobalPositionsEqual(element.globalPosition, game.squareCursor.globalPosition)
+        isSelected: game.cursor
+          ? areGlobalPositionsEqual(element.globalPosition, game.cursor.globalPosition)
           : false,
         handleTouch({y, x}) {
           setState(s => touchBattleFieldElement(s, y, x))
@@ -98,8 +98,8 @@ function mapBattlePageStateToProps(
         globalPlacementId: 'cardsOnYourHand',
         creatureId,
       }
-      const isSelected = game.squareCursor
-        ? areGlobalPositionsEqual(asGlobalPosition, game.squareCursor.globalPosition)
+      const isSelected = game.cursor
+        ? areGlobalPositionsEqual(asGlobalPosition, game.cursor.globalPosition)
         : false
       return {
         uid: card.creatureId,

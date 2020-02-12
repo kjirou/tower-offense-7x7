@@ -38,12 +38,12 @@ export function touchBattleFieldElement(
       x,
     }
     if (
-      draft.game.squareCursor &&
-      areGlobalPositionsEqual(touchedPosition, draft.game.squareCursor.globalPosition)
+      draft.game.cursor &&
+      areGlobalPositionsEqual(touchedPosition, draft.game.cursor.globalPosition)
     ) {
-      draft.game.squareCursor = undefined;
+      draft.game.cursor = undefined;
     } else {
-      draft.game.squareCursor = {
+      draft.game.cursor = {
         globalPosition: {
           globalPlacementId: 'battleFieldMatrix',
           y,
@@ -65,12 +65,12 @@ export function touchCardOnYourHand(
       creatureId,
     }
     if (
-      draft.game.squareCursor &&
-      areGlobalPositionsEqual(touchedPosition, draft.game.squareCursor.globalPosition)
+      draft.game.cursor &&
+      areGlobalPositionsEqual(touchedPosition, draft.game.cursor.globalPosition)
     ) {
-      draft.game.squareCursor = undefined;
+      draft.game.cursor = undefined;
     } else {
-      draft.game.squareCursor = {
+      draft.game.cursor = {
         globalPosition: {
           globalPlacementId: 'cardsOnYourHand',
           creatureId,

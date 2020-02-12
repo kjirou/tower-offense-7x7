@@ -77,7 +77,7 @@ export type CreatureWithPartyOnBattleFieldElement = {
   battleFieldElement: BattleFieldElement,
 }
 
-type SquareCursor = {
+type Cursor = {
   globalPosition: GlobalPosition,
 }
 
@@ -96,8 +96,8 @@ export type Game = {
   }[],
   cards: Card[],
   creatures: Creature[],
+  cursor: Cursor | undefined,
   parties: Party[],
-  squareCursor: SquareCursor | undefined,
 }
 
 export type BattlePage = {

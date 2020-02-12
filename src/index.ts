@@ -121,7 +121,7 @@ function createInitialGame(): Game {
       {creatureId: 'ally-6'},
       {creatureId: 'ally-7'},
     ],
-    squareCursor: undefined,
+    cursor: undefined,
   }
 }
 
