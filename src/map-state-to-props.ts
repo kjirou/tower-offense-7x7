@@ -61,14 +61,14 @@ function mapBattlePageStateToProps(
 ): BattlePageProps {
   const game = battlePage.game
 
-  const battleFieldBoard: BattlePageProps['battleFieldBoard'] = game.battleFieldMatrix.map(row => {
+  const battleFieldBoardProps: BattlePageProps['battleFieldBoard'] = game.battleFieldMatrix.map(row => {
     return row.map(element => {
       const creatureWithParty = element.creatureId ?
         findCreatureWithParty(game.creatures, game.parties, element.creatureId) : undefined
 
-      let creature: CreatureOnSquareProps | undefined = undefined
+      let creatureProps: CreatureOnSquareProps | undefined = undefined
       if (creatureWithParty) {
-        creature = {
+        creatureProps = {
           image: jobIdToDummyImage(creatureWithParty.creature.jobId),
           factionRelationshipId: determineRelationshipBetweenFactions(
             'player', creatureWithParty.party.factionId),
@@ -79,7 +79,7 @@ function mapBattlePageStateToProps(
       return {
         y: element.position.y,
         x: element.position.x,
-        creature,
+        creature: creatureProps,
         isSelected: game.squareCursor
           ? areGlobalPositionsEqual(element.globalPosition, game.squareCursor.globalPosition)
           : false,
@@ -114,7 +114,7 @@ function mapBattlePageStateToProps(
     })
 
   return {
-    battleFieldBoard,
+    battleFieldBoard: battleFieldBoardProps,
     cardsOnYourHand: {
       cards: cardsProps
     },
