@@ -96,7 +96,7 @@ function mapBattlePageStateToProps(
       const creature = findCreatureById(game.creatures, creatureId)
       const asGlobalPosition: GlobalPosition = {
         globalPlacementId: 'cardsOnYourHand',
-        cardCreatureId: creatureId,
+        creatureId,
       }
       const isSelected = game.squareCursor
         ? areGlobalPositionsEqual(asGlobalPosition, game.squareCursor.globalPosition)

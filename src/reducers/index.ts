@@ -63,7 +63,7 @@ export function touchCardOnYourHand(
   const newBattlePage = produce(ensureBattlePage(state), draft => {
     const touchedPosition: GlobalPosition = {
       globalPlacementId: 'cardsOnYourHand',
-      cardCreatureId: creatureId,
+      creatureId,
     }
     if (
       draft.game.squareCursor &&
@@ -74,7 +74,7 @@ export function touchCardOnYourHand(
       draft.game.squareCursor = {
         globalPosition: {
           globalPlacementId: 'cardsOnYourHand',
-          cardCreatureId: creatureId,
+          creatureId,
         },
       }
     }

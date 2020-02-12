@@ -40,8 +40,7 @@ type BattleFieldElementPosition = {
 }
 
 type CardOnYourHandPosition = {
-  // TODO: -> "creatureId" ?
-  cardCreatureId: Creature['id'],
+  creatureId: Creature['id'],
   globalPlacementId: 'cardsOnYourHand',
 }
 
@@ -137,7 +136,7 @@ export function areGlobalPositionsEqual(a: GlobalPosition, b: GlobalPosition): b
   if (isBattleFieldMatrixPositionType(a) && isBattleFieldMatrixPositionType(b)) {
     return a.y === b.y && a.x === b.x
   } else if (isCardsOnYourHandPositionType(a) && isCardsOnYourHandPositionType(b)) {
-    return a.cardCreatureId === b.cardCreatureId
+    return a.creatureId === b.creatureId
   }
   return false
 }

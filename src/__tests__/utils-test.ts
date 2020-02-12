@@ -132,11 +132,11 @@ describe('utils', function() {
           areGlobalPositionsEqual(
             {
               globalPlacementId: 'cardsOnYourHand',
-              cardCreatureId: 'foo',
+              creatureId: 'foo',
             },
             {
               globalPlacementId: 'cardsOnYourHand',
-              cardCreatureId: 'foo',
+              creatureId: 'foo',
             }
           ),
           true
@@ -148,11 +148,11 @@ describe('utils', function() {
           areGlobalPositionsEqual(
             {
               globalPlacementId: 'cardsOnYourHand',
-              cardCreatureId: 'foo',
+              creatureId: 'foo',
             },
             {
               globalPlacementId: 'cardsOnYourHand',
-              cardCreatureId: 'bar',
+              creatureId: 'bar',
             }
           ),
           false
@@ -166,7 +166,7 @@ describe('utils', function() {
           areGlobalPositionsEqual(
             {
               globalPlacementId: 'cardsOnYourHand',
-              cardCreatureId: 'foo',
+              creatureId: 'foo',
             },
             {
               globalPlacementId: 'battleFieldMatrix',
