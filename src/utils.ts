@@ -33,31 +33,28 @@ export type MatrixPosition = {
 
 type GlobalPlacementId = 'battleFieldMatrix' | 'cardsOnYourHand'
 
-// TODO: -> "BattleFieldElementPosition" ?
-type BattleFieldMatrixPosition = {
+type BattleFieldElementPosition = {
   globalPlacementId: 'battleFieldMatrix',
   x: MatrixPosition['x'],
   y: MatrixPosition['y'],
 }
 
-// TODO: -> "CardPosition" ?
-type CardsOnYourHandPosition = {
-  // TODO: -> "creatureId" ?
-  cardCreatureId: Creature['id'],
+type CardOnYourHandPosition = {
+  creatureId: Creature['id'],
   globalPlacementId: 'cardsOnYourHand',
 }
 
-export type GlobalPosition = BattleFieldMatrixPosition | CardsOnYourHandPosition
+export type GlobalPosition = BattleFieldElementPosition | CardOnYourHandPosition
 
 export function isBattleFieldMatrixPositionType(
   globalPosition: GlobalPosition
-): globalPosition is BattleFieldMatrixPosition  {
+): globalPosition is BattleFieldElementPosition  {
   return globalPosition.globalPlacementId === 'battleFieldMatrix'
 }
 
 export function isCardsOnYourHandPositionType(
   globalPosition: GlobalPosition
-): globalPosition is CardsOnYourHandPosition {
+): globalPosition is CardOnYourHandPosition {
   return globalPosition.globalPlacementId === 'cardsOnYourHand'
 }
 
@@ -80,7 +77,7 @@ export type CreatureWithPartyOnBattleFieldElement = {
   battleFieldElement: BattleFieldElement,
 }
 
-type SquareCursor = {
+type Cursor = {
   globalPosition: GlobalPosition,
 }
 
@@ -91,18 +88,20 @@ export type NormalAttackContext = {
   parties: Party[],
 }
 
-export type GameState = {
+export type Game = {
   battleFieldMatrix: BattleFieldMatrix,
   // TODO: Max 5 cards
-  cardCreatureIdsOnYourHand: Creature['id'][],
+  cardsOnYourHand: {
+    creatureId: Creature['id'],
+  }[],
   cards: Card[],
   creatures: Creature[],
+  cursor: Cursor | undefined,
   parties: Party[],
-  squareCursor: SquareCursor | undefined,
 }
 
 export type BattlePage = {
-  game: GameState,
+  game: Game,
 }
 
 export type ApplicationState = {
@@ -139,7 +138,7 @@ export function areGlobalPositionsEqual(a: GlobalPosition, b: GlobalPosition): b
   if (isBattleFieldMatrixPositionType(a) && isBattleFieldMatrixPositionType(b)) {
     return a.y === b.y && a.x === b.x
   } else if (isCardsOnYourHandPositionType(a) && isCardsOnYourHandPositionType(b)) {
-    return a.cardCreatureId === b.cardCreatureId
+    return a.creatureId === b.creatureId
   }
   return false
 }
