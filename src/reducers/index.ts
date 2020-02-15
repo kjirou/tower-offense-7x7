@@ -21,7 +21,7 @@ import {
 } from '../utils'
 import {
   invokeNormalAttack,
-} from './game/battle-process'
+} from './game'
 
 export function selectBattleFieldElement(
   state: ApplicationState,
