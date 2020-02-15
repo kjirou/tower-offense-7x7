@@ -46,6 +46,7 @@ type CardOnYourHandPosition = {
 
 export type GlobalPosition = BattleFieldElementPosition | CardOnYourHandPosition
 
+// TODO: function -> const
 export function isBattleFieldMatrixPositionType(
   globalPosition: GlobalPosition
 ): globalPosition is BattleFieldElementPosition  {
@@ -226,6 +227,10 @@ export function findCardByCreatureId(cards: Card[], creatureId: Creature['id']):
   throw new Error('Can not find the card.')
 }
 
+export const findCardsByCreatureIds = (cards: Card[], creatureIds: Creature['id'][]): Card[] => {
+  return creatureIds.map(creatureId => findCardByCreatureId(cards, creatureId))
+}
+
 export function measureDistance(from: MatrixPosition, to: MatrixPosition): number {
   const deltaY = from.y > to.y ? from.y - to.y : to.y - from.y
   const deltaX = from.x > to.x ? from.x - to.x : to.x - from.x
@@ -260,4 +265,17 @@ export function pickBattleFieldElementsWhereCreatureExists(
     }
   }
   return elements
+}
+
+export const findCardUnderCursor = (cards: Card[], cursor: Cursor): Card | undefined => {
+  for (const card of cards) {
+    const position: GlobalPosition = {
+      globalPlacementId: 'cardsOnYourHand',
+      creatureId: card.creatureId,
+    }
+    if (areGlobalPositionsEqual(position, cursor.globalPosition)) {
+      return card
+    }
+  }
+  return undefined
 }
