@@ -26,7 +26,7 @@ const ensureBattlePage = (state: ApplicationState): BattlePage => {
   return battlePage
 }
 
-export function touchBattleFieldElement(
+export function selectBattleFieldElement(
   state: ApplicationState,
   y: MatrixPosition['y'],
   x: MatrixPosition['x']
@@ -55,7 +55,7 @@ export function touchBattleFieldElement(
   return Object.assign({}, state, {pages: {battle: newBattlePage}})
 }
 
-export function touchCardOnYourHand(
+export function selectCardOnYourHand(
   state: ApplicationState,
   creatureId: Creature['id'],
 ): ApplicationState {
