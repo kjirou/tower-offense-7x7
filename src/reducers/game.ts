@@ -11,7 +11,7 @@ import {
   findBattleFieldElementByCreatureId,
   findBattleFieldElementsByDistance,
   findCreatureWithParty,
-} from '../../utils';
+} from '../utils';
 
 export function invokeNormalAttack(context: NormalAttackContext): NormalAttackContext {
   const attackerWithParty = findCreatureWithParty(context.creatures, context.parties, context.attackerCreatureId)

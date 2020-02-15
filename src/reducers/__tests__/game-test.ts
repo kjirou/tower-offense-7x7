@@ -5,12 +5,12 @@ import {
   NormalAttackContext,
   createBattleFieldMatrix,
   findCreatureById,
-} from '../../../utils'
+} from '../../utils'
 import {
   invokeNormalAttack,
-} from '../battle-process'
+} from '../game'
 
-describe('reducers/game/battle-process', function() {
+describe('reducers/game', function() {
   describe('invokeNormalAttack', function() {
     describe('An attacker is adjacent to a single enemy', function() {
       const matrix = createBattleFieldMatrix(3, 3)
