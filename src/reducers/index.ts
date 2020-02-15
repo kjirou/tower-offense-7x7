@@ -2,15 +2,20 @@ import produce from 'immer'
 
 import {
   ApplicationState,
+  BattleFieldElement,
   BattleFieldMatrix,
   BattlePage,
+  Card,
   Creature,
+  CreatureWithParty,
   CreatureWithPartyOnBattleFieldElement,
   GlobalPosition,
   MatrixPosition,
   NormalAttackContext,
   Party,
   areGlobalPositionsEqual,
+  ensureBattlePage,
+  findCardUnderCursor,
   findCreatureWithParty,
   pickBattleFieldElementsWhereCreatureExists,
 } from '../utils'
@@ -18,44 +23,65 @@ import {
   invokeNormalAttack,
 } from './game/battle-process'
 
-const ensureBattlePage = (state: ApplicationState): BattlePage => {
-  const battlePage = state.pages.battle
-  if (battlePage === undefined) {
-    throw new Error('`state.pages.battle` does not exist.')
-  }
-  return battlePage
-}
-
-export function touchBattleFieldElement(
+export function selectBattleFieldElement(
   state: ApplicationState,
   y: MatrixPosition['y'],
   x: MatrixPosition['x']
 ): ApplicationState {
   const newBattlePage = produce(ensureBattlePage(state), draft => {
-    const touchedPosition: GlobalPosition = {
+    const selectedPosition: GlobalPosition = {
       globalPlacementId: 'battleFieldMatrix',
       y,
       x,
     }
+
+    // カーソルが当たっているマスを選択するとき。
     if (
       draft.game.cursor &&
-      areGlobalPositionsEqual(touchedPosition, draft.game.cursor.globalPosition)
+      areGlobalPositionsEqual(selectedPosition, draft.game.cursor.globalPosition)
     ) {
-      draft.game.cursor = undefined;
+      // カーソルが外れる。
+      draft.game.cursor = undefined
+    // カーソルが当たっていないマスを選択するとき。
     } else {
-      draft.game.cursor = {
-        globalPosition: {
-          globalPlacementId: 'battleFieldMatrix',
-          y,
-          x,
-        },
+      // 選択先のマスの情報。
+      const battleFieldElement: BattleFieldElement = draft.game.battleFieldMatrix[y][x]
+      // 選択先のマスへクリーチャーが配置されているか。
+      const placedCreatureWithParty: CreatureWithParty | undefined = battleFieldElement.creatureId !== undefined
+        ? findCreatureWithParty(draft.game.creatures, draft.game.parties, battleFieldElement.creatureId)
+        : undefined
+      // 手札のカードへカーソルが当たっているか。
+      const cardUnderCursor: Card | undefined = draft.game.cursor
+        ? findCardUnderCursor(draft.game.cards, draft.game.cursor)
+        : undefined
+
+      // 手札のカードへカーソルが当たっているとき。
+      if (cardUnderCursor) {
+        // 選択先のマスへクリーチャーが配置されているとき。
+        if (placedCreatureWithParty) {
+        // 選択先のマスへクリーチャーが配置されていないとき。
+        } else {
+          // クリーチャーを配置する。
+          battleFieldElement.creatureId = cardUnderCursor.creatureId
+          // 手札のカードを一枚減らす。
+          draft.game.cardsOnYourHand = draft.game.cardsOnYourHand
+            .filter(e => e.creatureId !== cardUnderCursor.creatureId)
+        }
+      } else {
+        draft.game.cursor = {
+          globalPosition: {
+            globalPlacementId: 'battleFieldMatrix',
+            y,
+            x,
+          },
+        }
       }
     }
   })
   return Object.assign({}, state, {pages: {battle: newBattlePage}})
 }
 
-export function touchCardOnYourHand(
+export function selectCardOnYourHand(
   state: ApplicationState,
   creatureId: Creature['id'],
 ): ApplicationState {

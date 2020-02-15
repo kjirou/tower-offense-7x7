@@ -4,11 +4,14 @@ import {describe, it} from 'mocha';
 import {
   BattleFieldElement,
   BattleFieldMatrix,
+  Card,
   MatrixPosition,
   areGlobalPositionsEqual,
   createBattleFieldMatrix,
   findBattleFieldElementByCreatureId,
   findBattleFieldElementsByDistance,
+  findCardUnderCursor,
+  findCardsByCreatureIds,
   flattenMatrix,
   measureDistance,
   pickBattleFieldElementsWhereCreatureExists,
@@ -313,4 +316,68 @@ describe('utils', function() {
       assert.strictEqual(elements[1].creatureId, 'b')
     })
   })
-});
+
+  describe('findCardsByCreatureIds', function() {
+    it('should return the cards in order of creatureIds', function() {
+      const cards: Card[] = [
+        {
+          creatureId: 'a',
+          skillCategoryId: 'attack',
+        },
+        {
+          creatureId: 'b',
+          skillCategoryId: 'attack',
+        },
+      ]
+      const found = findCardsByCreatureIds(cards, ['b', 'a'])
+      assert.strictEqual(found[0].creatureId, 'b')
+      assert.strictEqual(found[1].creatureId, 'a')
+    })
+  })
+
+  describe('findCardUnderCursor', function() {
+    it('can find a card when the cursor is on cards', function() {
+      const cards: Card[] = [
+        {
+          creatureId: 'a',
+          skillCategoryId: 'attack',
+        },
+        {
+          creatureId: 'b',
+          skillCategoryId: 'attack',
+        },
+        {
+          creatureId: 'c',
+          skillCategoryId: 'attack',
+        },
+      ]
+      assert.strictEqual(
+        findCardUnderCursor(cards, {
+          globalPosition: {
+            globalPlacementId: 'cardsOnYourHand',
+            creatureId: 'b',
+          },
+        }),
+        cards[1],
+      )
+    })
+
+    it('can not find any card when the cursor is not on cards', function() {
+      const cards: Card[] = [
+        {
+          creatureId: 'a',
+          skillCategoryId: 'attack',
+        },
+      ]
+      assert.strictEqual(
+        findCardUnderCursor(cards, {
+          globalPosition: {
+            globalPlacementId: 'cardsOnYourHand',
+            creatureId: 'b',
+          },
+        }),
+        undefined,
+      )
+    })
+  })
+})

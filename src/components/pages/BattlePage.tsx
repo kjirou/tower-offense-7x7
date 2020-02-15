@@ -133,6 +133,7 @@ export type CardProps = {
   creatureId: string,
   creatureImage: string,
   handleTouch: (creatureId: string) => void,
+  isFirst: boolean,
   isSelected: boolean,
   skillCategorySymbol: string,
   uid: string,
@@ -145,6 +146,7 @@ const Card: React.FC<CardProps> = (props) => {
         position: 'relative',
         width: '68px',
         height: '100px',
+        marginLeft: props.isFirst ? '0' : '2px',
         backgroundColor: 'lime',
       }}
       onTouchStart={() => {
@@ -206,16 +208,21 @@ const CardsOnYourHand: React.FC<CardsOnYourHandProps> = (props) => {
     width: '360px',
     height: '112px',
     padding: '6px',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
+    flexGrow: 0,
+    flexShrink: 0,
     backgroundColor: 'green',
   }
 
   return (
     <div style={style}>
     {
-      props.cards.map((card) => {
+      props.cards.map((card, index) => {
         const key = `card-${card.uid}`;
-        return <Card key={key} {...card} />;
+        return <Card
+          key={key}
+          {...card}
+        />
       })
     }
     </div>

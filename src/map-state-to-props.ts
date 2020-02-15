@@ -22,8 +22,8 @@ import {
 } from './utils'
 import {
   proceedTurn,
-  touchBattleFieldElement,
-  touchCardOnYourHand,
+  selectBattleFieldElement,
+  selectCardOnYourHand,
 } from './reducers'
 
 type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>
@@ -84,14 +84,14 @@ function mapBattlePageStateToProps(
           ? areGlobalPositionsEqual(element.globalPosition, game.cursor.globalPosition)
           : false,
         handleTouch({y, x}) {
-          setState(s => touchBattleFieldElement(s, y, x))
+          setState(s => selectBattleFieldElement(s, y, x))
         },
       }
     })
   })
 
   const cardsProps: CardProps[] = game.cardsOnYourHand
-    .map(({creatureId}) => {
+    .map(({creatureId}, index) => {
       const card = findCardByCreatureId(game.cards, creatureId)
       const creature = findCreatureById(game.creatures, creatureId)
       const asGlobalPosition: GlobalPosition = {
@@ -106,9 +106,10 @@ function mapBattlePageStateToProps(
         creatureId,
         creatureImage: jobIdToDummyImage(creature.jobId),
         skillCategorySymbol: skillCategoryIdToDummyImage(card.skillCategoryId),
+        isFirst: index === 0,
         isSelected,
         handleTouch: (creatureId: string) => {
-          setState(s => touchCardOnYourHand(s, creatureId))
+          setState(s => selectCardOnYourHand(s, creatureId))
         },
       }
     })
