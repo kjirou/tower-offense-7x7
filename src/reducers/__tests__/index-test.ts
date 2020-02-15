@@ -20,7 +20,7 @@ import {
 
 describe('reducers/index', function() {
   describe('selectBattleFieldElement', function() {
-    describe('Select a card then place an ally to an empty element of the battle field', function() {
+    describe('In the case that select a card then select an empty element of the battle field', function() {
       let state: ApplicationState, newState: ApplicationState
       let battlePage: BattlePage, newBattlePage: BattlePage
       let allyCreatureId: Creature['id']
