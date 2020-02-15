@@ -91,7 +91,7 @@ function mapBattlePageStateToProps(
   })
 
   const cardsProps: CardProps[] = game.cardsOnYourHand
-    .map(({creatureId}) => {
+    .map(({creatureId}, index) => {
       const card = findCardByCreatureId(game.cards, creatureId)
       const creature = findCreatureById(game.creatures, creatureId)
       const asGlobalPosition: GlobalPosition = {
@@ -106,6 +106,7 @@ function mapBattlePageStateToProps(
         creatureId,
         creatureImage: jobIdToDummyImage(creature.jobId),
         skillCategorySymbol: skillCategoryIdToDummyImage(card.skillCategoryId),
+        isFirst: index === 0,
         isSelected,
         handleTouch: (creatureId: string) => {
           setState(s => selectCardOnYourHand(s, creatureId))
