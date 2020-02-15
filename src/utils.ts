@@ -2,7 +2,7 @@
  * This file MUST NOT depend on any file in the project.
  */
 
-type FactionId = 'player' | 'computer'
+export type FactionId = 'player' | 'computer'
 
 export type FactionRelationshipId = 'ally' | 'enemy'
 

@@ -14,6 +14,7 @@ import {
   NormalAttackContext,
   Party,
   areGlobalPositionsEqual,
+  determineRelationshipBetweenFactions,
   ensureBattlePage,
   findCardUnderCursor,
   findCreatureWithParty,
@@ -59,6 +60,12 @@ export function selectBattleFieldElement(
       if (cardUnderCursor) {
         // 選択先のマスへクリーチャーが配置されているとき。
         if (placedCreatureWithParty) {
+          // 選択先クリーチャーが味方のとき。
+          if (determineRelationshipBetweenFactions('player', placedCreatureWithParty.party.factionId) === 'ally') {
+          // 選択先クリーチャーが敵のとき。
+          } else {
+            /* no-op */
+          }
         // 選択先のマスへクリーチャーが配置されていないとき。
         } else {
           // クリーチャーを配置する。
