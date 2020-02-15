@@ -66,6 +66,8 @@ export function selectBattleFieldElement(
           // 手札のカードを一枚減らす。
           draft.game.cardsOnYourHand = draft.game.cardsOnYourHand
             .filter(e => e.creatureId !== cardUnderCursor.creatureId)
+          // カーソルを外す。
+          draft.game.cursor = undefined
         }
       } else {
         draft.game.cursor = {

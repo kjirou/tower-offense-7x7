@@ -47,6 +47,10 @@ describe('reducers/index', function() {
           true
         )
       })
+
+      it('should remove the cursor from the selcted card', function() {
+        assert.strictEqual(newBattlePage.game.cursor, undefined)
+      })
     })
   })
 
