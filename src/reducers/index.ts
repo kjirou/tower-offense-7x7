@@ -31,15 +31,18 @@ export function selectBattleFieldElement(
   y: MatrixPosition['y'],
   x: MatrixPosition['x']
 ): ApplicationState {
+  const selectedPosition: GlobalPosition = {
+    globalPlacementId: 'battleFieldMatrix',
+    y,
+    x,
+  }
+
+  // 現在のカーソル位置を取得する。
+
   const newBattlePage = produce(ensureBattlePage(state), draft => {
-    const touchedPosition: GlobalPosition = {
-      globalPlacementId: 'battleFieldMatrix',
-      y,
-      x,
-    }
     if (
       draft.game.cursor &&
-      areGlobalPositionsEqual(touchedPosition, draft.game.cursor.globalPosition)
+      areGlobalPositionsEqual(selectedPosition, draft.game.cursor.globalPosition)
     ) {
       draft.game.cursor = undefined;
     } else {
