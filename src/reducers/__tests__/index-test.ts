@@ -5,11 +5,13 @@ import {
   ApplicationState,
   BattlePage,
   Creature,
+  Party,
   createBattleFieldMatrix,
   ensureBattlePage,
 } from '../../utils'
 import {
   createStateDisplayBattlePageAtStartOfGame,
+  findFirstEnemy,
 } from '../../test-fixtures'
 import {
   proceedTurn,
@@ -18,7 +20,7 @@ import {
 
 describe('reducers/index', function() {
   describe('selectBattleFieldElement', function() {
-    describe('Select a card then place an ally to an empty element of the battle field', function() {
+    describe('In the case that select a card then select an empty element of the battle field', function() {
       let state: ApplicationState, newState: ApplicationState
       let battlePage: BattlePage, newBattlePage: BattlePage
       let allyCreatureId: Creature['id']
@@ -50,6 +52,32 @@ describe('reducers/index', function() {
 
       it('should remove the cursor from the selcted card', function() {
         assert.strictEqual(newBattlePage.game.cursor, undefined)
+      })
+    })
+
+    describe('In the case that select a card then select an enemy on the battle field', function() {
+      let state: ApplicationState, newState: ApplicationState
+      let battlePage: BattlePage, newBattlePage: BattlePage
+      let allyCreatureId: Creature['id']
+
+      beforeEach(function() {
+        state = createStateDisplayBattlePageAtStartOfGame()
+        battlePage = ensureBattlePage(state)
+        allyCreatureId = battlePage.game.cardsOnYourHand[0].creatureId
+        battlePage.game.cursor = {
+          globalPosition: {
+            globalPlacementId: 'cardsOnYourHand',
+            creatureId: allyCreatureId,
+          },
+        }
+        const enemy = findFirstEnemy(battlePage.game.creatures, battlePage.game.parties, 'player')
+        battlePage.game.battleFieldMatrix[0][0].creatureId = enemy.id
+        newState = selectBattleFieldElement(state, 0, 0)
+        newBattlePage = ensureBattlePage(newState)
+      })
+
+      it('should not reduce cards on player\'s hand', function() {
+        assert.strictEqual(battlePage.game.cardsOnYourHand.length, newBattlePage.game.cardsOnYourHand.length)
       })
     })
   })

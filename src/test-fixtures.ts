@@ -2,7 +2,11 @@ import {
   ApplicationState,
   Card,
   Creature,
+  FactionId,
+  Party,
   createBattleFieldMatrix,
+  determineRelationshipBetweenFactions,
+  findCreatureWithParty,
 } from './utils'
 
 /**
@@ -34,6 +38,16 @@ function createCreature(): Creature {
     attackPoint: 1,
     lifePoint: 1,
   }
+}
+
+export function findFirstEnemy(creatures: Creature[], parties: Party[], myFactionId: FactionId): Creature {
+  for (const creature of creatures) {
+    const creatureWithParty = findCreatureWithParty(creatures, parties, creature.id)
+    if (determineRelationshipBetweenFactions(myFactionId, creatureWithParty.party.factionId) === 'enemy') {
+      return creature
+    }
+  }
+  throw new Error('Can not find an enemy.')
 }
 
 /**
