@@ -120,18 +120,18 @@ export function validateMatrix<Element>(matrix: Element[][]): boolean {
     Array.isArray(matrix[0]) &&
     matrix[0].length > 0 &&
     matrix.every((row: Element[]) => row.length === matrix[0].length)
-  );
+  )
 }
 
 export function flattenMatrix<Element>(matrix: Element[][]): Element[] {
-  const flattened: Element[] = [];
+  const flattened: Element[] = []
 
   matrix.forEach(row => {
     row.forEach(element => {
-      flattened.push(element);
-    });
-  });
-  return flattened;
+      flattened.push(element)
+    })
+  })
+  return flattened
 }
 
 export function areGlobalPositionsEqual(a: GlobalPosition, b: GlobalPosition): boolean {
@@ -148,15 +148,15 @@ export function determineRelationshipBetweenFactions(a: FactionId, b: FactionId)
 }
 
 export function findCreatureByIdIfPossible(creatures: Creature[], creatureId: Creature['id']): Creature | undefined {
-  return creatures.find(creature => creature.id === creatureId);
+  return creatures.find(creature => creature.id === creatureId)
 }
 
 export function findCreatureById(creatures: Creature[], creatureId: Creature['id']): Creature {
-  const found = findCreatureByIdIfPossible(creatures, creatureId);
+  const found = findCreatureByIdIfPossible(creatures, creatureId)
   if (!found) {
-    throw new Error('Can not found a creature.');
+    throw new Error('Can not found a creature.')
   }
-  return found;
+  return found
 }
 
 export function findCreatureWithParty(
@@ -200,7 +200,7 @@ export function createBattleFieldMatrix(rowLength: number, columnLength: number)
     }
     battleFieldMatrix.push(row)
   }
-  return battleFieldMatrix;
+  return battleFieldMatrix
 }
 
 export function findBattleFieldElementByCreatureId(
