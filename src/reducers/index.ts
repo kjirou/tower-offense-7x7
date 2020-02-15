@@ -14,6 +14,7 @@ import {
   NormalAttackContext,
   Party,
   areGlobalPositionsEqual,
+  ensureBattlePage,
   findCardUnderCursor,
   findCreatureWithParty,
   pickBattleFieldElementsWhereCreatureExists,
@@ -21,14 +22,6 @@ import {
 import {
   invokeNormalAttack,
 } from './game/battle-process'
-
-const ensureBattlePage = (state: ApplicationState): BattlePage => {
-  const battlePage = state.pages.battle
-  if (battlePage === undefined) {
-    throw new Error('`state.pages.battle` does not exist.')
-  }
-  return battlePage
-}
 
 export function selectBattleFieldElement(
   state: ApplicationState,

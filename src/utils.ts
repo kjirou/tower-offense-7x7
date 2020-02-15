@@ -134,6 +134,14 @@ export function flattenMatrix<Element>(matrix: Element[][]): Element[] {
   return flattened
 }
 
+export const ensureBattlePage = (state: ApplicationState): BattlePage => {
+  const battlePage = state.pages.battle
+  if (battlePage === undefined) {
+    throw new Error('`state.pages.battle` does not exist.')
+  }
+  return battlePage
+}
+
 export function areGlobalPositionsEqual(a: GlobalPosition, b: GlobalPosition): boolean {
   if (isBattleFieldMatrixPositionType(a) && isBattleFieldMatrixPositionType(b)) {
     return a.y === b.y && a.x === b.x

@@ -4,13 +4,52 @@ import {describe, it} from 'mocha'
 import {
   ApplicationState,
   BattlePage,
+  Creature,
   createBattleFieldMatrix,
+  ensureBattlePage,
 } from '../../utils'
 import {
+  createStateDisplayBattlePageAtStartOfGame,
+} from '../../test-fixtures'
+import {
   proceedTurn,
+  selectBattleFieldElement,
 } from '../index'
 
 describe('reducers/index', function() {
+  describe('selectBattleFieldElement', function() {
+    describe('Select a card then place an ally to an empty element of the battle field', function() {
+      let state: ApplicationState, newState: ApplicationState
+      let battlePage: BattlePage, newBattlePage: BattlePage
+      let allyCreatureId: Creature['id']
+
+      beforeEach(function() {
+        state = createStateDisplayBattlePageAtStartOfGame()
+        battlePage = ensureBattlePage(state)
+        allyCreatureId = battlePage.game.cardsOnYourHand[0].creatureId
+        battlePage.game.cursor = {
+          globalPosition: {
+            globalPlacementId: 'cardsOnYourHand',
+            creatureId: allyCreatureId,
+          },
+        }
+        newState = selectBattleFieldElement(state, 0, 0)
+        newBattlePage = ensureBattlePage(newState)
+      })
+
+      it('should place an ally', function() {
+        assert.strictEqual(newBattlePage.game.battleFieldMatrix[0][0].creatureId, allyCreatureId)
+      })
+
+      it('should reduce cards on player\'s hand', function() {
+        assert.strictEqual(
+          battlePage.game.cardsOnYourHand.length > newBattlePage.game.cardsOnYourHand.length,
+          true
+        )
+      })
+    })
+  })
+
   describe('proceedTurn', function() {
     describe('Creatures of the hostile relations are adjacent to each other', function() {
       const createApplicationState = (): ApplicationState => {
