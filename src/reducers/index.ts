@@ -2,15 +2,19 @@ import produce from 'immer'
 
 import {
   ApplicationState,
+  BattleFieldElement,
   BattleFieldMatrix,
   BattlePage,
+  Card,
   Creature,
+  CreatureWithParty,
   CreatureWithPartyOnBattleFieldElement,
   GlobalPosition,
   MatrixPosition,
   NormalAttackContext,
   Party,
   areGlobalPositionsEqual,
+  findCardUnderCursor,
   findCreatureWithParty,
   pickBattleFieldElementsWhereCreatureExists,
 } from '../utils'
@@ -31,27 +35,53 @@ export function selectBattleFieldElement(
   y: MatrixPosition['y'],
   x: MatrixPosition['x']
 ): ApplicationState {
-  const selectedPosition: GlobalPosition = {
-    globalPlacementId: 'battleFieldMatrix',
-    y,
-    x,
-  }
-
-  // 現在のカーソル位置を取得する。
-
   const newBattlePage = produce(ensureBattlePage(state), draft => {
+    const selectedPosition: GlobalPosition = {
+      globalPlacementId: 'battleFieldMatrix',
+      y,
+      x,
+    }
+
+    // カーソルが当たっているマスを選択するとき。
     if (
       draft.game.cursor &&
       areGlobalPositionsEqual(selectedPosition, draft.game.cursor.globalPosition)
     ) {
-      draft.game.cursor = undefined;
+      // カーソルが外れる。
+      draft.game.cursor = undefined
+    // カーソルが当たっていないマスを選択するとき。
     } else {
-      draft.game.cursor = {
-        globalPosition: {
-          globalPlacementId: 'battleFieldMatrix',
-          y,
-          x,
-        },
+      // 選択先のマスの情報。
+      const battleFieldElement: BattleFieldElement = draft.game.battleFieldMatrix[y][x]
+      // 選択先のマスへクリーチャーが配置されているか。
+      const placedCreatureWithParty: CreatureWithParty | undefined = battleFieldElement.creatureId !== undefined
+        ? findCreatureWithParty(draft.game.creatures, draft.game.parties, battleFieldElement.creatureId)
+        : undefined
+      // 手札のカードへカーソルが当たっているか。
+      const cardUnderCursor: Card | undefined = draft.game.cursor
+        ? findCardUnderCursor(draft.game.cards, draft.game.cursor)
+        : undefined
+
+      // 手札のカードへカーソルが当たっているとき。
+      if (cardUnderCursor) {
+        // 選択先のマスへクリーチャーが配置されているとき。
+        if (placedCreatureWithParty) {
+        // 選択先のマスへクリーチャーが配置されていないとき。
+        } else {
+          // クリーチャーを配置する。
+          battleFieldElement.creatureId = cardUnderCursor.creatureId
+          // 手札のカードを一枚減らす。
+          draft.game.cardsOnYourHand = draft.game.cardsOnYourHand
+            .filter(e => e.creatureId !== cardUnderCursor.creatureId)
+        }
+      } else {
+        draft.game.cursor = {
+          globalPosition: {
+            globalPlacementId: 'battleFieldMatrix',
+            y,
+            x,
+          },
+        }
       }
     }
   })
