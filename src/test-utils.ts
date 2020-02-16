@@ -1,5 +1,3 @@
-// TODO: "test-fixtures"->"test-utils"
-
 import {
   ApplicationState,
   Card,

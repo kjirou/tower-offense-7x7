@@ -10,7 +10,7 @@ import {
 import {
   createStateDisplayBattlePageAtStartOfGame,
   findFirstAlly,
-} from '../../test-fixtures'
+} from '../../test-utils'
 import {
   invokeNormalAttack,
 } from '../game'

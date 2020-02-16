@@ -13,7 +13,7 @@ import {
   createStateDisplayBattlePageAtStartOfGame,
   findAllies,
   findFirstAlly,
-} from '../../test-fixtures'
+} from '../../test-utils'
 import {
   proceedTurn,
   selectBattleFieldElement,
