@@ -8,11 +8,17 @@ export type FactionRelationshipId = 'ally' | 'enemy'
 
 export type SkillCategoryId = 'attack' | 'healing' | 'support'
 
+type Skill = {
+  id: string,
+  skillCategoryId: SkillCategoryId,
+}
+
 export type Creature = {
   attackPoint: number,
   lifePoint: number,
   id: string,
   jobId: string,
+  skillIds: Skill['id'][],
 }
 
 export type Party = {
