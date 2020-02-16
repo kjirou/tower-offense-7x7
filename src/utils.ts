@@ -88,8 +88,7 @@ type Cursor = {
   globalPosition: GlobalPosition,
 }
 
-// TODO: -> NormalAttackProcessContext
-export type NormalAttackContext = {
+export type NormalAttackProcessContext = {
   attackerCreatureId: Creature['id'],
   battleFieldMatrix: BattleFieldMatrix,
   creatures: Creature[],

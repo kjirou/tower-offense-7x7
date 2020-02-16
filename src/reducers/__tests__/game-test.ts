@@ -2,7 +2,7 @@ import * as assert from 'assert'
 import {describe, it} from 'mocha'
 
 import {
-  NormalAttackContext,
+  NormalAttackProcessContext,
   SkillProcessContext,
   createBattleFieldMatrix,
   ensureBattlePage,
@@ -29,7 +29,7 @@ describe('reducers/game', function() {
         enemy.lifePoint = 2
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][1].creatureId = enemy.id
-        const context: NormalAttackContext = {
+        const context: NormalAttackProcessContext = {
           creatures: battlePage.game.creatures,
           parties: battlePage.game.parties,
           battleFieldMatrix: battlePage.game.battleFieldMatrix,
@@ -51,7 +51,7 @@ describe('reducers/game', function() {
         enemy.lifePoint = 2
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][2].creatureId = enemy.id
-        const context: NormalAttackContext = {
+        const context: NormalAttackProcessContext = {
           creatures: battlePage.game.creatures,
           parties: battlePage.game.parties,
           battleFieldMatrix: battlePage.game.battleFieldMatrix,

@@ -4,7 +4,7 @@ import {
   CreatureWithParty,
   CreatureWithPartyOnBattleFieldElement,
   Party,
-  NormalAttackContext,
+  NormalAttackProcessContext,
   SkillProcessContext,
   determineRelationshipBetweenFactions,
   findCreatureById,
@@ -14,7 +14,7 @@ import {
   findCreatureWithParty,
 } from '../utils';
 
-export function invokeNormalAttack(context: NormalAttackContext): NormalAttackContext {
+export function invokeNormalAttack(context: NormalAttackProcessContext): NormalAttackProcessContext {
   const attackerWithParty = findCreatureWithParty(context.creatures, context.parties, context.attackerCreatureId)
 
   // 攻撃者情報を抽出する。

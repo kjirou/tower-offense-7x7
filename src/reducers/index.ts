@@ -11,7 +11,6 @@ import {
   CreatureWithPartyOnBattleFieldElement,
   GlobalPosition,
   MatrixPosition,
-  NormalAttackContext,
   Party,
   areGlobalPositionsEqual,
   determineRelationshipBetweenFactions,
