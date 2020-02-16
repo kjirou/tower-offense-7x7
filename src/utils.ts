@@ -88,11 +88,20 @@ type Cursor = {
   globalPosition: GlobalPosition,
 }
 
+// TODO: -> NormalAttackProcessContext
 export type NormalAttackContext = {
   attackerCreatureId: Creature['id'],
   battleFieldMatrix: BattleFieldMatrix,
   creatures: Creature[],
   parties: Party[],
+}
+
+export type SkillProcessContext = {
+  battleFieldMatrix: BattleFieldMatrix,
+  creatures: Creature[],
+  invokerCreatureId: Creature['id'],
+  parties: Party[],
+  skill: Skill,
 }
 
 export type Game = {
