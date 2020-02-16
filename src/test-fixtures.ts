@@ -62,17 +62,6 @@ export function findFirstAlly(creatures: Creature[], parties: Party[], factionId
   throw new Error('Can not find an ally.')
 }
 
-// TODO: Deprecated
-export function findFirstEnemy(creatures: Creature[], parties: Party[], myFactionId: FactionId): Creature {
-  for (const creature of creatures) {
-    const creatureWithParty = findCreatureWithParty(creatures, parties, creature.id)
-    if (determineRelationshipBetweenFactions(myFactionId, creatureWithParty.party.factionId) === 'enemy') {
-      return creature
-    }
-  }
-  throw new Error('Can not find an enemy.')
-}
-
 /**
  * 戦闘開始直後の BattlePage を想定した状態を生成する。
  */

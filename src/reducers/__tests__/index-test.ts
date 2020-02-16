@@ -13,7 +13,6 @@ import {
   createStateDisplayBattlePageAtStartOfGame,
   findAllies,
   findFirstAlly,
-  findFirstEnemy,
 } from '../../test-fixtures'
 import {
   proceedTurn,
@@ -72,7 +71,7 @@ describe('reducers/index', function() {
             creatureId: allyCreatureId,
           },
         }
-        const enemy = findFirstEnemy(battlePage.game.creatures, battlePage.game.parties, 'player')
+        const enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
         battlePage.game.battleFieldMatrix[0][0].creatureId = enemy.id
         newState = selectBattleFieldElement(state, 0, 0)
         newBattlePage = ensureBattlePage(newState)
