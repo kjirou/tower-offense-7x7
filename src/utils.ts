@@ -6,13 +6,20 @@ export type FactionId = 'player' | 'computer'
 
 export type FactionRelationshipId = 'ally' | 'enemy'
 
-export type SkillCategoryId = 'attack' | 'healing' | 'support'
+export type SkillCategoryId = 'attack' | 'defense' | 'support'
+
+// This is the so-called “Active Skill”.
+type Skill = {
+  id: string,
+  skillCategoryId: SkillCategoryId,
+}
 
 export type Creature = {
   attackPoint: number,
   lifePoint: number,
   id: string,
   jobId: string,
+  skillIds: Skill['id'][],
 }
 
 export type Party = {
@@ -81,11 +88,19 @@ type Cursor = {
   globalPosition: GlobalPosition,
 }
 
-export type NormalAttackContext = {
+export type NormalAttackProcessContext = {
   attackerCreatureId: Creature['id'],
   battleFieldMatrix: BattleFieldMatrix,
   creatures: Creature[],
   parties: Party[],
+}
+
+export type SkillProcessContext = {
+  battleFieldMatrix: BattleFieldMatrix,
+  creatures: Creature[],
+  invokerCreatureId: Creature['id'],
+  parties: Party[],
+  skill: Skill,
 }
 
 export type Game = {

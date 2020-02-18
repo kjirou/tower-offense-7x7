@@ -20,66 +20,76 @@ const dummyAllCreatures: Creature[] = [
     jobId: 'fighter',
     lifePoint: 12,
     attackPoint: 4,
+    skillIds: [],
   },
   {
     id: 'ally-2',
     jobId: 'knight',
     lifePoint: 18,
     attackPoint: 2,
+    skillIds: [],
   },
   {
     id: 'ally-3',
     jobId: 'archer',
     lifePoint: 6,
     attackPoint: 3,
+    skillIds: [],
   },
   {
     id: 'ally-4',
     jobId: 'mage',
     lifePoint: 3,
     attackPoint: 3,
+    skillIds: [],
   },
   {
     id: 'ally-5',
     jobId: 'fighter',
     lifePoint: 12,
     attackPoint: 4,
+    skillIds: [],
   },
   {
     id: 'ally-6',
     jobId: 'mage',
     lifePoint: 3,
     attackPoint: 3,
+    skillIds: [],
   },
   {
     id: 'ally-7',
     jobId: 'archer',
     lifePoint: 6,
     attackPoint: 3,
+    skillIds: [],
   },
   {
     id: 'enemy-1',
     jobId: 'goblin',
     lifePoint: 4,
     attackPoint: 1,
+    skillIds: [],
   },
   {
     id: 'enemy-2',
     jobId: 'goblin',
     lifePoint: 4,
     attackPoint: 1,
+    skillIds: [],
   },
   {
     id: 'enemy-3',
     jobId: 'orc',
     lifePoint: 8,
     attackPoint: 3,
+    skillIds: [],
   },
 ]
 const dummyAllCards: Card[] = dummyAllCreatures
   .filter(e => /^ally-/.test(e.id))
   .map((creature, index) => {
-    const skillCategoryId = ['attack', 'healing', 'support'][index % 3] as SkillCategoryId
+    const skillCategoryId = ['attack', 'defense', 'support'][index % 3] as SkillCategoryId
     return {
       skillCategoryId,
       creatureId: creature.id,

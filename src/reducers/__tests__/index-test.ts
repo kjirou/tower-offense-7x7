@@ -11,8 +11,9 @@ import {
 } from '../../utils'
 import {
   createStateDisplayBattlePageAtStartOfGame,
-  findFirstEnemy,
-} from '../../test-fixtures'
+  findAllies,
+  findFirstAlly,
+} from '../../test-utils'
 import {
   proceedTurn,
   selectBattleFieldElement,
@@ -70,7 +71,7 @@ describe('reducers/index', function() {
             creatureId: allyCreatureId,
           },
         }
-        const enemy = findFirstEnemy(battlePage.game.creatures, battlePage.game.parties, 'player')
+        const enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
         battlePage.game.battleFieldMatrix[0][0].creatureId = enemy.id
         newState = selectBattleFieldElement(state, 0, 0)
         newBattlePage = ensureBattlePage(newState)
@@ -84,116 +85,44 @@ describe('reducers/index', function() {
 
   describe('proceedTurn', function() {
     describe('Creatures of the hostile relations are adjacent to each other', function() {
-      const createApplicationState = (): ApplicationState => {
-        const a = {
-          id: 'a',
-          jobId: '',
-          attackPoint: 1,
-          lifePoint: 2,
-        }
-        const b = {
-          id: 'b',
-          jobId: '',
-          attackPoint: 1,
-          lifePoint: 3,
-        }
-        const battleFieldMatrix = createBattleFieldMatrix(1, 2)
-        battleFieldMatrix[0][0].creatureId = a.id
-        battleFieldMatrix[0][1].creatureId = b.id
-
-        return {
-          pages: {
-            battle: {
-              game: {
-                creatures: [a, b],
-                parties: [
-                  {
-                    factionId: 'player',
-                    creatureIds: [a.id],
-                  },
-                  {
-                    factionId: 'computer',
-                    creatureIds: [b.id],
-                  },
-                ],
-                battleFieldMatrix,
-                cards: [],
-                cardsOnYourHand: [],
-                cursor: undefined,
-              },
-            },
-          },
-        }
-      }
-
       it('can update the result that creatures attack to each other', function() {
-        const state = createApplicationState()
-        const battlePage = state.pages.battle as BattlePage
+        const state = createStateDisplayBattlePageAtStartOfGame()
+        const battlePage = ensureBattlePage(state)
+        const a = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
+        const b = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
+        a.lifePoint = 2
+        a.attackPoint = 1
+        b.lifePoint = 2
+        b.attackPoint = 1
+        battlePage.game.battleFieldMatrix[0][0].creatureId = a.id
+        battlePage.game.battleFieldMatrix[0][1].creatureId = b.id
         const newState = proceedTurn(state)
-        const newBattlePage = newState.pages.battle as BattlePage
-        assert.notStrictEqual(battlePage.game.creatures[0].lifePoint, newBattlePage.game.creatures[0].lifePoint)
-        assert.strictEqual(
-          battlePage.game.creatures[0].lifePoint > newBattlePage.game.creatures[0].lifePoint,
-          true
-        )
-        assert.notStrictEqual(battlePage.game.creatures[1].lifePoint, newBattlePage.game.creatures[1].lifePoint)
-        assert.strictEqual(
-          battlePage.game.creatures[1].lifePoint > newBattlePage.game.creatures[1].lifePoint,
-          true
-        )
+        const newBattlePage = ensureBattlePage(newState)
+        const newA = findFirstAlly(newBattlePage.game.creatures, newBattlePage.game.parties, 'player')
+        const newB = findFirstAlly(newBattlePage.game.creatures, newBattlePage.game.parties, 'computer')
+        assert.notStrictEqual(a.lifePoint, newA.lifePoint)
+        assert.strictEqual(a.lifePoint > newA.lifePoint, true)
+        assert.notStrictEqual(b.lifePoint, newB.lifePoint)
+        assert.strictEqual(b.lifePoint > newB.lifePoint, true)
       })
     })
 
     describe('Creatures of the friendly relations are adjacent to each other', function() {
-      const createApplicationState = (): ApplicationState => {
-        const a = {
-          id: 'a',
-          jobId: '',
-          attackPoint: 1,
-          lifePoint: 2,
-        }
-        const b = {
-          id: 'b',
-          jobId: '',
-          attackPoint: 1,
-          lifePoint: 3,
-        }
-        const battleFieldMatrix = createBattleFieldMatrix(1, 2)
-        battleFieldMatrix[0][0].creatureId = a.id
-        battleFieldMatrix[0][1].creatureId = b.id
-
-        return {
-          pages: {
-            battle: {
-              game: {
-                creatures: [a, b],
-                parties: [
-                  {
-                    factionId: 'player',
-                    creatureIds: [a.id],
-                  },
-                  {
-                    factionId: 'player',
-                    creatureIds: [b.id],
-                  },
-                ],
-                battleFieldMatrix,
-                cards: [],
-                cardsOnYourHand: [],
-                cursor: undefined,
-              },
-            },
-          },
-        }
-      }
-
       it('can update the result that creatures does not attack to each other', function() {
-        const state = createApplicationState()
-        const battlePage = state.pages.battle as BattlePage
+        const state = createStateDisplayBattlePageAtStartOfGame()
+        const battlePage = ensureBattlePage(state)
+        const allies = findAllies(battlePage.game.creatures, battlePage.game.parties, 'player')
+        allies[0].lifePoint = 2
+        allies[0].attackPoint = 1
+        allies[1].lifePoint = 2
+        allies[1].attackPoint = 1
+        battlePage.game.battleFieldMatrix[0][0].creatureId = allies[0].id
+        battlePage.game.battleFieldMatrix[0][1].creatureId = allies[1].id
         const newState = proceedTurn(state)
-        const newBattlePage = newState.pages.battle as BattlePage
-        assert.strictEqual(battlePage.game.creatures[0].lifePoint, newBattlePage.game.creatures[0].lifePoint)
-        assert.strictEqual(battlePage.game.creatures[1].lifePoint, newBattlePage.game.creatures[1].lifePoint)
+        const newBattlePage = ensureBattlePage(newState)
+        const newAllies = findAllies(newBattlePage.game.creatures, newBattlePage.game.parties, 'player')
+        assert.strictEqual(allies[0].lifePoint, newAllies[0].lifePoint)
+        assert.strictEqual(allies[1].lifePoint, newAllies[1].lifePoint)
       })
     })
   })

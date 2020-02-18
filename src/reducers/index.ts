@@ -11,8 +11,8 @@ import {
   CreatureWithPartyOnBattleFieldElement,
   GlobalPosition,
   MatrixPosition,
-  NormalAttackContext,
   Party,
+  SkillProcessContext,
   areGlobalPositionsEqual,
   determineRelationshipBetweenFactions,
   ensureBattlePage,
@@ -21,6 +21,7 @@ import {
   pickBattleFieldElementsWhereCreatureExists,
 } from '../utils'
 import {
+  invokeSkill,
   invokeNormalAttack,
 } from './game'
 
@@ -62,6 +63,27 @@ export function selectBattleFieldElement(
         if (placedCreatureWithParty) {
           // 選択先クリーチャーが味方のとき。
           if (determineRelationshipBetweenFactions('player', placedCreatureWithParty.party.factionId) === 'ally') {
+            // TODO: 発動できない状況を除外する。
+            // スキルを発動する。
+            const newContext = invokeSkill({
+              creatures: draft.game.creatures,
+              parties: draft.game.parties,
+              battleFieldMatrix: draft.game.battleFieldMatrix,
+              invokerCreatureId: placedCreatureWithParty.creature.id,
+              skill: {
+                id: '',
+                skillCategoryId: 'attack',
+              },
+            })
+            // スキル発動の結果を反映する。
+            draft.game.creatures = newContext.creatures
+            draft.game.parties = newContext.parties
+            draft.game.battleFieldMatrix = newContext.battleFieldMatrix
+            // 手札のカードを一枚減らす。
+            draft.game.cardsOnYourHand = draft.game.cardsOnYourHand
+              .filter(e => e.creatureId !== cardUnderCursor.creatureId)
+            // カーソルを外す。
+            draft.game.cursor = undefined
           // 選択先クリーチャーが敵のとき。
           } else {
             /* no-op */

@@ -37,17 +37,27 @@ function createCreature(): Creature {
     jobId: '',
     attackPoint: 1,
     lifePoint: 1,
+    skillIds: [],
   }
 }
 
-export function findFirstEnemy(creatures: Creature[], parties: Party[], myFactionId: FactionId): Creature {
+export function findAllies(creatures: Creature[], parties: Party[], factionId: FactionId): Creature[] {
+  const allies: Creature[] = []
   for (const creature of creatures) {
     const creatureWithParty = findCreatureWithParty(creatures, parties, creature.id)
-    if (determineRelationshipBetweenFactions(myFactionId, creatureWithParty.party.factionId) === 'enemy') {
-      return creature
+    if (determineRelationshipBetweenFactions(factionId, creatureWithParty.party.factionId) === 'ally') {
+      allies.push(creature)
     }
   }
-  throw new Error('Can not find an enemy.')
+  return allies
+}
+
+export function findFirstAlly(creatures: Creature[], parties: Party[], factionId: FactionId): Creature {
+  const allies = findAllies(creatures, parties, factionId)
+  if (allies.length > 0) {
+    return allies[0]
+  }
+  throw new Error('Can not find an ally.')
 }
 
 /**
