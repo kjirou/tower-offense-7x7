@@ -12,6 +12,7 @@ import {
   GlobalPosition,
   MatrixPosition,
   Party,
+  SkillProcessContext,
   areGlobalPositionsEqual,
   determineRelationshipBetweenFactions,
   ensureBattlePage,
@@ -20,6 +21,7 @@ import {
   pickBattleFieldElementsWhereCreatureExists,
 } from '../utils'
 import {
+  invokeSkill,
   invokeNormalAttack,
 } from './game'
 
@@ -61,6 +63,19 @@ export function selectBattleFieldElement(
         if (placedCreatureWithParty) {
           // 選択先クリーチャーが味方のとき。
           if (determineRelationshipBetweenFactions('player', placedCreatureWithParty.party.factionId) === 'ally') {
+            const newContext = invokeSkill({
+              creatures: draft.game.creatures,
+              parties: draft.game.parties,
+              battleFieldMatrix: draft.game.battleFieldMatrix,
+              invokerCreatureId: placedCreatureWithParty.creature.id,
+              skill: {
+                id: '',
+                skillCategoryId: 'attack',
+              },
+            })
+            draft.game.creatures = newContext.creatures
+            draft.game.parties = newContext.parties
+            draft.game.battleFieldMatrix = newContext.battleFieldMatrix
           // 選択先クリーチャーが敵のとき。
           } else {
             /* no-op */
