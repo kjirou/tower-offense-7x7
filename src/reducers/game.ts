@@ -116,7 +116,7 @@ function invokeAttackSkill(context: SkillProcessContext): SkillProcessContext {
   }
 
   // 最大攻撃対象数を算出する。
-  const dummyMaxNumberOfTargetees = 1
+  const dummyMaxNumberOfTargetees = 99
 
   // 優先順位を考慮して作用対象を決定する。
   const targeteesData = targeteeCandidatesData
