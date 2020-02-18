@@ -47,7 +47,7 @@ const skillCategoryIdToDummyImage = (skillCategoryId: SkillCategoryId): string =
     [key: string]: string,
   } = {
     attack: 'A',
-    healing: 'H',
+    defense: 'D',
     support: 'S',
   }
   return skillCategoryMapping[skillCategoryId]

@@ -89,7 +89,7 @@ const dummyAllCreatures: Creature[] = [
 const dummyAllCards: Card[] = dummyAllCreatures
   .filter(e => /^ally-/.test(e.id))
   .map((creature, index) => {
-    const skillCategoryId = ['attack', 'healing', 'support'][index % 3] as SkillCategoryId
+    const skillCategoryId = ['attack', 'defense', 'support'][index % 3] as SkillCategoryId
     return {
       skillCategoryId,
       creatureId: creature.id,

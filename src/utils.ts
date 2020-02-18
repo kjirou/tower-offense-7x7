@@ -6,7 +6,7 @@ export type FactionId = 'player' | 'computer'
 
 export type FactionRelationshipId = 'ally' | 'enemy'
 
-export type SkillCategoryId = 'attack' | 'healing' | 'support'
+export type SkillCategoryId = 'attack' | 'defense' | 'support'
 
 // This is the so-called “Active Skill”.
 type Skill = {
