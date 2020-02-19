@@ -83,6 +83,10 @@ export function selectBattleFieldElement(
             // 手札のカードを一枚減らす。
             draft.game.cardsOnPlayersHand = draft.game.cardsOnPlayersHand
               .filter(e => e.creatureId !== cardUnderCursor.creatureId)
+            // 山札のカードへ消費したカードを戻す。
+            draft.game.cardsInDeck.push({
+              creatureId: cardUnderCursor.creatureId,
+            })
             // カーソルを外す。
             draft.game.cursor = undefined
           // 選択先クリーチャーが敵のとき。
