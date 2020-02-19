@@ -72,6 +72,8 @@ function isCardsOnPlayersHandPositionType(
 export type BattleFieldElement = {
   creatureId: Creature['id'] | undefined,
   globalPosition: GlobalPosition,
+  // Only "computer" side creatures.
+  reservedCreatureId: Creature['id'] | undefined,
   position: MatrixPosition,
 }
 
@@ -225,6 +227,7 @@ export function createBattleFieldMatrix(rowLength: number, columnLength: number)
           x,
         },
         creatureId: undefined,
+        reservedCreatureId: undefined,
       })
     }
     battleFieldMatrix.push(row)
