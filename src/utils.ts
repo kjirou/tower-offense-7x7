@@ -110,6 +110,7 @@ export type Game = {
     creatureId: Creature['id'],
   }[],
   cards: Card[],
+  completedNormalAttackPhase: boolean,
   creatures: Creature[],
   cursor: Cursor | undefined,
   parties: Party[],
