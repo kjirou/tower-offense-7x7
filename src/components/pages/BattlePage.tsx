@@ -5,16 +5,33 @@ import {
   flattenMatrix,
 } from '../../utils'
 
-const MetaInformationBar: React.FC<{}> = () => {
+type MetaInformationBarProps = {
+  turnNumber: number,
+}
+
+const MetaInformationBar: React.FC<MetaInformationBarProps> = (props) => {
   const style = {
     position: 'relative',
+    display: 'flex',
+    justifyContent: 'flex-start',
     width: '360px',
     height: '48px',
     backgroundColor: 'yellow',
   }
 
   return (
-    <div style={style}>MetaInformationBar!</div>
+    <div style={style}>
+      <div
+        style={{
+          width: '48px',
+          height: '48px',
+          lineHeight: '48px',
+          fontSize: '24px',
+          textAlign: 'center',
+          backgroundColor: 'silver',
+        }}
+      >{props.turnNumber}</div>
+    </div>
   )
 }
 
@@ -306,7 +323,7 @@ export const BattlePage: React.FC<Props> = (props) => {
 
   return (
     <div style={style}>
-      <MetaInformationBar />
+      <MetaInformationBar turnNumber={99} />
       <BattleFieldBoard board={props.battleFieldBoard} />
       <SquareMonitor />
       <CardsOnYourHand {...props.cardsOnYourHand} />
