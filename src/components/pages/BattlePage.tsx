@@ -311,6 +311,7 @@ export type Props = {
   battleFieldBoard: BattleFieldSquareProps[][],
   cardsOnYourHand: CardsOnYourHandProps,
   handleClickNextButton: FooterProps['handleClickNextButton'],
+  turnNumber: MetaInformationBarProps['turnNumber'],
 }
 
 export const BattlePage: React.FC<Props> = (props) => {
@@ -323,7 +324,7 @@ export const BattlePage: React.FC<Props> = (props) => {
 
   return (
     <div style={style}>
-      <MetaInformationBar turnNumber={99} />
+      <MetaInformationBar turnNumber={props.turnNumber} />
       <BattleFieldBoard board={props.battleFieldBoard} />
       <SquareMonitor />
       <CardsOnYourHand {...props.cardsOnYourHand} />

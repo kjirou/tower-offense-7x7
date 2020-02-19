@@ -119,6 +119,7 @@ function mapBattlePageStateToProps(
     cardsOnYourHand: {
       cards: cardsProps
     },
+    turnNumber: game.turnNumber,
     handleClickNextButton: () => {
       setState(s => proceedTurn(s))
     },
