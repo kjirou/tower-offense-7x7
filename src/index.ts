@@ -113,18 +113,18 @@ function createInitialGame(): Game {
     ],
     battleFieldMatrix,
     cards: dummyAllCards,
-    cardsOnYourHand: dummyAllies
+    cardsOnYourHand: dummyAllCards
       .slice(0, 5)
-      .map((creature) => {
+      .map((card) => {
         return {
-          creatureId: creature.id,
+          creatureId: card.creatureId,
         }
       }),
-    cardsInDeck: dummyAllies
-      .slice(5, dummyAllies.length)
-      .map((creature) => {
+    cardsInDeck: dummyAllCards
+      .slice(5, dummyAllCards.length)
+      .map((card) => {
         return {
-          creatureId: creature.id,
+          creatureId: card.creatureId,
         }
       }),
     cursor: undefined,
