@@ -247,7 +247,8 @@ const CardsOnYourHand: React.FC<CardsOnYourHandProps> = (props) => {
 }
 
 type FooterProps = {
-  handleClickNextButton: () => void,
+  handleClickBattleButton: () => void,
+  handleClickNextTurnButton: () => void,
   showNextTurnButton: boolean,
 }
 
@@ -300,6 +301,7 @@ const Footer: React.FC<FooterProps> = (props) => {
         props.showNextTurnButton
         ? <div
           style={rightSideButtonStyle}
+          onClick={props.handleClickNextTurnButton}
         >
           <div
             style={{
@@ -309,7 +311,7 @@ const Footer: React.FC<FooterProps> = (props) => {
         </div>
         : <div
           style={rightSideButtonStyle}
-          onClick={props.handleClickNextButton}
+          onClick={props.handleClickBattleButton}
         >
           <div
             style={{
@@ -325,7 +327,8 @@ const Footer: React.FC<FooterProps> = (props) => {
 export type Props = {
   battleFieldBoard: BattleFieldSquareProps[][],
   cardsOnYourHand: CardsOnYourHandProps,
-  handleClickNextButton: FooterProps['handleClickNextButton'],
+  handleClickBattleButton: FooterProps['handleClickBattleButton'],
+  handleClickNextTurnButton: FooterProps['handleClickNextTurnButton'],
   turnNumber: MetaInformationBarProps['turnNumber'],
   showNextTurnButton: FooterProps['showNextTurnButton'],
 }
@@ -345,7 +348,8 @@ export const BattlePage: React.FC<Props> = (props) => {
       <SquareMonitor />
       <CardsOnYourHand {...props.cardsOnYourHand} />
       <Footer
-        handleClickNextButton={props.handleClickNextButton}
+        handleClickBattleButton={props.handleClickBattleButton}
+        handleClickNextTurnButton={props.handleClickNextTurnButton}
         showNextTurnButton={props.showNextTurnButton}
       />
     </div>

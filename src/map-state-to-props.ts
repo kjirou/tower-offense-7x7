@@ -21,6 +21,7 @@ import {
   findCreatureWithParty,
 } from './utils'
 import {
+  proceedTurn,
   runNormalAttackPhase,
   selectBattleFieldElement,
   selectCardOnYourHand,
@@ -121,8 +122,11 @@ function mapBattlePageStateToProps(
     },
     turnNumber: game.turnNumber,
     showNextTurnButton: game.completedNormalAttackPhase,
-    handleClickNextButton: () => {
+    handleClickBattleButton: () => {
       setState(s => runNormalAttackPhase(s))
+    },
+    handleClickNextTurnButton: () => {
+      setState(s => proceedTurn(s))
     },
   }
 }
