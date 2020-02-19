@@ -23,6 +23,7 @@ import {
 import {
   invokeSkill,
   invokeNormalAttack,
+  refillCardsOnYourHand,
 } from './game'
 
 export function selectBattleFieldElement(
@@ -202,7 +203,13 @@ export function proceedTurn(
     if (!draft.game.completedNormalAttackPhase) {
       throw new Error('The normal-attack phase must be completed.')
     }
+
     // TODO: Prohibit operation
+
+    const newCardSets = refillCardsOnYourHand(draft.game.cardsInDeck, draft.game.cardsOnYourHand)
+
+    draft.game.cardsInDeck = newCardSets.cardsInDeck
+    draft.game.cardsOnYourHand = newCardSets.cardsOnYourHand
     draft.game.completedNormalAttackPhase = false
     draft.game.turnNumber += 1
   })

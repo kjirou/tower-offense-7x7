@@ -1,5 +1,6 @@
 import {
   BattleFieldElement,
+  CardRelationship,
   Creature,
   CreatureWithParty,
   CreatureWithPartyOnBattleFieldElement,
@@ -155,4 +156,22 @@ export function invokeSkill(context: SkillProcessContext): SkillProcessContext {
     return invokeAttackSkill(context)
   }
   throw new Error('It is an invalid `skillCategoryId`.')
+}
+
+export function refillCardsOnYourHand(
+  cardsInDeck: CardRelationship[],
+  cardsOnYourHand:CardRelationship[]
+): {
+  cardsInDeck: CardRelationship[],
+  cardsOnYourHand:CardRelationship[]
+} {
+  // TODO: Commonize "max 5"
+  const delta = 5 - cardsOnYourHand.length
+  if (delta < 0) {
+    throw new Error('The maximum number of cards is 5.')
+  }
+  return {
+    cardsInDeck: cardsInDeck.slice(delta, cardsInDeck.length),
+    cardsOnYourHand: cardsOnYourHand.concat(cardsInDeck.slice(0, delta)),
+  }
 }

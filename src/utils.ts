@@ -33,6 +33,10 @@ export type Card = {
   skillCategoryId: SkillCategoryId,
 }
 
+export type CardRelationship = {
+  creatureId: Creature['id'],
+}
+
 export type MatrixPosition = {
   x: number,
   y: number,
@@ -105,13 +109,9 @@ export type SkillProcessContext = {
 
 export type Game = {
   battleFieldMatrix: BattleFieldMatrix,
-  cardsInDeck: {
-    creatureId: Creature['id'],
-  }[],
+  cardsInDeck: CardRelationship[],
   // TODO: Max 5 cards
-  cardsOnYourHand: {
-    creatureId: Creature['id'],
-  }[],
+  cardsOnYourHand: CardRelationship[],
   cards: Card[],
   completedNormalAttackPhase: boolean,
   creatures: Creature[],

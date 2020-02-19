@@ -15,6 +15,7 @@ import {
 import {
   invokeNormalAttack,
   invokeSkill,
+  refillCardsOnYourHand,
 } from '../game'
 
 describe('reducers/game', function() {
@@ -89,6 +90,35 @@ describe('reducers/game', function() {
           assert.strictEqual(newEnemy.lifePoint < enemy.lifePoint, true)
         })
       })
+    })
+  })
+
+  describe('refillCardsOnYourHand', function() {
+    it('works', function() {
+      const result = refillCardsOnYourHand(
+        [
+          {creatureId: 'a'},
+          {creatureId: 'b'},
+          {creatureId: 'c'},
+          {creatureId: 'd'},
+          {creatureId: 'e'},
+        ],
+        [
+          {creatureId: 'x'},
+          {creatureId: 'y'},
+        ]
+      )
+      assert.deepStrictEqual(result.cardsInDeck, [
+        {creatureId: 'd'},
+        {creatureId: 'e'},
+      ])
+      assert.deepStrictEqual(result.cardsOnYourHand, [
+        {creatureId: 'x'},
+        {creatureId: 'y'},
+        {creatureId: 'a'},
+        {creatureId: 'b'},
+        {creatureId: 'c'},
+      ])
     })
   })
 })
