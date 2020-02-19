@@ -5,6 +5,7 @@ import {
   CreatureWithParty,
   CreatureWithPartyOnBattleFieldElement,
   Party,
+  MAX_NUMBER_OF_PLAYERS_HAND,
   NormalAttackProcessContext,
   SkillProcessContext,
   determineRelationshipBetweenFactions,
@@ -165,10 +166,9 @@ export function refillCardsOnYourHand(
   cardsInDeck: CardRelationship[],
   cardsOnYourHand:CardRelationship[]
 } {
-  // TODO: Commonize "max 5"
-  const delta = 5 - cardsOnYourHand.length
+  const delta = MAX_NUMBER_OF_PLAYERS_HAND - cardsOnYourHand.length
   if (delta < 0) {
-    throw new Error('The maximum number of cards is 5.')
+    throw new Error('The player\'s hand exceeds the max number.')
   }
   return {
     cardsInDeck: cardsInDeck.slice(delta, cardsInDeck.length),

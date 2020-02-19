@@ -110,7 +110,6 @@ export type SkillProcessContext = {
 export type Game = {
   battleFieldMatrix: BattleFieldMatrix,
   cardsInDeck: CardRelationship[],
-  // TODO: Max 5 cards
   cardsOnYourHand: CardRelationship[],
   cards: Card[],
   completedNormalAttackPhase: boolean,
@@ -129,6 +128,8 @@ export type ApplicationState = {
     battle?: BattlePage,
   },
 }
+
+export const MAX_NUMBER_OF_PLAYERS_HAND = 5
 
 /**
  * Validate that the matrix is not empty and is rectangular

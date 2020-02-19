@@ -9,6 +9,7 @@ import {
   Card,
   Creature,
   Game,
+  MAX_NUMBER_OF_PLAYERS_HAND,
   Party,
   SkillCategoryId,
   createBattleFieldMatrix,
@@ -114,14 +115,14 @@ function createInitialGame(): Game {
     battleFieldMatrix,
     cards: dummyAllCards,
     cardsOnYourHand: dummyAllCards
-      .slice(0, 5)
+      .slice(0, MAX_NUMBER_OF_PLAYERS_HAND)
       .map((card) => {
         return {
           creatureId: card.creatureId,
         }
       }),
     cardsInDeck: dummyAllCards
-      .slice(5, dummyAllCards.length)
+      .slice(MAX_NUMBER_OF_PLAYERS_HAND, dummyAllCards.length)
       .map((card) => {
         return {
           creatureId: card.creatureId,
