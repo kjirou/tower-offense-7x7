@@ -144,7 +144,6 @@ export function proceedTurn(
   const newBattlePage = produce(ensureBattlePage(state), draft => {
     const game = draft.game
 
-    // TODO: ターン数を増加する。
     // TODO: アニメーション用の情報を生成する。
 
     // 攻撃者リストを抽出する。
@@ -186,6 +185,7 @@ export function proceedTurn(
     draft.game.creatures = creaturesBeingUpdated
     draft.game.parties = partiesBeingUpdated
     draft.game.battleFieldMatrix = battleFieldMatrixBeingUpdated
+    draft.game.turnNumber += 1
   })
   return Object.assign({}, state, {pages: {battle: newBattlePage}})
 }
