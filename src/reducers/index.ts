@@ -139,7 +139,7 @@ export function selectCardOnYourHand(
   return Object.assign({}, state, {pages: {battle: newBattlePage}})
 }
 
-export function proceedTurn(
+export function runNormalAttackPhase(
   state: ApplicationState,
 ): ApplicationState {
   const newBattlePage = produce(ensureBattlePage(state), draft => {

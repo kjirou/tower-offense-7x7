@@ -15,7 +15,7 @@ import {
   findFirstAlly,
 } from '../../test-utils'
 import {
-  proceedTurn,
+  runNormalAttackPhase,
   selectBattleFieldElement,
 } from '../index'
 
@@ -83,7 +83,7 @@ describe('reducers/index', function() {
     })
   })
 
-  describe('proceedTurn', function() {
+  describe('runNormalAttackPhase', function() {
     describe('Creatures of the hostile relations are adjacent to each other', function() {
       it('can update the result that creatures attack to each other', function() {
         const state = createStateDisplayBattlePageAtStartOfGame()
@@ -96,7 +96,7 @@ describe('reducers/index', function() {
         b.attackPoint = 1
         battlePage.game.battleFieldMatrix[0][0].creatureId = a.id
         battlePage.game.battleFieldMatrix[0][1].creatureId = b.id
-        const newState = proceedTurn(state)
+        const newState = runNormalAttackPhase(state)
         const newBattlePage = ensureBattlePage(newState)
         const newA = findFirstAlly(newBattlePage.game.creatures, newBattlePage.game.parties, 'player')
         const newB = findFirstAlly(newBattlePage.game.creatures, newBattlePage.game.parties, 'computer')
@@ -118,7 +118,7 @@ describe('reducers/index', function() {
         allies[1].attackPoint = 1
         battlePage.game.battleFieldMatrix[0][0].creatureId = allies[0].id
         battlePage.game.battleFieldMatrix[0][1].creatureId = allies[1].id
-        const newState = proceedTurn(state)
+        const newState = runNormalAttackPhase(state)
         const newBattlePage = ensureBattlePage(newState)
         const newAllies = findAllies(newBattlePage.game.creatures, newBattlePage.game.parties, 'player')
         assert.strictEqual(allies[0].lifePoint, newAllies[0].lifePoint)
