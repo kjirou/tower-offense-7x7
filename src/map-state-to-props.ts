@@ -38,6 +38,7 @@ const jobIdToDummyImage = (jobId: string): string => {
     goblin: 'ゴ',
     knight: '重',
     mage: '魔',
+    priest: '聖',
     orc: 'オ',
   }
   return mapping[jobId] || '？'
