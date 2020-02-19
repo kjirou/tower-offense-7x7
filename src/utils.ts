@@ -42,7 +42,7 @@ export type MatrixPosition = {
   y: number,
 }
 
-type GlobalPlacementId = 'battleFieldMatrix' | 'cardsOnYourHand'
+type GlobalPlacementId = 'battleFieldMatrix' | 'cardsOnPlayersHand'
 
 type BattleFieldElementPosition = {
   globalPlacementId: 'battleFieldMatrix',
@@ -52,7 +52,7 @@ type BattleFieldElementPosition = {
 
 type CardOnYourHandPosition = {
   creatureId: Creature['id'],
-  globalPlacementId: 'cardsOnYourHand',
+  globalPlacementId: 'cardsOnPlayersHand',
 }
 
 export type GlobalPosition = BattleFieldElementPosition | CardOnYourHandPosition
@@ -63,10 +63,10 @@ export function isBattleFieldMatrixPositionType(
   return globalPosition.globalPlacementId === 'battleFieldMatrix'
 }
 
-export function isCardsOnYourHandPositionType(
+function isCardsOnPlayersHandPositionType(
   globalPosition: GlobalPosition
 ): globalPosition is CardOnYourHandPosition {
-  return globalPosition.globalPlacementId === 'cardsOnYourHand'
+  return globalPosition.globalPlacementId === 'cardsOnPlayersHand'
 }
 
 export type BattleFieldElement = {
@@ -110,7 +110,7 @@ export type SkillProcessContext = {
 export type Game = {
   battleFieldMatrix: BattleFieldMatrix,
   cardsInDeck: CardRelationship[],
-  cardsOnYourHand: CardRelationship[],
+  cardsOnPlayersHand: CardRelationship[],
   cards: Card[],
   completedNormalAttackPhase: boolean,
   creatures: Creature[],
@@ -166,7 +166,7 @@ export const ensureBattlePage = (state: ApplicationState): BattlePage => {
 export function areGlobalPositionsEqual(a: GlobalPosition, b: GlobalPosition): boolean {
   if (isBattleFieldMatrixPositionType(a) && isBattleFieldMatrixPositionType(b)) {
     return a.y === b.y && a.x === b.x
-  } else if (isCardsOnYourHandPositionType(a) && isCardsOnYourHandPositionType(b)) {
+  } else if (isCardsOnPlayersHandPositionType(a) && isCardsOnPlayersHandPositionType(b)) {
     return a.creatureId === b.creatureId
   }
   return false
@@ -298,7 +298,7 @@ export function pickBattleFieldElementsWhereCreatureExists(
 export function findCardUnderCursor(cards: Card[], cursor: Cursor): Card | undefined {
   for (const card of cards) {
     const position: GlobalPosition = {
-      globalPlacementId: 'cardsOnYourHand',
+      globalPlacementId: 'cardsOnPlayersHand',
       creatureId: card.creatureId,
     }
     if (areGlobalPositionsEqual(position, cursor.globalPosition)) {

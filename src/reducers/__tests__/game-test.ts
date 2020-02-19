@@ -15,7 +15,7 @@ import {
 import {
   invokeNormalAttack,
   invokeSkill,
-  refillCardsOnYourHand,
+  refillCardsOnPlayersHand,
 } from '../game'
 
 describe('reducers/game', function() {
@@ -93,9 +93,9 @@ describe('reducers/game', function() {
     })
   })
 
-  describe('refillCardsOnYourHand', function() {
+  describe('refillCardsOnPlayersHand', function() {
     it('works', function() {
-      const result = refillCardsOnYourHand(
+      const result = refillCardsOnPlayersHand(
         [
           {creatureId: 'a'},
           {creatureId: 'b'},
@@ -112,7 +112,7 @@ describe('reducers/game', function() {
         {creatureId: 'd'},
         {creatureId: 'e'},
       ])
-      assert.deepStrictEqual(result.cardsOnYourHand, [
+      assert.deepStrictEqual(result.cardsOnPlayersHand, [
         {creatureId: 'x'},
         {creatureId: 'y'},
         {creatureId: 'a'},

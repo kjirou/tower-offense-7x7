@@ -92,12 +92,12 @@ function mapBattlePageStateToProps(
     })
   })
 
-  const cardsProps: CardProps[] = game.cardsOnYourHand
+  const cardsProps: CardProps[] = game.cardsOnPlayersHand
     .map(({creatureId}, index) => {
       const card = findCardByCreatureId(game.cards, creatureId)
       const creature = findCreatureById(game.creatures, creatureId)
       const asGlobalPosition: GlobalPosition = {
-        globalPlacementId: 'cardsOnYourHand',
+        globalPlacementId: 'cardsOnPlayersHand',
         creatureId,
       }
       const isSelected = game.cursor
@@ -118,7 +118,7 @@ function mapBattlePageStateToProps(
 
   return {
     battleFieldBoard: battleFieldBoardProps,
-    cardsOnYourHand: {
+    cardsOnPlayersHand: {
       cards: cardsProps
     },
     turnNumber: game.turnNumber,

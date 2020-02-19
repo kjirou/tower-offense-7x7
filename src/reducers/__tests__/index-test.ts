@@ -29,10 +29,10 @@ describe('reducers/index', function() {
       beforeEach(function() {
         state = createStateDisplayBattlePageAtStartOfGame()
         battlePage = ensureBattlePage(state)
-        allyCreatureId = battlePage.game.cardsOnYourHand[0].creatureId
+        allyCreatureId = battlePage.game.cardsOnPlayersHand[0].creatureId
         battlePage.game.cursor = {
           globalPosition: {
-            globalPlacementId: 'cardsOnYourHand',
+            globalPlacementId: 'cardsOnPlayersHand',
             creatureId: allyCreatureId,
           },
         }
@@ -46,7 +46,7 @@ describe('reducers/index', function() {
 
       it('should reduce cards on player\'s hand', function() {
         assert.strictEqual(
-          battlePage.game.cardsOnYourHand.length > newBattlePage.game.cardsOnYourHand.length,
+          battlePage.game.cardsOnPlayersHand.length > newBattlePage.game.cardsOnPlayersHand.length,
           true
         )
       })
@@ -64,10 +64,10 @@ describe('reducers/index', function() {
       beforeEach(function() {
         state = createStateDisplayBattlePageAtStartOfGame()
         battlePage = ensureBattlePage(state)
-        allyCreatureId = battlePage.game.cardsOnYourHand[0].creatureId
+        allyCreatureId = battlePage.game.cardsOnPlayersHand[0].creatureId
         battlePage.game.cursor = {
           globalPosition: {
-            globalPlacementId: 'cardsOnYourHand',
+            globalPlacementId: 'cardsOnPlayersHand',
             creatureId: allyCreatureId,
           },
         }
@@ -78,7 +78,7 @@ describe('reducers/index', function() {
       })
 
       it('should not reduce cards on player\'s hand', function() {
-        assert.strictEqual(battlePage.game.cardsOnYourHand.length, newBattlePage.game.cardsOnYourHand.length)
+        assert.strictEqual(battlePage.game.cardsOnPlayersHand.length, newBattlePage.game.cardsOnPlayersHand.length)
       })
     })
   })

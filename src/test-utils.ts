@@ -91,7 +91,7 @@ export function createStateDisplayBattlePageAtStartOfGame(): ApplicationState {
           battleFieldMatrix: createBattleFieldMatrix(7, 7),
           cards,
           cardsInDeck: [],
-          cardsOnYourHand: Array.from({length: 5}).map((e, index) => {
+          cardsOnPlayersHand: Array.from({length: 5}).map((e, index) => {
             return {
               creatureId: allies[index].id,
             }

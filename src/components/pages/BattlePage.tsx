@@ -214,12 +214,12 @@ const Card: React.FC<CardProps> = (props) => {
   )
 }
 
-type CardsOnYourHandProps = {
+type CardsOnPlayersHandProps = {
   // 0 to 5 cards.
   cards: CardProps[],
 }
 
-const CardsOnYourHand: React.FC<CardsOnYourHandProps> = (props) => {
+const CardsOnPlayersHand: React.FC<CardsOnPlayersHandProps> = (props) => {
   const style = {
     display: 'flex',
     width: '360px',
@@ -326,7 +326,7 @@ const Footer: React.FC<FooterProps> = (props) => {
 
 export type Props = {
   battleFieldBoard: BattleFieldSquareProps[][],
-  cardsOnYourHand: CardsOnYourHandProps,
+  cardsOnPlayersHand: CardsOnPlayersHandProps,
   handleTouchBattleButton: FooterProps['handleTouchBattleButton'],
   handleTouchNextTurnButton: FooterProps['handleTouchNextTurnButton'],
   turnNumber: MetaInformationBarProps['turnNumber'],
@@ -346,7 +346,7 @@ export const BattlePage: React.FC<Props> = (props) => {
       <MetaInformationBar turnNumber={props.turnNumber} />
       <BattleFieldBoard board={props.battleFieldBoard} />
       <SquareMonitor />
-      <CardsOnYourHand {...props.cardsOnYourHand} />
+      <CardsOnPlayersHand {...props.cardsOnPlayersHand} />
       <Footer
         handleTouchBattleButton={props.handleTouchBattleButton}
         handleTouchNextTurnButton={props.handleTouchNextTurnButton}

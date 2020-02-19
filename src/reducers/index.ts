@@ -23,7 +23,7 @@ import {
 import {
   invokeSkill,
   invokeNormalAttack,
-  refillCardsOnYourHand,
+  refillCardsOnPlayersHand,
 } from './game'
 
 export function selectBattleFieldElement(
@@ -81,7 +81,7 @@ export function selectBattleFieldElement(
             draft.game.parties = newContext.parties
             draft.game.battleFieldMatrix = newContext.battleFieldMatrix
             // 手札のカードを一枚減らす。
-            draft.game.cardsOnYourHand = draft.game.cardsOnYourHand
+            draft.game.cardsOnPlayersHand = draft.game.cardsOnPlayersHand
               .filter(e => e.creatureId !== cardUnderCursor.creatureId)
             // カーソルを外す。
             draft.game.cursor = undefined
@@ -94,7 +94,7 @@ export function selectBattleFieldElement(
           // クリーチャーを配置する。
           battleFieldElement.creatureId = cardUnderCursor.creatureId
           // 手札のカードを一枚減らす。
-          draft.game.cardsOnYourHand = draft.game.cardsOnYourHand
+          draft.game.cardsOnPlayersHand = draft.game.cardsOnPlayersHand
             .filter(e => e.creatureId !== cardUnderCursor.creatureId)
           // カーソルを外す。
           draft.game.cursor = undefined
@@ -120,7 +120,7 @@ export function selectCardOnYourHand(
 ): ApplicationState {
   const newBattlePage = produce(ensureBattlePage(state), draft => {
     const touchedPosition: GlobalPosition = {
-      globalPlacementId: 'cardsOnYourHand',
+      globalPlacementId: 'cardsOnPlayersHand',
       creatureId,
     }
     if (
@@ -131,7 +131,7 @@ export function selectCardOnYourHand(
     } else {
       draft.game.cursor = {
         globalPosition: {
-          globalPlacementId: 'cardsOnYourHand',
+          globalPlacementId: 'cardsOnPlayersHand',
           creatureId,
         },
       }
@@ -206,10 +206,10 @@ export function proceedTurn(
 
     // TODO: Prohibit operation
 
-    const newCardSets = refillCardsOnYourHand(draft.game.cardsInDeck, draft.game.cardsOnYourHand)
+    const newCardSets = refillCardsOnPlayersHand(draft.game.cardsInDeck, draft.game.cardsOnPlayersHand)
 
     draft.game.cardsInDeck = newCardSets.cardsInDeck
-    draft.game.cardsOnYourHand = newCardSets.cardsOnYourHand
+    draft.game.cardsOnPlayersHand = newCardSets.cardsOnPlayersHand
     draft.game.completedNormalAttackPhase = false
     draft.game.turnNumber += 1
   })

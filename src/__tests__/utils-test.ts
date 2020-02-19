@@ -134,11 +134,11 @@ describe('utils', function() {
         assert.strictEqual(
           areGlobalPositionsEqual(
             {
-              globalPlacementId: 'cardsOnYourHand',
+              globalPlacementId: 'cardsOnPlayersHand',
               creatureId: 'foo',
             },
             {
-              globalPlacementId: 'cardsOnYourHand',
+              globalPlacementId: 'cardsOnPlayersHand',
               creatureId: 'foo',
             }
           ),
@@ -150,11 +150,11 @@ describe('utils', function() {
         assert.strictEqual(
           areGlobalPositionsEqual(
             {
-              globalPlacementId: 'cardsOnYourHand',
+              globalPlacementId: 'cardsOnPlayersHand',
               creatureId: 'foo',
             },
             {
-              globalPlacementId: 'cardsOnYourHand',
+              globalPlacementId: 'cardsOnPlayersHand',
               creatureId: 'bar',
             }
           ),
@@ -168,7 +168,7 @@ describe('utils', function() {
         assert.strictEqual(
           areGlobalPositionsEqual(
             {
-              globalPlacementId: 'cardsOnYourHand',
+              globalPlacementId: 'cardsOnPlayersHand',
               creatureId: 'foo',
             },
             {
@@ -354,7 +354,7 @@ describe('utils', function() {
       assert.strictEqual(
         findCardUnderCursor(cards, {
           globalPosition: {
-            globalPlacementId: 'cardsOnYourHand',
+            globalPlacementId: 'cardsOnPlayersHand',
             creatureId: 'b',
           },
         }),
@@ -372,7 +372,7 @@ describe('utils', function() {
       assert.strictEqual(
         findCardUnderCursor(cards, {
           globalPosition: {
-            globalPlacementId: 'cardsOnYourHand',
+            globalPlacementId: 'cardsOnPlayersHand',
             creatureId: 'b',
           },
         }),

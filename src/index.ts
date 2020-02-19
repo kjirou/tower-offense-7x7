@@ -114,7 +114,7 @@ function createInitialGame(): Game {
     ],
     battleFieldMatrix,
     cards: dummyAllCards,
-    cardsOnYourHand: dummyAllCards
+    cardsOnPlayersHand: dummyAllCards
       .slice(0, MAX_NUMBER_OF_PLAYERS_HAND)
       .map((card) => {
         return {

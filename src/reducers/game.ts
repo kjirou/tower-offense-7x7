@@ -159,19 +159,19 @@ export function invokeSkill(context: SkillProcessContext): SkillProcessContext {
   throw new Error('It is an invalid `skillCategoryId`.')
 }
 
-export function refillCardsOnYourHand(
+export function refillCardsOnPlayersHand(
   cardsInDeck: CardRelationship[],
-  cardsOnYourHand:CardRelationship[]
+  cardsOnPlayersHand:CardRelationship[]
 ): {
   cardsInDeck: CardRelationship[],
-  cardsOnYourHand:CardRelationship[]
+  cardsOnPlayersHand:CardRelationship[]
 } {
-  const delta = MAX_NUMBER_OF_PLAYERS_HAND - cardsOnYourHand.length
+  const delta = MAX_NUMBER_OF_PLAYERS_HAND - cardsOnPlayersHand.length
   if (delta < 0) {
     throw new Error('The player\'s hand exceeds the max number.')
   }
   return {
     cardsInDeck: cardsInDeck.slice(delta, cardsInDeck.length),
-    cardsOnYourHand: cardsOnYourHand.concat(cardsInDeck.slice(0, delta)),
+    cardsOnPlayersHand: cardsOnPlayersHand.concat(cardsInDeck.slice(0, delta)),
   }
 }
