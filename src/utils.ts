@@ -105,6 +105,9 @@ export type SkillProcessContext = {
 
 export type Game = {
   battleFieldMatrix: BattleFieldMatrix,
+  cardsInDeck: {
+    creatureId: Creature['id'],
+  }[],
   // TODO: Max 5 cards
   cardsOnYourHand: {
     creatureId: Creature['id'],

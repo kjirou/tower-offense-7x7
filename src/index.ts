@@ -120,6 +120,13 @@ function createInitialGame(): Game {
           creatureId: creature.id,
         }
       }),
+    cardsInDeck: dummyAllies
+      .slice(5, dummyAllies.length)
+      .map((creature) => {
+        return {
+          creatureId: creature.id,
+        }
+      }),
     cursor: undefined,
     completedNormalAttackPhase: false,
     turnNumber: 1,
