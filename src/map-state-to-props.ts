@@ -122,10 +122,10 @@ function mapBattlePageStateToProps(
     },
     turnNumber: game.turnNumber,
     showNextTurnButton: game.completedNormalAttackPhase,
-    handleClickBattleButton: () => {
+    handleTouchBattleButton: () => {
       setState(s => runNormalAttackPhase(s))
     },
-    handleClickNextTurnButton: () => {
+    handleTouchNextTurnButton: () => {
       setState(s => proceedTurn(s))
     },
   }
