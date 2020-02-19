@@ -1,9 +1,11 @@
 import {
   BattleFieldElement,
+  CardRelationship,
   Creature,
   CreatureWithParty,
   CreatureWithPartyOnBattleFieldElement,
   Party,
+  MAX_NUMBER_OF_PLAYERS_HAND,
   NormalAttackProcessContext,
   SkillProcessContext,
   determineRelationshipBetweenFactions,
@@ -155,4 +157,21 @@ export function invokeSkill(context: SkillProcessContext): SkillProcessContext {
     return invokeAttackSkill(context)
   }
   throw new Error('It is an invalid `skillCategoryId`.')
+}
+
+export function refillCardsOnPlayersHand(
+  cardsInDeck: CardRelationship[],
+  cardsOnPlayersHand:CardRelationship[]
+): {
+  cardsInDeck: CardRelationship[],
+  cardsOnPlayersHand:CardRelationship[]
+} {
+  const delta = MAX_NUMBER_OF_PLAYERS_HAND - cardsOnPlayersHand.length
+  if (delta < 0) {
+    throw new Error('The player\'s hand exceeds the max number.')
+  }
+  return {
+    cardsInDeck: cardsInDeck.slice(delta, cardsInDeck.length),
+    cardsOnPlayersHand: cardsOnPlayersHand.concat(cardsInDeck.slice(0, delta)),
+  }
 }

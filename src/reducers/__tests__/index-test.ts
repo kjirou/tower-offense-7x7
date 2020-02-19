@@ -15,7 +15,7 @@ import {
   findFirstAlly,
 } from '../../test-utils'
 import {
-  proceedTurn,
+  runNormalAttackPhase,
   selectBattleFieldElement,
 } from '../index'
 
@@ -29,10 +29,10 @@ describe('reducers/index', function() {
       beforeEach(function() {
         state = createStateDisplayBattlePageAtStartOfGame()
         battlePage = ensureBattlePage(state)
-        allyCreatureId = battlePage.game.cardsOnYourHand[0].creatureId
+        allyCreatureId = battlePage.game.cardsOnPlayersHand[0].creatureId
         battlePage.game.cursor = {
           globalPosition: {
-            globalPlacementId: 'cardsOnYourHand',
+            globalPlacementId: 'cardsOnPlayersHand',
             creatureId: allyCreatureId,
           },
         }
@@ -46,7 +46,7 @@ describe('reducers/index', function() {
 
       it('should reduce cards on player\'s hand', function() {
         assert.strictEqual(
-          battlePage.game.cardsOnYourHand.length > newBattlePage.game.cardsOnYourHand.length,
+          battlePage.game.cardsOnPlayersHand.length > newBattlePage.game.cardsOnPlayersHand.length,
           true
         )
       })
@@ -64,10 +64,10 @@ describe('reducers/index', function() {
       beforeEach(function() {
         state = createStateDisplayBattlePageAtStartOfGame()
         battlePage = ensureBattlePage(state)
-        allyCreatureId = battlePage.game.cardsOnYourHand[0].creatureId
+        allyCreatureId = battlePage.game.cardsOnPlayersHand[0].creatureId
         battlePage.game.cursor = {
           globalPosition: {
-            globalPlacementId: 'cardsOnYourHand',
+            globalPlacementId: 'cardsOnPlayersHand',
             creatureId: allyCreatureId,
           },
         }
@@ -78,12 +78,12 @@ describe('reducers/index', function() {
       })
 
       it('should not reduce cards on player\'s hand', function() {
-        assert.strictEqual(battlePage.game.cardsOnYourHand.length, newBattlePage.game.cardsOnYourHand.length)
+        assert.strictEqual(battlePage.game.cardsOnPlayersHand.length, newBattlePage.game.cardsOnPlayersHand.length)
       })
     })
   })
 
-  describe('proceedTurn', function() {
+  describe('runNormalAttackPhase', function() {
     describe('Creatures of the hostile relations are adjacent to each other', function() {
       it('can update the result that creatures attack to each other', function() {
         const state = createStateDisplayBattlePageAtStartOfGame()
@@ -96,7 +96,7 @@ describe('reducers/index', function() {
         b.attackPoint = 1
         battlePage.game.battleFieldMatrix[0][0].creatureId = a.id
         battlePage.game.battleFieldMatrix[0][1].creatureId = b.id
-        const newState = proceedTurn(state)
+        const newState = runNormalAttackPhase(state)
         const newBattlePage = ensureBattlePage(newState)
         const newA = findFirstAlly(newBattlePage.game.creatures, newBattlePage.game.parties, 'player')
         const newB = findFirstAlly(newBattlePage.game.creatures, newBattlePage.game.parties, 'computer')
@@ -118,7 +118,7 @@ describe('reducers/index', function() {
         allies[1].attackPoint = 1
         battlePage.game.battleFieldMatrix[0][0].creatureId = allies[0].id
         battlePage.game.battleFieldMatrix[0][1].creatureId = allies[1].id
-        const newState = proceedTurn(state)
+        const newState = runNormalAttackPhase(state)
         const newBattlePage = ensureBattlePage(newState)
         const newAllies = findAllies(newBattlePage.game.creatures, newBattlePage.game.parties, 'player')
         assert.strictEqual(allies[0].lifePoint, newAllies[0].lifePoint)

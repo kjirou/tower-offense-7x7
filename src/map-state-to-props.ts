@@ -22,8 +22,9 @@ import {
 } from './utils'
 import {
   proceedTurn,
+  runNormalAttackPhase,
   selectBattleFieldElement,
-  selectCardOnYourHand,
+  selectCardOnPlayersHand,
 } from './reducers'
 
 type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>
@@ -37,6 +38,7 @@ const jobIdToDummyImage = (jobId: string): string => {
     goblin: 'ゴ',
     knight: '重',
     mage: '魔',
+    priest: '聖',
     orc: 'オ',
   }
   return mapping[jobId] || '？'
@@ -90,12 +92,12 @@ function mapBattlePageStateToProps(
     })
   })
 
-  const cardsProps: CardProps[] = game.cardsOnYourHand
+  const cardsProps: CardProps[] = game.cardsOnPlayersHand
     .map(({creatureId}, index) => {
       const card = findCardByCreatureId(game.cards, creatureId)
       const creature = findCreatureById(game.creatures, creatureId)
       const asGlobalPosition: GlobalPosition = {
-        globalPlacementId: 'cardsOnYourHand',
+        globalPlacementId: 'cardsOnPlayersHand',
         creatureId,
       }
       const isSelected = game.cursor
@@ -109,17 +111,22 @@ function mapBattlePageStateToProps(
         isFirst: index === 0,
         isSelected,
         handleTouch: (creatureId: string) => {
-          setState(s => selectCardOnYourHand(s, creatureId))
+          setState(s => selectCardOnPlayersHand(s, creatureId))
         },
       }
     })
 
   return {
     battleFieldBoard: battleFieldBoardProps,
-    cardsOnYourHand: {
+    cardsOnPlayersHand: {
       cards: cardsProps
     },
-    handleClickNextButton: () => {
+    turnNumber: game.turnNumber,
+    showNextTurnButton: game.completedNormalAttackPhase,
+    handleTouchBattleButton: () => {
+      setState(s => runNormalAttackPhase(s))
+    },
+    handleTouchNextTurnButton: () => {
       setState(s => proceedTurn(s))
     },
   }

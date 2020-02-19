@@ -9,85 +9,83 @@ import {
   Card,
   Creature,
   Game,
+  MAX_NUMBER_OF_PLAYERS_HAND,
   Party,
   SkillCategoryId,
   createBattleFieldMatrix,
 } from './utils'
 
-const dummyAllCreatures: Creature[] = [
-  {
-    id: 'ally-1',
-    jobId: 'fighter',
-    lifePoint: 12,
-    attackPoint: 4,
-    skillIds: [],
-  },
-  {
-    id: 'ally-2',
-    jobId: 'knight',
-    lifePoint: 18,
-    attackPoint: 2,
-    skillIds: [],
-  },
-  {
-    id: 'ally-3',
-    jobId: 'archer',
-    lifePoint: 6,
-    attackPoint: 3,
-    skillIds: [],
-  },
-  {
-    id: 'ally-4',
-    jobId: 'mage',
-    lifePoint: 3,
-    attackPoint: 3,
-    skillIds: [],
-  },
-  {
-    id: 'ally-5',
-    jobId: 'fighter',
-    lifePoint: 12,
-    attackPoint: 4,
-    skillIds: [],
-  },
-  {
-    id: 'ally-6',
-    jobId: 'mage',
-    lifePoint: 3,
-    attackPoint: 3,
-    skillIds: [],
-  },
-  {
-    id: 'ally-7',
-    jobId: 'archer',
-    lifePoint: 6,
-    attackPoint: 3,
-    skillIds: [],
-  },
-  {
-    id: 'enemy-1',
-    jobId: 'goblin',
-    lifePoint: 4,
-    attackPoint: 1,
-    skillIds: [],
-  },
-  {
-    id: 'enemy-2',
-    jobId: 'goblin',
-    lifePoint: 4,
-    attackPoint: 1,
-    skillIds: [],
-  },
-  {
-    id: 'enemy-3',
-    jobId: 'orc',
-    lifePoint: 8,
-    attackPoint: 3,
-    skillIds: [],
-  },
-]
-const dummyAllCards: Card[] = dummyAllCreatures
-  .filter(e => /^ally-/.test(e.id))
+const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => {
+  const id = `ally-${index + 1}`
+  switch (index % 5) {
+    case 0:
+      return {
+        id,
+        jobId: 'fighter',
+        lifePoint: 12,
+        attackPoint: 4,
+        skillIds: [],
+      }
+    case 1:
+      return {
+        id,
+        jobId: 'knight',
+        lifePoint: 18,
+        attackPoint: 2,
+        skillIds: [],
+      }
+    case 2:
+      return {
+        id,
+        jobId: 'archer',
+        lifePoint: 6,
+        attackPoint: 3,
+        skillIds: [],
+      }
+    case 3:
+      return {
+        id,
+        jobId: 'mage',
+        lifePoint: 3,
+        attackPoint: 3,
+        skillIds: [],
+      }
+    case 4:
+      return {
+        id,
+        jobId: 'priest',
+        lifePoint: 5,
+        attackPoint: 1,
+        skillIds: [],
+      }
+    default:
+      throw new Error('')
+  }
+})
+const dummyEnemies: Creature[] = Array.from({length: 20}).map((unused, index) => {
+  const id = `enemy-${index + 1}`
+  switch (index % 2) {
+    case 0:
+      return {
+        id,
+        jobId: 'goblin',
+        lifePoint: 4,
+        attackPoint: 1,
+        skillIds: [],
+      }
+    case 1:
+      return {
+        id,
+        jobId: 'orc',
+        lifePoint: 8,
+        attackPoint: 3,
+        skillIds: [],
+      }
+    default:
+      throw new Error('')
+  }
+})
+const dummyAllCards: Card[] = dummyAllies
   .map((creature, index) => {
     const skillCategoryId = ['attack', 'defense', 'support'][index % 3] as SkillCategoryId
     return {
@@ -99,39 +97,40 @@ const dummyAllCards: Card[] = dummyAllCreatures
 function createInitialGame(): Game {
   const battleFieldMatrix = createBattleFieldMatrix(7, 7)
 
-  // "ally-1"
-  battleFieldMatrix[3][2].creatureId = dummyAllCreatures[0].id
-  // "ally-4"
-  battleFieldMatrix[2][1].creatureId = dummyAllCreatures[3].id
-  battleFieldMatrix[3][3].creatureId = dummyAllCreatures[7].id
-  battleFieldMatrix[4][3].creatureId = dummyAllCreatures[9].id
+  battleFieldMatrix[3][3].creatureId = dummyEnemies[0].id
+  battleFieldMatrix[4][3].creatureId = dummyEnemies[1].id
 
   return {
-    creatures: dummyAllCreatures,
+    creatures: dummyAllies.concat(dummyEnemies),
     parties: [
       {
         factionId: 'player',
-        creatureIds: dummyAllCreatures
-          .filter(e => /^ally-/.test(e.id))
-          .map(e => e.id),
+        creatureIds: dummyAllies.map(e => e.id),
       },
       {
         factionId: 'computer',
-        creatureIds: dummyAllCreatures
-          .filter(e => /^enemy-/.test(e.id))
-          .map(e => e.id),
+        creatureIds: dummyEnemies.map(e => e.id),
       },
     ],
     battleFieldMatrix,
     cards: dummyAllCards,
-    cardsOnYourHand: [
-      {creatureId: 'ally-2'},
-      {creatureId: 'ally-3'},
-      {creatureId: 'ally-5'},
-      {creatureId: 'ally-6'},
-      {creatureId: 'ally-7'},
-    ],
+    cardsOnPlayersHand: dummyAllCards
+      .slice(0, MAX_NUMBER_OF_PLAYERS_HAND)
+      .map((card) => {
+        return {
+          creatureId: card.creatureId,
+        }
+      }),
+    cardsInDeck: dummyAllCards
+      .slice(MAX_NUMBER_OF_PLAYERS_HAND, dummyAllCards.length)
+      .map((card) => {
+        return {
+          creatureId: card.creatureId,
+        }
+      }),
     cursor: undefined,
+    completedNormalAttackPhase: false,
+    turnNumber: 1,
   }
 }
 

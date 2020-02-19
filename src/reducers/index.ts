@@ -23,6 +23,7 @@ import {
 import {
   invokeSkill,
   invokeNormalAttack,
+  refillCardsOnPlayersHand,
 } from './game'
 
 export function selectBattleFieldElement(
@@ -80,8 +81,12 @@ export function selectBattleFieldElement(
             draft.game.parties = newContext.parties
             draft.game.battleFieldMatrix = newContext.battleFieldMatrix
             // 手札のカードを一枚減らす。
-            draft.game.cardsOnYourHand = draft.game.cardsOnYourHand
+            draft.game.cardsOnPlayersHand = draft.game.cardsOnPlayersHand
               .filter(e => e.creatureId !== cardUnderCursor.creatureId)
+            // 山札のカードへ消費したカードを戻す。
+            draft.game.cardsInDeck.push({
+              creatureId: cardUnderCursor.creatureId,
+            })
             // カーソルを外す。
             draft.game.cursor = undefined
           // 選択先クリーチャーが敵のとき。
@@ -93,11 +98,12 @@ export function selectBattleFieldElement(
           // クリーチャーを配置する。
           battleFieldElement.creatureId = cardUnderCursor.creatureId
           // 手札のカードを一枚減らす。
-          draft.game.cardsOnYourHand = draft.game.cardsOnYourHand
+          draft.game.cardsOnPlayersHand = draft.game.cardsOnPlayersHand
             .filter(e => e.creatureId !== cardUnderCursor.creatureId)
           // カーソルを外す。
           draft.game.cursor = undefined
         }
+      // 手札のカードへカーソルが当たっていないとき。
       } else {
         draft.game.cursor = {
           globalPosition: {
@@ -112,13 +118,13 @@ export function selectBattleFieldElement(
   return Object.assign({}, state, {pages: {battle: newBattlePage}})
 }
 
-export function selectCardOnYourHand(
+export function selectCardOnPlayersHand(
   state: ApplicationState,
   creatureId: Creature['id'],
 ): ApplicationState {
   const newBattlePage = produce(ensureBattlePage(state), draft => {
     const touchedPosition: GlobalPosition = {
-      globalPlacementId: 'cardsOnYourHand',
+      globalPlacementId: 'cardsOnPlayersHand',
       creatureId,
     }
     if (
@@ -129,7 +135,7 @@ export function selectCardOnYourHand(
     } else {
       draft.game.cursor = {
         globalPosition: {
-          globalPlacementId: 'cardsOnYourHand',
+          globalPlacementId: 'cardsOnPlayersHand',
           creatureId,
         },
       }
@@ -138,13 +144,16 @@ export function selectCardOnYourHand(
   return Object.assign({}, state, {pages: {battle: newBattlePage}})
 }
 
-export function proceedTurn(
+export function runNormalAttackPhase(
   state: ApplicationState,
 ): ApplicationState {
   const newBattlePage = produce(ensureBattlePage(state), draft => {
     const game = draft.game
 
-    // TODO: ターン数を増加する。
+    if (game.completedNormalAttackPhase) {
+      throw new Error('The normal-attack phase is over.')
+    }
+
     // TODO: アニメーション用の情報を生成する。
 
     // 攻撃者リストを抽出する。
@@ -186,6 +195,27 @@ export function proceedTurn(
     draft.game.creatures = creaturesBeingUpdated
     draft.game.parties = partiesBeingUpdated
     draft.game.battleFieldMatrix = battleFieldMatrixBeingUpdated
+    draft.game.completedNormalAttackPhase = true
+  })
+  return Object.assign({}, state, {pages: {battle: newBattlePage}})
+}
+
+export function proceedTurn(
+  state: ApplicationState,
+): ApplicationState {
+  const newBattlePage = produce(ensureBattlePage(state), draft => {
+    if (!draft.game.completedNormalAttackPhase) {
+      throw new Error('The normal-attack phase must be completed.')
+    }
+
+    // TODO: Prohibit operation
+
+    const newCardSets = refillCardsOnPlayersHand(draft.game.cardsInDeck, draft.game.cardsOnPlayersHand)
+
+    draft.game.cardsInDeck = newCardSets.cardsInDeck
+    draft.game.cardsOnPlayersHand = newCardSets.cardsOnPlayersHand
+    draft.game.completedNormalAttackPhase = false
+    draft.game.turnNumber += 1
   })
   return Object.assign({}, state, {pages: {battle: newBattlePage}})
 }

@@ -5,16 +5,33 @@ import {
   flattenMatrix,
 } from '../../utils'
 
-const MetaInformationBar: React.FC<{}> = () => {
+type MetaInformationBarProps = {
+  turnNumber: number,
+}
+
+const MetaInformationBar: React.FC<MetaInformationBarProps> = (props) => {
   const style = {
     position: 'relative',
+    display: 'flex',
+    justifyContent: 'flex-start',
     width: '360px',
     height: '48px',
     backgroundColor: 'yellow',
   }
 
   return (
-    <div style={style}>MetaInformationBar!</div>
+    <div style={style}>
+      <div
+        style={{
+          width: '48px',
+          height: '48px',
+          lineHeight: '48px',
+          fontSize: '24px',
+          textAlign: 'center',
+          backgroundColor: 'silver',
+        }}
+      >{props.turnNumber}</div>
+    </div>
   )
 }
 
@@ -197,12 +214,12 @@ const Card: React.FC<CardProps> = (props) => {
   )
 }
 
-type CardsOnYourHandProps = {
+type CardsOnPlayersHandProps = {
   // 0 to 5 cards.
   cards: CardProps[],
 }
 
-const CardsOnYourHand: React.FC<CardsOnYourHandProps> = (props) => {
+const CardsOnPlayersHand: React.FC<CardsOnPlayersHandProps> = (props) => {
   const style = {
     display: 'flex',
     width: '360px',
@@ -230,7 +247,9 @@ const CardsOnYourHand: React.FC<CardsOnYourHandProps> = (props) => {
 }
 
 type FooterProps = {
-  handleClickNextButton: () => void,
+  handleTouchBattleButton: () => void,
+  handleTouchNextTurnButton: () => void,
+  showNextTurnButton: boolean,
 }
 
 const Footer: React.FC<FooterProps> = (props) => {
@@ -242,6 +261,15 @@ const Footer: React.FC<FooterProps> = (props) => {
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: 'aqua',
+  }
+
+  const rightSideButtonStyle = {
+    width: '136px',
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'lime',
   }
 
   return (
@@ -256,7 +284,7 @@ const Footer: React.FC<FooterProps> = (props) => {
       }}>
         <div style={{
           fontSize: '24px',
-        }}>Back</div>
+        }}>Rollback</div>
       </div>
       <div style={{
         width: '72px',
@@ -269,31 +297,40 @@ const Footer: React.FC<FooterProps> = (props) => {
       }}>
         <div>5</div>
       </div>
-      <div
-        style={{
-          width: '136px',
-          height: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: 'lime',
-        }}
-        onClick={props.handleClickNextButton}
-      >
-        <div
-          style={{
-            fontSize: '24px',
-          }}
-        >Next</div>
-      </div>
+      {
+        props.showNextTurnButton
+        ? <div
+          style={rightSideButtonStyle}
+          onTouchStart={props.handleTouchNextTurnButton}
+        >
+          <div
+            style={{
+              fontSize: '24px',
+            }}
+          >Next</div>
+        </div>
+        : <div
+          style={rightSideButtonStyle}
+          onTouchStart={props.handleTouchBattleButton}
+        >
+          <div
+            style={{
+              fontSize: '24px',
+            }}
+          >Battle</div>
+        </div>
+      }
     </div>
   )
 }
 
 export type Props = {
   battleFieldBoard: BattleFieldSquareProps[][],
-  cardsOnYourHand: CardsOnYourHandProps,
-  handleClickNextButton: FooterProps['handleClickNextButton'],
+  cardsOnPlayersHand: CardsOnPlayersHandProps,
+  handleTouchBattleButton: FooterProps['handleTouchBattleButton'],
+  handleTouchNextTurnButton: FooterProps['handleTouchNextTurnButton'],
+  turnNumber: MetaInformationBarProps['turnNumber'],
+  showNextTurnButton: FooterProps['showNextTurnButton'],
 }
 
 export const BattlePage: React.FC<Props> = (props) => {
@@ -306,12 +343,14 @@ export const BattlePage: React.FC<Props> = (props) => {
 
   return (
     <div style={style}>
-      <MetaInformationBar />
+      <MetaInformationBar turnNumber={props.turnNumber} />
       <BattleFieldBoard board={props.battleFieldBoard} />
       <SquareMonitor />
-      <CardsOnYourHand {...props.cardsOnYourHand} />
+      <CardsOnPlayersHand {...props.cardsOnPlayersHand} />
       <Footer
-        handleClickNextButton={props.handleClickNextButton}
+        handleTouchBattleButton={props.handleTouchBattleButton}
+        handleTouchNextTurnButton={props.handleTouchNextTurnButton}
+        showNextTurnButton={props.showNextTurnButton}
       />
     </div>
   )

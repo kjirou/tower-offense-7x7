@@ -129,16 +129,16 @@ describe('utils', function() {
       })
     })
 
-    describe('a=CardsOnYourHandPosition, b=CardsOnYourHandPosition', function() {
+    describe('a=CardOnPlayersHandPosition, b=CardOnPlayersHandPosition', function() {
       it('can return true if args are equal', function() {
         assert.strictEqual(
           areGlobalPositionsEqual(
             {
-              globalPlacementId: 'cardsOnYourHand',
+              globalPlacementId: 'cardsOnPlayersHand',
               creatureId: 'foo',
             },
             {
-              globalPlacementId: 'cardsOnYourHand',
+              globalPlacementId: 'cardsOnPlayersHand',
               creatureId: 'foo',
             }
           ),
@@ -150,11 +150,11 @@ describe('utils', function() {
         assert.strictEqual(
           areGlobalPositionsEqual(
             {
-              globalPlacementId: 'cardsOnYourHand',
+              globalPlacementId: 'cardsOnPlayersHand',
               creatureId: 'foo',
             },
             {
-              globalPlacementId: 'cardsOnYourHand',
+              globalPlacementId: 'cardsOnPlayersHand',
               creatureId: 'bar',
             }
           ),
@@ -163,12 +163,12 @@ describe('utils', function() {
       })
     })
 
-    describe('a=BattleFieldMatrixPosition, b=CardsOnYourHandPosition', function() {
+    describe('a=BattleFieldMatrixPosition, b=CardOnPlayersHandPosition', function() {
       it('can return false', function() {
         assert.strictEqual(
           areGlobalPositionsEqual(
             {
-              globalPlacementId: 'cardsOnYourHand',
+              globalPlacementId: 'cardsOnPlayersHand',
               creatureId: 'foo',
             },
             {
@@ -354,7 +354,7 @@ describe('utils', function() {
       assert.strictEqual(
         findCardUnderCursor(cards, {
           globalPosition: {
-            globalPlacementId: 'cardsOnYourHand',
+            globalPlacementId: 'cardsOnPlayersHand',
             creatureId: 'b',
           },
         }),
@@ -372,7 +372,7 @@ describe('utils', function() {
       assert.strictEqual(
         findCardUnderCursor(cards, {
           globalPosition: {
-            globalPlacementId: 'cardsOnYourHand',
+            globalPlacementId: 'cardsOnPlayersHand',
             creatureId: 'b',
           },
         }),
