@@ -98,6 +98,7 @@ export function selectBattleFieldElement(
           // カーソルを外す。
           draft.game.cursor = undefined
         }
+      // 手札のカードへカーソルが当たっていないとき。
       } else {
         draft.game.cursor = {
           globalPosition: {
