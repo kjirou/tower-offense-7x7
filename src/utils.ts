@@ -50,12 +50,12 @@ type BattleFieldElementPosition = {
   y: MatrixPosition['y'],
 }
 
-type CardOnYourHandPosition = {
+type CardOnPlayersHandPosition = {
   creatureId: Creature['id'],
   globalPlacementId: 'cardsOnPlayersHand',
 }
 
-export type GlobalPosition = BattleFieldElementPosition | CardOnYourHandPosition
+export type GlobalPosition = BattleFieldElementPosition | CardOnPlayersHandPosition
 
 export function isBattleFieldMatrixPositionType(
   globalPosition: GlobalPosition
@@ -65,7 +65,7 @@ export function isBattleFieldMatrixPositionType(
 
 function isCardsOnPlayersHandPositionType(
   globalPosition: GlobalPosition
-): globalPosition is CardOnYourHandPosition {
+): globalPosition is CardOnPlayersHandPosition {
   return globalPosition.globalPlacementId === 'cardsOnPlayersHand'
 }
 

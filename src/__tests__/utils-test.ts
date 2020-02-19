@@ -129,7 +129,7 @@ describe('utils', function() {
       })
     })
 
-    describe('a=CardsOnYourHandPosition, b=CardsOnYourHandPosition', function() {
+    describe('a=CardOnPlayersHandPosition, b=CardOnPlayersHandPosition', function() {
       it('can return true if args are equal', function() {
         assert.strictEqual(
           areGlobalPositionsEqual(
@@ -163,7 +163,7 @@ describe('utils', function() {
       })
     })
 
-    describe('a=BattleFieldMatrixPosition, b=CardsOnYourHandPosition', function() {
+    describe('a=BattleFieldMatrixPosition, b=CardOnPlayersHandPosition', function() {
       it('can return false', function() {
         assert.strictEqual(
           areGlobalPositionsEqual(
