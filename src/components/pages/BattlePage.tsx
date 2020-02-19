@@ -248,6 +248,7 @@ const CardsOnYourHand: React.FC<CardsOnYourHandProps> = (props) => {
 
 type FooterProps = {
   handleClickNextButton: () => void,
+  showNextTurnButton: boolean,
 }
 
 const Footer: React.FC<FooterProps> = (props) => {
@@ -259,6 +260,15 @@ const Footer: React.FC<FooterProps> = (props) => {
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: 'aqua',
+  }
+
+  const rightSideButtonStyle = {
+    width: '136px',
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'lime',
   }
 
   return (
@@ -273,7 +283,7 @@ const Footer: React.FC<FooterProps> = (props) => {
       }}>
         <div style={{
           fontSize: '24px',
-        }}>Back</div>
+        }}>Rollback</div>
       </div>
       <div style={{
         width: '72px',
@@ -286,23 +296,28 @@ const Footer: React.FC<FooterProps> = (props) => {
       }}>
         <div>5</div>
       </div>
-      <div
-        style={{
-          width: '136px',
-          height: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: 'lime',
-        }}
-        onClick={props.handleClickNextButton}
-      >
-        <div
-          style={{
-            fontSize: '24px',
-          }}
-        >Next</div>
-      </div>
+      {
+        props.showNextTurnButton
+        ? <div
+          style={rightSideButtonStyle}
+        >
+          <div
+            style={{
+              fontSize: '24px',
+            }}
+          >Next</div>
+        </div>
+        : <div
+          style={rightSideButtonStyle}
+          onClick={props.handleClickNextButton}
+        >
+          <div
+            style={{
+              fontSize: '24px',
+            }}
+          >Battle</div>
+        </div>
+      }
     </div>
   )
 }
@@ -312,6 +327,7 @@ export type Props = {
   cardsOnYourHand: CardsOnYourHandProps,
   handleClickNextButton: FooterProps['handleClickNextButton'],
   turnNumber: MetaInformationBarProps['turnNumber'],
+  showNextTurnButton: FooterProps['showNextTurnButton'],
 }
 
 export const BattlePage: React.FC<Props> = (props) => {
@@ -330,6 +346,7 @@ export const BattlePage: React.FC<Props> = (props) => {
       <CardsOnYourHand {...props.cardsOnYourHand} />
       <Footer
         handleClickNextButton={props.handleClickNextButton}
+        showNextTurnButton={props.showNextTurnButton}
       />
     </div>
   )

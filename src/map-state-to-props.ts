@@ -120,6 +120,7 @@ function mapBattlePageStateToProps(
       cards: cardsProps
     },
     turnNumber: game.turnNumber,
+    showNextTurnButton: game.completedNormalAttackPhase,
     handleClickNextButton: () => {
       setState(s => runNormalAttackPhase(s))
     },
