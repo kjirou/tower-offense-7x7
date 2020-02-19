@@ -132,6 +132,7 @@ function createInitialGame(): Game {
       {creatureId: 'ally-7'},
     ],
     cursor: undefined,
+    turnNumber: 1,
   }
 }
 

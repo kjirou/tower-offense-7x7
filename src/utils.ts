@@ -113,6 +113,7 @@ export type Game = {
   creatures: Creature[],
   cursor: Cursor | undefined,
   parties: Party[],
+  turnNumber: number,
 }
 
 export type BattlePage = {

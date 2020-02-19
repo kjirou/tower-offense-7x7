@@ -96,6 +96,7 @@ export function createStateDisplayBattlePageAtStartOfGame(): ApplicationState {
             }
           }),
           cursor: undefined,
+          turnNumber: 1,
         },
       },
     },
