@@ -114,7 +114,7 @@ export function selectBattleFieldElement(
   return Object.assign({}, state, {pages: {battle: newBattlePage}})
 }
 
-export function selectCardOnYourHand(
+export function selectCardOnPlayersHand(
   state: ApplicationState,
   creatureId: Creature['id'],
 ): ApplicationState {

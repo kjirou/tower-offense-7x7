@@ -24,7 +24,7 @@ import {
   proceedTurn,
   runNormalAttackPhase,
   selectBattleFieldElement,
-  selectCardOnYourHand,
+  selectCardOnPlayersHand,
 } from './reducers'
 
 type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>
@@ -111,7 +111,7 @@ function mapBattlePageStateToProps(
         isFirst: index === 0,
         isSelected,
         handleTouch: (creatureId: string) => {
-          setState(s => selectCardOnYourHand(s, creatureId))
+          setState(s => selectCardOnPlayersHand(s, creatureId))
         },
       }
     })
