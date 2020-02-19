@@ -301,7 +301,7 @@ const Footer: React.FC<FooterProps> = (props) => {
         props.showNextTurnButton
         ? <div
           style={rightSideButtonStyle}
-          onClick={props.handleTouchNextTurnButton}
+          onTouchStart={props.handleTouchNextTurnButton}
         >
           <div
             style={{
@@ -311,7 +311,7 @@ const Footer: React.FC<FooterProps> = (props) => {
         </div>
         : <div
           style={rightSideButtonStyle}
-          onClick={props.handleTouchBattleButton}
+          onTouchStart={props.handleTouchBattleButton}
         >
           <div
             style={{
