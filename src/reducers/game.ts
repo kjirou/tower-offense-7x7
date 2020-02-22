@@ -23,6 +23,11 @@ import {
   pickBattleFieldElementsWhereCreatureExists,
 } from '../utils';
 
+export const creatureUtils = {
+  canAct: (creature: Creature): boolean => !creatureUtils.isDead(creature),
+  isDead: (creature: Creature): boolean => creature.lifePoint === 0,
+}
+
 export function invokeNormalAttack(context: NormalAttackProcessContext): NormalAttackProcessContext {
   const attackerWithParty = findCreatureWithParty(context.creatures, context.parties, context.attackerCreatureId)
 

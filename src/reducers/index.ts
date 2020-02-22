@@ -21,6 +21,7 @@ import {
   pickBattleFieldElementsWhereCreatureExists,
 } from '../utils'
 import {
+  creatureUtils,
   determinePositionsOfCreatureAppearance,
   invokeSkill,
   invokeNormalAttack,
@@ -180,6 +181,14 @@ export function runNormalAttackPhase(
     attackerDataList.forEach((attackerData) => {
       // Only the "creature.id" should be referred because other properties may be updated.
       const attackerCreatureId = attackerData.creature.id
+
+      const attackerWithParty = findCreatureWithParty(
+        creaturesBeingUpdated, partiesBeingUpdated, attackerCreatureId)
+
+      // 攻撃者が行動不能のとき。
+      if (!creatureUtils.canAct(attackerWithParty.creature)) {
+        return
+      }
 
       const result = invokeNormalAttack({
         attackerCreatureId,
