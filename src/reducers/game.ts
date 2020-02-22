@@ -179,8 +179,10 @@ export function determinePositionsOfCreatureAppearance(
 
   // クリーチャーが出現するターン数のとき。
   if (creatureAppearance) {
-    // TODO: Ignore more elements where `reservedCreatureId` is set
     const elements = pickBattleFieldElementsWhereCreatureExists(battleFieldMatrix, false)
+      .filter(e => e.reservedCreatureId === undefined)
+
+    // TODO: 勝敗判定に含めるなどして、この状況が発生しないようにする。
     if (elements.length < creatureAppearance.creatureIds.length) {
       throw new Error('There are no battle field elements for creature appearances.')
     }
