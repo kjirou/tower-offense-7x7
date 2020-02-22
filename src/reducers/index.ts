@@ -16,7 +16,9 @@ import {
   areGlobalPositionsEqual,
   determineRelationshipBetweenFactions,
   ensureBattlePage,
+  findBattleFieldElementByCreatureId,
   findCardUnderCursor,
+  findCreatureById,
   findCreatureWithParty,
   pickBattleFieldElementsWhereCreatureExists,
 } from '../utils'
@@ -198,9 +200,24 @@ export function runNormalAttackPhase(
         battleFieldMatrix: battleFieldMatrixBeingUpdated,
       })
 
+      // 攻撃により死亡したクリーチャーが存在する位置をまとめる。
+      const positionsOfDeadCreature: MatrixPosition[] = []
+      for (const element of pickBattleFieldElementsWhereCreatureExists(result.battleFieldMatrix)) {
+        if (element.creatureId !== undefined) {
+          const creature = findCreatureById(result.creatures, element.creatureId)
+          if (creatureUtils.isDead(creature)) {
+            positionsOfDeadCreature.push(element.position)
+          }
+        }
+      }
+
       creaturesBeingUpdated = result.creatures
       partiesBeingUpdated = result.parties
       battleFieldMatrixBeingUpdated = result.battleFieldMatrix
+      positionsOfDeadCreature.forEach(position => {
+        // TODO: 味方は手札に戻す必要がある。
+        battleFieldMatrixBeingUpdated[position.y][position.x].creatureId = undefined
+      })
     })
 
     draft.game.creatures = creaturesBeingUpdated

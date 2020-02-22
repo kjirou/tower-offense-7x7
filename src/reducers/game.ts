@@ -74,6 +74,9 @@ export function invokeNormalAttack(context: NormalAttackProcessContext): NormalA
     .slice(0, dummyMaxNumberOfTargetees)
 
   // 影響を決定する。
+  // NOTE: このループ内で攻撃対象が死亡するなどしても、対象から除外しなくても良い。
+  //       通常攻撃の副作用で攻撃者に有利な効果が発生することもあり、それが意図せずに発生しないと損な感じが強そう。
+  //       それにより、死亡しているクリーチャーも攻撃対象に含まれることになる。
   const affectedCreatures: Creature[] = targeteesData
     .map(targeteeData => {
       const dummyDamage = 1
