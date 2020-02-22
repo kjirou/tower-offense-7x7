@@ -13,6 +13,7 @@ import {
   findFirstAlly,
 } from '../../test-utils'
 import {
+  determinePositionsOfCreatureAppearance,
   invokeNormalAttack,
   invokeSkill,
   refillCardsOnPlayersHand,
@@ -119,6 +120,23 @@ describe('reducers/game', function() {
         {creatureId: 'b'},
         {creatureId: 'c'},
       ])
+    })
+  })
+
+  describe('determinePositionsOfCreatureAppearance', function() {
+    // TODO: Improve this using the sinon.js.
+    it('probably works', function() {
+      const matrix = createBattleFieldMatrix(3, 3)
+      const creatureAppearances = [
+        {
+          turnNumber: 2,
+          creatureIds: ['a', 'b'],
+        }
+      ]
+      const result = determinePositionsOfCreatureAppearance(matrix, creatureAppearances, 2)
+      assert.strictEqual(result.length, 2)
+      assert.strictEqual(result[0].creatureId, 'a')
+      assert.strictEqual(result[1].creatureId, 'b')
     })
   })
 })

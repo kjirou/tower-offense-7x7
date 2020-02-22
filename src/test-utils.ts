@@ -96,6 +96,7 @@ export function createStateDisplayBattlePageAtStartOfGame(): ApplicationState {
               creatureId: allies[index].id,
             }
           }),
+          creatureAppearances: [],
           cursor: undefined,
           completedNormalAttackPhase: false,
           turnNumber: 1,

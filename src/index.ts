@@ -128,6 +128,12 @@ function createInitialGame(): Game {
           creatureId: card.creatureId,
         }
       }),
+    creatureAppearances: dummyEnemies.map((creature, index) => {
+      return {
+        turnNumber: index + 1,
+        creatureIds: [creature.id],
+      }
+    }),
     cursor: undefined,
     completedNormalAttackPhase: false,
     turnNumber: 1,

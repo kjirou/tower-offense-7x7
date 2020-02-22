@@ -7,6 +7,7 @@ import {
   Card,
   MatrixPosition,
   areGlobalPositionsEqual,
+  choiceElementsAtRandom,
   createBattleFieldMatrix,
   findBattleFieldElementByCreatureId,
   findBattleFieldElementsByDistance,
@@ -15,10 +16,29 @@ import {
   flattenMatrix,
   measureDistance,
   pickBattleFieldElementsWhereCreatureExists,
+  shuffleArray,
   validateMatrix,
 } from '../utils';
 
 describe('utils', function() {
+  describe('shuffleArray', function() {
+    // TODO: Improve this using the sinon.js.
+    it('probably works', function() {
+      const array = [1, 2, 3, 4, 5]
+      const shuffled = shuffleArray<Number>(array)
+      assert.deepStrictEqual(shuffled.sort(), array)
+    })
+  })
+
+  describe('choiceElementsAtRandom', function() {
+    // TODO: Improve this using the sinon.js.
+    it('probably works', function() {
+      const array = [1, 2, 3, 4, 5]
+      const result = choiceElementsAtRandom<Number>(array, 2)
+      assert.strictEqual(result.length, 2)
+    })
+  })
+
   describe('validateMatrix', function() {
     const testCases: [any[][], boolean][] = [
       [
@@ -306,14 +326,26 @@ describe('utils', function() {
   })
 
   describe('pickBattleFieldElementsWhereCreatureExists', function() {
-    it('can pick elements where the creature exists', function() {
-      const matrix = createBattleFieldMatrix(2, 3)
-      matrix[0][0].creatureId = 'a'
-      matrix[1][2].creatureId = 'b'
-      const elements = pickBattleFieldElementsWhereCreatureExists(matrix)
-      assert.strictEqual(elements.length, 2)
-      assert.strictEqual(elements[0].creatureId, 'a')
-      assert.strictEqual(elements[1].creatureId, 'b')
+    describe('When the `exists` argument is true', function() {
+      it('can pick elements where the creature exists', function() {
+        const matrix = createBattleFieldMatrix(2, 3)
+        matrix[0][0].creatureId = 'a'
+        matrix[1][2].creatureId = 'b'
+        const elements = pickBattleFieldElementsWhereCreatureExists(matrix, true)
+        assert.strictEqual(elements.length, 2)
+        assert.strictEqual(elements[0].creatureId, 'a')
+        assert.strictEqual(elements[1].creatureId, 'b')
+      })
+    })
+
+    describe('When the `exists` argument is false', function() {
+      it('can pick elements where the creature does not exist', function() {
+        const matrix = createBattleFieldMatrix(2, 3)
+        matrix[0][0].creatureId = 'a'
+        matrix[1][2].creatureId = 'b'
+        const elements = pickBattleFieldElementsWhereCreatureExists(matrix, false)
+        assert.strictEqual(elements.length, 4)
+      })
     })
   })
 
