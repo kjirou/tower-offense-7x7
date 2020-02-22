@@ -74,7 +74,7 @@ const CreatureOnSquare: React.FC<CreatureOnSquareProps> = (props) => {
   )
 }
 
-type BattleFieldSquareProps = {
+type BattleFieldElementProps = {
   creature: CreatureOnSquareProps | void,
   handleTouch: (payload: {
     x: number,
@@ -85,7 +85,7 @@ type BattleFieldSquareProps = {
   y: number,
 }
 
-const BattleFieldSquare: React.FC<BattleFieldSquareProps> = (props) => {
+const BattleFieldElement: React.FC<BattleFieldElementProps> = (props) => {
   const style = {
     position: 'absolute',
     top: `${6 + props.y * 48 + props.y * 2}px`,
@@ -108,7 +108,7 @@ const BattleFieldSquare: React.FC<BattleFieldSquareProps> = (props) => {
 }
 
 type BattleFieldBoardProps = {
-  board: BattleFieldSquareProps[][],
+  board: BattleFieldElementProps[][],
 }
 
 const BattleFieldBoard: React.FC<BattleFieldBoardProps> = (props) => {
@@ -119,14 +119,14 @@ const BattleFieldBoard: React.FC<BattleFieldBoardProps> = (props) => {
     backgroundColor: 'green',
   }
 
-  const squares = flattenMatrix<BattleFieldSquareProps>(props.board)
+  const squares = flattenMatrix<BattleFieldElementProps>(props.board)
 
   return (
     <div style={style}>
     {
       squares.map((square) => {
         const key = `square-${square.y}-${square.x}`;
-        return <BattleFieldSquare key={key} {...square} />;
+        return <BattleFieldElement key={key} {...square} />;
       })
     }
     </div>
@@ -325,7 +325,7 @@ const Footer: React.FC<FooterProps> = (props) => {
 }
 
 export type Props = {
-  battleFieldBoard: BattleFieldSquareProps[][],
+  battleFieldBoard: BattleFieldElementProps[][],
   cardsOnPlayersHand: CardsOnPlayersHandProps,
   handleTouchBattleButton: FooterProps['handleTouchBattleButton'],
   handleTouchNextTurnButton: FooterProps['handleTouchNextTurnButton'],
