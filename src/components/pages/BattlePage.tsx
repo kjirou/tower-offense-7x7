@@ -35,13 +35,13 @@ const MetaInformationBar: React.FC<MetaInformationBarProps> = (props) => {
   )
 }
 
-export type CreatureOnSquareProps = {
+export type CreatureOnElementProps = {
   factionRelationshipId: FactionRelationshipId,
   image: string,
   lifePoint: string,
 }
 
-const CreatureOnSquare: React.FC<CreatureOnSquareProps> = (props) => {
+const CreatureOnElement: React.FC<CreatureOnElementProps> = (props) => {
   return (
     <div
       style={{
@@ -75,7 +75,7 @@ const CreatureOnSquare: React.FC<CreatureOnSquareProps> = (props) => {
 }
 
 type BattleFieldElementProps = {
-  creature: CreatureOnSquareProps | void,
+  creature: CreatureOnElementProps | void,
   handleTouch: (payload: {
     x: number,
     y: number,
@@ -101,7 +101,7 @@ const BattleFieldElement: React.FC<BattleFieldElementProps> = (props) => {
       onTouchStart={() => props.handleTouch({x: props.x, y: props.y})}
     >
     {
-      props.creature ? <CreatureOnSquare {...props.creature} /> : undefined
+      props.creature ? <CreatureOnElement {...props.creature} /> : undefined
     }
     </div>
   )

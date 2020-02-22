@@ -6,7 +6,7 @@ import {
 } from './components/Root'
 import {
   CardProps,
-  CreatureOnSquareProps,
+  CreatureOnElementProps,
   Props as BattlePageProps,
 } from './components/pages/BattlePage'
 import {
@@ -68,7 +68,7 @@ function mapBattlePageStateToProps(
       const creatureWithParty = element.creatureId ?
         findCreatureWithParty(game.creatures, game.parties, element.creatureId) : undefined
 
-      let creatureProps: CreatureOnSquareProps | undefined = undefined
+      let creatureProps: CreatureOnElementProps | undefined = undefined
       if (creatureWithParty) {
         creatureProps = {
           image: jobIdToDummyImage(creatureWithParty.creature.jobId),
