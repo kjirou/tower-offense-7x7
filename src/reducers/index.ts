@@ -211,7 +211,15 @@ export function proceedTurn(
 
     // TODO: Prohibit operation
 
-    // 予約されているクリーチャーが真に出現する。
+    // 予約されているクリーチャーの出現が実現する。
+    const realizedCreatureAppearances: MatrixPosition[] = []
+    for (const row of draft.game.battleFieldMatrix) {
+      for (const element of row) {
+        if (element.reservedCreatureId !== undefined) {
+          realizedCreatureAppearances.push(element.position)
+        }
+      }
+    }
 
     // クリーチャーの出現が予約される。
     const creatureAppearances = determinePositionsOfCreatureAppearance(
@@ -220,6 +228,11 @@ export function proceedTurn(
     // プレイヤーの手札を補充する。
     const newCardSets = refillCardsOnPlayersHand(draft.game.cardsInDeck, draft.game.cardsOnPlayersHand)
 
+    realizedCreatureAppearances.forEach(position => {
+      const element = draft.game.battleFieldMatrix[position.y][position.x]
+      element.creatureId = element.reservedCreatureId
+      element.reservedCreatureId = undefined
+    })
     creatureAppearances.forEach(({position, creatureId}) => {
       draft.game.battleFieldMatrix[position.y][position.x].reservedCreatureId = creatureId
     })
