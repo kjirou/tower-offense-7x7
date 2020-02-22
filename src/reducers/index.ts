@@ -179,7 +179,8 @@ export function runNormalAttackPhase(
 
     // 攻撃者リストをループしてそれぞれの通常攻撃を発動する。
     attackerDataList.forEach((attackerData) => {
-      // Only the "creature.id" should be referred because other properties may be updated.
+      // NOTE: この id と直上でまとめた更新用の値以外は参照しないこと。
+      //       他の値はループ処理が始まれば陳腐化するため。
       const attackerCreatureId = attackerData.creature.id
 
       const attackerWithParty = findCreatureWithParty(
