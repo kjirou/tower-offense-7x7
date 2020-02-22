@@ -73,6 +73,7 @@ export type BattleFieldElement = {
   creatureId: Creature['id'] | undefined,
   globalPosition: GlobalPosition,
   // Only "computer" side creatures.
+  // TODO: Either `creatureId` or `reservedCreatureId` should be an undefined.
   reservedCreatureId: Creature['id'] | undefined,
   position: MatrixPosition,
 }
