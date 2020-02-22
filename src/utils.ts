@@ -79,6 +79,11 @@ export type BattleFieldElement = {
 
 export type BattleFieldMatrix = BattleFieldElement[][];
 
+export type CreatureAppearance = {
+  creatureIds: Creature['id'][],
+  turnNumber: number,
+}
+
 export type CreatureWithParty = {
   creature: Creature,
   party: Party,
@@ -115,6 +120,7 @@ export type Game = {
   cardsOnPlayersHand: CardRelationship[],
   cards: Card[],
   completedNormalAttackPhase: boolean,
+  creatureAppearances: CreatureAppearance[],
   creatures: Creature[],
   cursor: Cursor | undefined,
   parties: Party[],
@@ -132,6 +138,29 @@ export type ApplicationState = {
 }
 
 export const MAX_NUMBER_OF_PLAYERS_HAND = 5
+
+/**
+ * Shuffle an array with the Fisher–Yates algorithm.
+ * Ref) https://www.30secondsofcode.org/js/s/shuffle/
+ */
+export function shuffleArray<Element>(array: Element[]): Element[] {
+  const copied = array.slice()
+  let m = copied.length
+  while (m) {
+    const i = Math.floor(Math.random() * (m - 1))
+    m--
+    [copied[m], copied[i]] = [copied[i], copied[m]]
+  }
+  return copied
+}
+
+export function choiceElementsAtRandom<Element>(elements: Element[], numberOfChoices: number): Element[] {
+  if (elements.length < numberOfChoices) {
+    throw new Error('The number of elements in the array is not enough.')
+  }
+  const shuffled = shuffleArray(elements)
+  return shuffled.slice(0, numberOfChoices)
+}
 
 /**
  * Validate that the matrix is not empty and is rectangular
@@ -285,17 +314,33 @@ export function findBattleFieldElementsByDistance(
 }
 
 export function pickBattleFieldElementsWhereCreatureExists(
-  battleFieldMatrix: BattleFieldMatrix
+  battleFieldMatrix: BattleFieldMatrix,
+  exists: boolean = true
 ): BattleFieldElement[] {
   const elements = []
   for (const row of battleFieldMatrix) {
     for (const element of row) {
-      if (element.creatureId !== undefined) {
+      if (
+        exists && element.creatureId !== undefined ||
+        !exists && element.creatureId === undefined
+      ) {
         elements.push(element)
       }
     }
   }
   return elements
+}
+
+export function findCreatureAppearanceByTurnNumber(
+  creatureAppearances: CreatureAppearance[],
+  turnNumber: Game['turnNumber']
+): CreatureAppearance | undefined {
+  for (const creatureAppearance of creatureAppearances) {
+    if (creatureAppearance.turnNumber === turnNumber) {
+      return creatureAppearance
+    }
+  }
+  return undefined
 }
 
 export function findCardUnderCursor(cards: Card[], cursor: Cursor): Card | undefined {

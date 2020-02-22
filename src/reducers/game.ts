@@ -1,19 +1,26 @@
 import {
   BattleFieldElement,
+  BattleFieldMatrix,
   CardRelationship,
   Creature,
+  CreatureAppearance,
   CreatureWithParty,
   CreatureWithPartyOnBattleFieldElement,
-  Party,
+  Game,
   MAX_NUMBER_OF_PLAYERS_HAND,
+  MatrixPosition,
   NormalAttackProcessContext,
+  Party,
   SkillProcessContext,
+  choiceElementsAtRandom,
   determineRelationshipBetweenFactions,
+  findCreatureAppearanceByTurnNumber,
   findCreatureById,
   findCreatureByIdIfPossible,
   findBattleFieldElementByCreatureId,
   findBattleFieldElementsByDistance,
   findCreatureWithParty,
+  pickBattleFieldElementsWhereCreatureExists,
 } from '../utils';
 
 export function invokeNormalAttack(context: NormalAttackProcessContext): NormalAttackProcessContext {
@@ -157,6 +164,35 @@ export function invokeSkill(context: SkillProcessContext): SkillProcessContext {
     return invokeAttackSkill(context)
   }
   throw new Error('It is an invalid `skillCategoryId`.')
+}
+
+export function determinePositionsOfCreatureAppearance(
+  battleFieldMatrix: BattleFieldMatrix,
+  creatureAppearances: CreatureAppearance[],
+  turnNumber: Game['turnNumber']
+): {
+  creatureId: Creature['id'],
+  position: MatrixPosition,
+}[] {
+  // 指定ターン数のクリーチャー出現情報を抽出する。
+  const creatureAppearance = findCreatureAppearanceByTurnNumber(creatureAppearances, turnNumber)
+
+  // クリーチャーが出現するターン数のとき。
+  if (creatureAppearance) {
+    // TODO: Ignore more elements where `reservedCreatureId` is set
+    const elements = pickBattleFieldElementsWhereCreatureExists(battleFieldMatrix, false)
+    if (elements.length < creatureAppearance.creatureIds.length) {
+      throw new Error('There are no battle field elements for creature appearances.')
+    }
+    return choiceElementsAtRandom<BattleFieldElement>(elements, creatureAppearance.creatureIds.length)
+      .map((choicedElement, index) => {
+        return {
+          creatureId: creatureAppearance.creatureIds[index],
+          position: choicedElement.position,
+        }
+      })
+  }
+  return []
 }
 
 export function refillCardsOnPlayersHand(
