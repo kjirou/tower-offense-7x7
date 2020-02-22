@@ -21,6 +21,7 @@ import {
   pickBattleFieldElementsWhereCreatureExists,
 } from '../utils'
 import {
+  determinePositionsOfCreatureAppearance,
   invokeSkill,
   invokeNormalAttack,
   refillCardsOnPlayersHand,
@@ -210,8 +211,18 @@ export function proceedTurn(
 
     // TODO: Prohibit operation
 
+    // 予約されているクリーチャーが真に出現する。
+
+    // クリーチャーの出現が予約される。
+    const creatureAppearances = determinePositionsOfCreatureAppearance(
+      draft.game.battleFieldMatrix, draft.game.creatureAppearances, draft.game.turnNumber)
+
+    // プレイヤーの手札を補充する。
     const newCardSets = refillCardsOnPlayersHand(draft.game.cardsInDeck, draft.game.cardsOnPlayersHand)
 
+    creatureAppearances.forEach(({position, creatureId}) => {
+      draft.game.battleFieldMatrix[position.y][position.x].reservedCreatureId = creatureId
+    })
     draft.game.cardsInDeck = newCardSets.cardsInDeck
     draft.game.cardsOnPlayersHand = newCardSets.cardsOnPlayersHand
     draft.game.completedNormalAttackPhase = false
