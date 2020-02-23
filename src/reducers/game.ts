@@ -12,7 +12,6 @@ import {
   NormalAttackProcessContext,
   Party,
   SkillProcessContext,
-  choiceElementsAtRandom,
   determineRelationshipBetweenFactions,
   findCreatureAppearanceByTurnNumber,
   findCreatureById,
@@ -177,7 +176,8 @@ export function invokeSkill(context: SkillProcessContext): SkillProcessContext {
 export function determinePositionsOfCreatureAppearance(
   battleFieldMatrix: BattleFieldMatrix,
   creatureAppearances: CreatureAppearance[],
-  turnNumber: Game['turnNumber']
+  turnNumber: Game['turnNumber'],
+  choiceElements: (elements: BattleFieldElement[], numberOfElements: number) => BattleFieldElement[]
 ): {
   creatureId: Creature['id'],
   position: MatrixPosition,
@@ -194,7 +194,7 @@ export function determinePositionsOfCreatureAppearance(
     if (elements.length < creatureAppearance.creatureIds.length) {
       throw new Error('There are no battle field elements for creature appearances.')
     }
-    return choiceElementsAtRandom<BattleFieldElement>(elements, creatureAppearance.creatureIds.length)
+    return choiceElements(elements, creatureAppearance.creatureIds.length)
       .map((choicedElement, index) => {
         return {
           creatureId: creatureAppearance.creatureIds[index],

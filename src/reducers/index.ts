@@ -13,6 +13,7 @@ import {
   Party,
   SkillProcessContext,
   areGlobalPositionsEqual,
+  choiceElementsAtRandom,
   determineRelationshipBetweenFactions,
   ensureBattlePage,
   findBattleFieldElementByCreatureId,
@@ -293,7 +294,13 @@ export function proceedTurn(
 
     // クリーチャーの出現が予約される。
     const creatureAppearances = determinePositionsOfCreatureAppearance(
-      draft.game.battleFieldMatrix, draft.game.creatureAppearances, draft.game.turnNumber)
+      draft.game.battleFieldMatrix,
+      draft.game.creatureAppearances,
+      draft.game.turnNumber,
+      (elements: BattleFieldElement[], numberOfElements: number): BattleFieldElement[] => {
+        return choiceElementsAtRandom<BattleFieldElement>(elements, numberOfElements)
+      }
+    )
 
     // プレイヤーの手札を補充する。
     const newCardSets = refillCardsOnPlayersHand(draft.game.cardsInDeck, draft.game.cardsOnPlayersHand)
