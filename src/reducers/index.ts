@@ -6,6 +6,7 @@ import {
   BattleFieldMatrix,
   BattlePage,
   Card,
+  CardRelationship,
   Creature,
   CreatureWithParty,
   CreatureWithPartyOnBattleFieldElement,
@@ -175,9 +176,11 @@ export function runNormalAttackPhase(
 
     // TODO: 攻撃者リストを発動順に整列する。
 
+    // TODO: Use typeof
     let creaturesBeingUpdated: Creature[] = game.creatures
     let partiesBeingUpdated: Party[] = game.parties
     let battleFieldMatrixBeingUpdated: BattleFieldMatrix = game.battleFieldMatrix
+    let cardsInDeckBeingUpdated: CardRelationship[] = game.cardsInDeck
 
     // 攻撃者リストをループしてそれぞれの通常攻撃を発動する。
     attackerDataList.forEach((attackerData) => {
@@ -215,14 +218,26 @@ export function runNormalAttackPhase(
       partiesBeingUpdated = result.parties
       battleFieldMatrixBeingUpdated = result.battleFieldMatrix
       positionsOfDeadCreature.forEach(position => {
-        // TODO: 味方は手札に戻す必要がある。
-        battleFieldMatrixBeingUpdated[position.y][position.x].creatureId = undefined
+        const element = battleFieldMatrixBeingUpdated[position.y][position.x]
+        const creatureId = element.creatureId
+        if (creatureId !== undefined) {
+          // 盤上のクリーチャーを削除する。
+          element.creatureId = undefined
+          // プレイヤーのクリーチャーのときは、手札の末尾へ戻す。
+          const {party} = findCreatureWithParty(creaturesBeingUpdated, partiesBeingUpdated, creatureId)
+          if (party.factionId === 'player') {
+            cardsInDeckBeingUpdated.push({
+              creatureId,
+            })
+          }
+        }
       })
     })
 
     draft.game.creatures = creaturesBeingUpdated
     draft.game.parties = partiesBeingUpdated
     draft.game.battleFieldMatrix = battleFieldMatrixBeingUpdated
+    draft.game.cardsInDeck = cardsInDeckBeingUpdated
     draft.game.completedNormalAttackPhase = true
   })
   return Object.assign({}, state, {pages: {battle: newBattlePage}})
