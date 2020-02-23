@@ -67,57 +67,62 @@ export function selectBattleFieldElement(
         if (placedCreatureWithParty) {
           // 選択先クリーチャーがプレイヤー側のとき。
           if (placedCreatureWithParty.party.factionId === 'player') {
-            // TODO: 発動できない状況を除外する。
-            // スキルを発動する。
-            const newContext = invokeSkill({
-              creatures: draft.game.creatures,
-              parties: draft.game.parties,
-              battleFieldMatrix: draft.game.battleFieldMatrix,
-              invokerCreatureId: placedCreatureWithParty.creature.id,
-              skill: {
-                id: '',
-                skillCategoryId: 'attack',
-              },
-            })
-            // スキル発動により死亡したクリーチャーが存在する位置をまとめる。
-            const positionsOfDeadCreature: MatrixPosition[] = []
-            for (const element of pickBattleFieldElementsWhereCreatureExists(newContext.battleFieldMatrix)) {
-              if (element.creatureId !== undefined) {
-                const creature = findCreatureById(newContext.creatures, element.creatureId)
-                if (creatureUtils.isDead(creature)) {
-                  positionsOfDeadCreature.push(element.position)
+            // 行動可能なとき。
+            if (creatureUtils.canAct(placedCreatureWithParty.creature)) {
+              // スキルを発動する。
+              const newContext = invokeSkill({
+                creatures: draft.game.creatures,
+                parties: draft.game.parties,
+                battleFieldMatrix: draft.game.battleFieldMatrix,
+                invokerCreatureId: placedCreatureWithParty.creature.id,
+                skill: {
+                  id: '',
+                  skillCategoryId: 'attack',
+                },
+              })
+              // スキル発動により死亡したクリーチャーが存在する位置をまとめる。
+              const positionsOfDeadCreature: MatrixPosition[] = []
+              for (const element of pickBattleFieldElementsWhereCreatureExists(newContext.battleFieldMatrix)) {
+                if (element.creatureId !== undefined) {
+                  const creature = findCreatureById(newContext.creatures, element.creatureId)
+                  if (creatureUtils.isDead(creature)) {
+                    positionsOfDeadCreature.push(element.position)
+                  }
                 }
               }
+              // スキル発動の結果を反映する。
+              draft.game.creatures = newContext.creatures
+              draft.game.parties = newContext.parties
+              draft.game.battleFieldMatrix = newContext.battleFieldMatrix
+              // 盤上から死亡したクリーチャーを削除する。
+              positionsOfDeadCreature.forEach(position => {
+                const element = draft.game.battleFieldMatrix[position.y][position.x]
+                const creatureId = element.creatureId
+                if (creatureId !== undefined) {
+                  // 盤上のクリーチャーを削除する。
+                  element.creatureId = undefined
+                  // プレイヤーのクリーチャーのときは、山札の末尾へ戻す。
+                  const {party} = findCreatureWithParty(draft.game.creatures, draft.game.parties, creatureId)
+                  if (party.factionId === 'player') {
+                    draft.game.cardsInDeck.push({
+                      creatureId,
+                    })
+                  }
+                }
+              })
+              // 消費したカードを手札から削除する。
+              draft.game.cardsOnPlayersHand = draft.game.cardsOnPlayersHand
+                .filter(e => e.creatureId !== cardUnderCursor.creatureId)
+              // 山札のカードへ消費したカードを戻す。
+              draft.game.cardsInDeck.push({
+                creatureId: cardUnderCursor.creatureId,
+              })
+              // カーソルを外す。
+              draft.game.cursor = undefined
+            // 行動不能なとき。
+            } else {
+              /* no-op */
             }
-            // スキル発動の結果を反映する。
-            draft.game.creatures = newContext.creatures
-            draft.game.parties = newContext.parties
-            draft.game.battleFieldMatrix = newContext.battleFieldMatrix
-            // 盤上から死亡したクリーチャーを削除する。
-            positionsOfDeadCreature.forEach(position => {
-              const element = draft.game.battleFieldMatrix[position.y][position.x]
-              const creatureId = element.creatureId
-              if (creatureId !== undefined) {
-                // 盤上のクリーチャーを削除する。
-                element.creatureId = undefined
-                // プレイヤーのクリーチャーのときは、山札の末尾へ戻す。
-                const {party} = findCreatureWithParty(draft.game.creatures, draft.game.parties, creatureId)
-                if (party.factionId === 'player') {
-                  draft.game.cardsInDeck.push({
-                    creatureId,
-                  })
-                }
-              }
-            })
-            // 消費したカードを手札から削除する。
-            draft.game.cardsOnPlayersHand = draft.game.cardsOnPlayersHand
-              .filter(e => e.creatureId !== cardUnderCursor.creatureId)
-            // 山札のカードへ消費したカードを戻す。
-            draft.game.cardsInDeck.push({
-              creatureId: cardUnderCursor.creatureId,
-            })
-            // カーソルを外す。
-            draft.game.cursor = undefined
           // 選択先クリーチャーがプレイヤー側ではないとき。
           } else {
             /* no-op */
