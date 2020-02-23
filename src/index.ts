@@ -97,9 +97,6 @@ const dummyAllCards: Card[] = dummyAllies
 function createInitialGame(): Game {
   const battleFieldMatrix = createBattleFieldMatrix(7, 7)
 
-  battleFieldMatrix[3][3].creatureId = dummyEnemies[0].id
-  battleFieldMatrix[4][3].creatureId = dummyEnemies[1].id
-
   return {
     creatures: dummyAllies.concat(dummyEnemies),
     parties: [

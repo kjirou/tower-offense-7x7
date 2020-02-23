@@ -1,5 +1,5 @@
 import * as assert from 'assert'
-import {describe, it} from 'mocha'
+import {describe, it, beforeEach} from 'mocha'
 
 import {
   ApplicationState,
@@ -84,18 +84,26 @@ describe('reducers/index', function() {
   })
 
   describe('runNormalAttackPhase', function() {
-    describe('Creatures of the hostile relations are adjacent to each other', function() {
-      it('can update the result that creatures attack to each other', function() {
-        const state = createStateDisplayBattlePageAtStartOfGame()
-        const battlePage = ensureBattlePage(state)
-        const a = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
-        const b = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
+    describe('敵対関係であるクリーチャーが隣接しているとき', function() {
+      let state: ApplicationState
+      let battlePage: BattlePage
+      let a: Creature
+      let b: Creature
+
+      beforeEach(function() {
+        state = createStateDisplayBattlePageAtStartOfGame()
+        battlePage = ensureBattlePage(state)
+        a = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
+        b = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
+        battlePage.game.battleFieldMatrix[0][0].creatureId = a.id
+        battlePage.game.battleFieldMatrix[0][1].creatureId = b.id
+      })
+
+      it('互いに攻撃した結果を返す', function() {
         a.lifePoint = 2
         a.attackPoint = 1
         b.lifePoint = 2
         b.attackPoint = 1
-        battlePage.game.battleFieldMatrix[0][0].creatureId = a.id
-        battlePage.game.battleFieldMatrix[0][1].creatureId = b.id
         const newState = runNormalAttackPhase(state)
         const newBattlePage = ensureBattlePage(newState)
         const newA = findFirstAlly(newBattlePage.game.creatures, newBattlePage.game.parties, 'player')
@@ -105,10 +113,25 @@ describe('reducers/index', function() {
         assert.notStrictEqual(b.lifePoint, newB.lifePoint)
         assert.strictEqual(b.lifePoint > newB.lifePoint, true)
       })
+
+      describe('a クリーチャーの攻撃で b クリーチャーが死亡するとき', function() {
+        beforeEach(function() {
+          a.lifePoint = 10
+          a.attackPoint = 1
+          b.lifePoint = 1
+          b.attackPoint = 1
+        })
+
+        it('b が盤上に存在しない結果を返す', function() {
+          const newState = runNormalAttackPhase(state)
+          const newBattlePage = ensureBattlePage(newState)
+          assert.strictEqual(newBattlePage.game.battleFieldMatrix[0][1].creatureId, undefined)
+        })
+      })
     })
 
-    describe('Creatures of the friendly relations are adjacent to each other', function() {
-      it('can update the result that creatures does not attack to each other', function() {
+    describe('味方関係であるクリーチャーが隣接しているとき', function() {
+      it('互いに攻撃しなかった結果を返す', function() {
         const state = createStateDisplayBattlePageAtStartOfGame()
         const battlePage = ensureBattlePage(state)
         const allies = findAllies(battlePage.game.creatures, battlePage.game.parties, 'player')
@@ -123,6 +146,27 @@ describe('reducers/index', function() {
         const newAllies = findAllies(newBattlePage.game.creatures, newBattlePage.game.parties, 'player')
         assert.strictEqual(allies[0].lifePoint, newAllies[0].lifePoint)
         assert.strictEqual(allies[1].lifePoint, newAllies[1].lifePoint)
+      })
+    })
+
+    describe('computer 側の攻撃で死亡する player 側のクリーチャーが存在するとき', function() {
+      it('死亡した player 側のクリーチャーが山札の末尾へ戻る結果を返す', function() {
+        const state = createStateDisplayBattlePageAtStartOfGame()
+        const battlePage = ensureBattlePage(state)
+        const a = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
+        const b = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
+        a.lifePoint = 1
+        a.attackPoint = 1
+        b.lifePoint = 10
+        b.attackPoint = 1
+        battlePage.game.battleFieldMatrix[0][0].creatureId = a.id
+        battlePage.game.battleFieldMatrix[0][1].creatureId = b.id
+        const cardsInDeck = battlePage.game.cardsInDeck
+        const newState = runNormalAttackPhase(state)
+        const newBattlePage = ensureBattlePage(newState)
+        const newCardsInDeck = newBattlePage.game.cardsInDeck
+        assert.strictEqual(newCardsInDeck.length > cardsInDeck.length, true)
+        assert.strictEqual(newCardsInDeck[newCardsInDeck.length - 1].creatureId, a.id)
       })
     })
   })

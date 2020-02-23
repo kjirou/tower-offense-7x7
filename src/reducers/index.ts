@@ -3,7 +3,6 @@ import produce from 'immer'
 import {
   ApplicationState,
   BattleFieldElement,
-  BattleFieldMatrix,
   BattlePage,
   Card,
   Creature,
@@ -16,11 +15,14 @@ import {
   areGlobalPositionsEqual,
   determineRelationshipBetweenFactions,
   ensureBattlePage,
+  findBattleFieldElementByCreatureId,
   findCardUnderCursor,
+  findCreatureById,
   findCreatureWithParty,
   pickBattleFieldElementsWhereCreatureExists,
 } from '../utils'
 import {
+  creatureUtils,
   determinePositionsOfCreatureAppearance,
   invokeSkill,
   invokeNormalAttack,
@@ -63,34 +65,65 @@ export function selectBattleFieldElement(
       if (cardUnderCursor) {
         // 選択先のマスへクリーチャーが配置されているとき。
         if (placedCreatureWithParty) {
-          // 選択先クリーチャーが味方のとき。
-          if (determineRelationshipBetweenFactions('player', placedCreatureWithParty.party.factionId) === 'ally') {
-            // TODO: 発動できない状況を除外する。
-            // スキルを発動する。
-            const newContext = invokeSkill({
-              creatures: draft.game.creatures,
-              parties: draft.game.parties,
-              battleFieldMatrix: draft.game.battleFieldMatrix,
-              invokerCreatureId: placedCreatureWithParty.creature.id,
-              skill: {
-                id: '',
-                skillCategoryId: 'attack',
-              },
-            })
-            // スキル発動の結果を反映する。
-            draft.game.creatures = newContext.creatures
-            draft.game.parties = newContext.parties
-            draft.game.battleFieldMatrix = newContext.battleFieldMatrix
-            // 手札のカードを一枚減らす。
-            draft.game.cardsOnPlayersHand = draft.game.cardsOnPlayersHand
-              .filter(e => e.creatureId !== cardUnderCursor.creatureId)
-            // 山札のカードへ消費したカードを戻す。
-            draft.game.cardsInDeck.push({
-              creatureId: cardUnderCursor.creatureId,
-            })
-            // カーソルを外す。
-            draft.game.cursor = undefined
-          // 選択先クリーチャーが敵のとき。
+          // 選択先クリーチャーがプレイヤー側のとき。
+          if (placedCreatureWithParty.party.factionId === 'player') {
+            // 行動可能なとき。
+            if (creatureUtils.canAct(placedCreatureWithParty.creature)) {
+              // スキルを発動する。
+              const newContext = invokeSkill({
+                creatures: draft.game.creatures,
+                parties: draft.game.parties,
+                battleFieldMatrix: draft.game.battleFieldMatrix,
+                invokerCreatureId: placedCreatureWithParty.creature.id,
+                skill: {
+                  id: '',
+                  skillCategoryId: 'attack',
+                },
+              })
+              // スキル発動により死亡したクリーチャーが存在する位置をまとめる。
+              const positionsOfDeadCreature: MatrixPosition[] = []
+              for (const element of pickBattleFieldElementsWhereCreatureExists(newContext.battleFieldMatrix)) {
+                if (element.creatureId !== undefined) {
+                  const creature = findCreatureById(newContext.creatures, element.creatureId)
+                  if (creatureUtils.isDead(creature)) {
+                    positionsOfDeadCreature.push(element.position)
+                  }
+                }
+              }
+              // スキル発動の結果を反映する。
+              draft.game.creatures = newContext.creatures
+              draft.game.parties = newContext.parties
+              draft.game.battleFieldMatrix = newContext.battleFieldMatrix
+              // 盤上から死亡したクリーチャーを削除する。
+              positionsOfDeadCreature.forEach(position => {
+                const element = draft.game.battleFieldMatrix[position.y][position.x]
+                const creatureId = element.creatureId
+                if (creatureId !== undefined) {
+                  // 盤上のクリーチャーを削除する。
+                  element.creatureId = undefined
+                  // プレイヤーのクリーチャーのときは、山札の末尾へ戻す。
+                  const {party} = findCreatureWithParty(draft.game.creatures, draft.game.parties, creatureId)
+                  if (party.factionId === 'player') {
+                    draft.game.cardsInDeck.push({
+                      creatureId,
+                    })
+                  }
+                }
+              })
+              // 消費したカードを手札から削除する。
+              draft.game.cardsOnPlayersHand = draft.game.cardsOnPlayersHand
+                .filter(e => e.creatureId !== cardUnderCursor.creatureId)
+              // 山札のカードへ消費したカードを戻す。
+              draft.game.cardsInDeck.push({
+                creatureId: cardUnderCursor.creatureId,
+              })
+              // カーソルを外す。
+              draft.game.cursor = undefined
+            // 行動不能なとき。
+            } else {
+              /* no-op */
+            }
+          // 選択先クリーチャーがプレイヤー側ではないとき。
           } else {
             /* no-op */
           }
@@ -172,14 +205,24 @@ export function runNormalAttackPhase(
 
     // TODO: 攻撃者リストを発動順に整列する。
 
-    let creaturesBeingUpdated: Creature[] = game.creatures
-    let partiesBeingUpdated: Party[] = game.parties
-    let battleFieldMatrixBeingUpdated: BattleFieldMatrix = game.battleFieldMatrix
+    let creaturesBeingUpdated = game.creatures
+    let partiesBeingUpdated = game.parties
+    let battleFieldMatrixBeingUpdated = game.battleFieldMatrix
+    let cardsInDeckBeingUpdated = game.cardsInDeck
 
     // 攻撃者リストをループしてそれぞれの通常攻撃を発動する。
     attackerDataList.forEach((attackerData) => {
-      // Only the "creature.id" should be referred because other properties may be updated.
+      // NOTE: この id と直上でまとめた更新用の値以外は参照しないこと。
+      //       他の値はループ処理が始まれば陳腐化するため。
       const attackerCreatureId = attackerData.creature.id
+
+      const attackerWithParty = findCreatureWithParty(
+        creaturesBeingUpdated, partiesBeingUpdated, attackerCreatureId)
+
+      // 攻撃者が行動不能のとき。
+      if (!creatureUtils.canAct(attackerWithParty.creature)) {
+        return
+      }
 
       const result = invokeNormalAttack({
         attackerCreatureId,
@@ -188,14 +231,41 @@ export function runNormalAttackPhase(
         battleFieldMatrix: battleFieldMatrixBeingUpdated,
       })
 
+      // 攻撃により死亡したクリーチャーが存在する位置をまとめる。
+      const positionsOfDeadCreature: MatrixPosition[] = []
+      for (const element of pickBattleFieldElementsWhereCreatureExists(result.battleFieldMatrix)) {
+        if (element.creatureId !== undefined) {
+          const creature = findCreatureById(result.creatures, element.creatureId)
+          if (creatureUtils.isDead(creature)) {
+            positionsOfDeadCreature.push(element.position)
+          }
+        }
+      }
+
       creaturesBeingUpdated = result.creatures
       partiesBeingUpdated = result.parties
       battleFieldMatrixBeingUpdated = result.battleFieldMatrix
+      positionsOfDeadCreature.forEach(position => {
+        const element = battleFieldMatrixBeingUpdated[position.y][position.x]
+        const creatureId = element.creatureId
+        if (creatureId !== undefined) {
+          // 盤上のクリーチャーを削除する。
+          element.creatureId = undefined
+          // プレイヤーのクリーチャーのときは、山札の末尾へ戻す。
+          const {party} = findCreatureWithParty(creaturesBeingUpdated, partiesBeingUpdated, creatureId)
+          if (party.factionId === 'player') {
+            cardsInDeckBeingUpdated.push({
+              creatureId,
+            })
+          }
+        }
+      })
     })
 
     draft.game.creatures = creaturesBeingUpdated
     draft.game.parties = partiesBeingUpdated
     draft.game.battleFieldMatrix = battleFieldMatrixBeingUpdated
+    draft.game.cardsInDeck = cardsInDeckBeingUpdated
     draft.game.completedNormalAttackPhase = true
   })
   return Object.assign({}, state, {pages: {battle: newBattlePage}})
