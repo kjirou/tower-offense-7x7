@@ -65,8 +65,8 @@ export function selectBattleFieldElement(
       if (cardUnderCursor) {
         // 選択先のマスへクリーチャーが配置されているとき。
         if (placedCreatureWithParty) {
-          // 選択先クリーチャーが味方のとき。
-          if (determineRelationshipBetweenFactions('player', placedCreatureWithParty.party.factionId) === 'ally') {
+          // 選択先クリーチャーがプレイヤー側のとき。
+          if (placedCreatureWithParty.party.factionId === 'player') {
             // TODO: 発動できない状況を除外する。
             // スキルを発動する。
             const newContext = invokeSkill({
@@ -118,7 +118,7 @@ export function selectBattleFieldElement(
             })
             // カーソルを外す。
             draft.game.cursor = undefined
-          // 選択先クリーチャーが敵のとき。
+          // 選択先クリーチャーがプレイヤー側ではないとき。
           } else {
             /* no-op */
           }
