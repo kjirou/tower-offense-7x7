@@ -64,11 +64,15 @@ describe('utils', function() {
   })
 
   describe('choiceElementsAtRandom', function() {
-    // TODO: Improve this using the sinon.js.
-    it('probably works', function() {
-      const array = [1, 2, 3, 4, 5]
-      const result = choiceElementsAtRandom<Number>(array, 2)
+    it('指定数の要素を返す', function() {
+      const result = choiceElementsAtRandom([1, 2, 3, 4, 5], 2)
       assert.strictEqual(result.length, 2)
+    })
+
+    it('指定数が要素数を超えているときは例外を発生する', function() {
+      assert.throws(() => {
+        choiceElementsAtRandom([1, 2, 3, 4, 5], 6)
+      }, /not enough/)
     })
   })
 
