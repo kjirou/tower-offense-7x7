@@ -22,11 +22,44 @@ import {
 
 describe('utils', function() {
   describe('shuffleArray', function() {
-    // TODO: Improve this using the sinon.js.
-    it('probably works', function() {
-      const array = [1, 2, 3, 4, 5]
-      const shuffled = shuffleArray<Number>(array, Math.random)
-      assert.deepStrictEqual(shuffled.sort(), array)
+    it('乱数を偏らせたときに結果が異なる', function() {
+      const array = [1, 2]
+      const a = shuffleArray<Number>(array, () => 0.0)
+      const b = shuffleArray<Number>(array, () => 1.0)
+      assert.notDeepStrictEqual(a, b)
+    })
+
+    it('[1, 2, 3, 4, 5] に対して 1000 回実行したときに、結果内で 1 が全ての位置へ 1 つは存在している', function() {
+      // NOTE: この結果が偶然失敗するのは以下の確率である。
+      //       Math.pow(0.8, 1000) * 5 === 1.2302319221611854e-97 * 5
+      const results = Array.from({length: 1000}).map(() => shuffleArray([1, 2, 3, 4, 5], Math.random))
+      let oneIn1st = false
+      let oneIn2nd = false
+      let oneIn3rd = false
+      let oneIn4th = false
+      let oneIn5th = false
+      for (const result of results) {
+        if (result[0] === 1) {
+          oneIn1st = true
+        }
+        if (result[1] === 1) {
+          oneIn2nd = true
+        }
+        if (result[2] === 1) {
+          oneIn3rd = true
+        }
+        if (result[3] === 1) {
+          oneIn4th = true
+        }
+        if (result[4] === 1) {
+          oneIn5th = true
+        }
+      }
+      assert.strictEqual(oneIn1st, true)
+      assert.strictEqual(oneIn2nd, true)
+      assert.strictEqual(oneIn3rd, true)
+      assert.strictEqual(oneIn4th, true)
+      assert.strictEqual(oneIn5th, true)
     })
   })
 

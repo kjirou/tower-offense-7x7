@@ -148,7 +148,7 @@ export function shuffleArray<Element>(array: Element[], random: () => number): E
   const copied = array.slice()
   let m = copied.length
   while (m) {
-    const i = Math.floor(random() * (m - 1))
+    const i = Math.floor(random() * m)
     m--
     [copied[m], copied[i]] = [copied[i], copied[m]]
   }
