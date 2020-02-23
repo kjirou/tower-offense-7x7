@@ -25,7 +25,7 @@ describe('utils', function() {
     // TODO: Improve this using the sinon.js.
     it('probably works', function() {
       const array = [1, 2, 3, 4, 5]
-      const shuffled = shuffleArray<Number>(array)
+      const shuffled = shuffleArray<Number>(array, Math.random)
       assert.deepStrictEqual(shuffled.sort(), array)
     })
   })
