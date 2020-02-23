@@ -3,10 +3,8 @@ import produce from 'immer'
 import {
   ApplicationState,
   BattleFieldElement,
-  BattleFieldMatrix,
   BattlePage,
   Card,
-  CardRelationship,
   Creature,
   CreatureWithParty,
   CreatureWithPartyOnBattleFieldElement,
@@ -176,11 +174,10 @@ export function runNormalAttackPhase(
 
     // TODO: 攻撃者リストを発動順に整列する。
 
-    // TODO: Use typeof
-    let creaturesBeingUpdated: Creature[] = game.creatures
-    let partiesBeingUpdated: Party[] = game.parties
-    let battleFieldMatrixBeingUpdated: BattleFieldMatrix = game.battleFieldMatrix
-    let cardsInDeckBeingUpdated: CardRelationship[] = game.cardsInDeck
+    let creaturesBeingUpdated = game.creatures
+    let partiesBeingUpdated = game.parties
+    let battleFieldMatrixBeingUpdated = game.battleFieldMatrix
+    let cardsInDeckBeingUpdated = game.cardsInDeck
 
     // 攻撃者リストをループしてそれぞれの通常攻撃を発動する。
     attackerDataList.forEach((attackerData) => {
