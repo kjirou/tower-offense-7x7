@@ -144,11 +144,11 @@ export const MAX_NUMBER_OF_PLAYERS_HAND = 5
  * Shuffle an array with the Fisher–Yates algorithm.
  * Ref) https://www.30secondsofcode.org/js/s/shuffle/
  */
-export function shuffleArray<Element>(array: Element[]): Element[] {
+export function shuffleArray<Element>(array: Element[], random: () => number): Element[] {
   const copied = array.slice()
   let m = copied.length
   while (m) {
-    const i = Math.floor(Math.random() * (m - 1))
+    const i = Math.floor(random() * m)
     m--
     [copied[m], copied[i]] = [copied[i], copied[m]]
   }
@@ -159,7 +159,7 @@ export function choiceElementsAtRandom<Element>(elements: Element[], numberOfCho
   if (elements.length < numberOfChoices) {
     throw new Error('The number of elements in the array is not enough.')
   }
-  const shuffled = shuffleArray(elements)
+  const shuffled = shuffleArray(elements, Math.random)
   return shuffled.slice(0, numberOfChoices)
 }
 

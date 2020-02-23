@@ -124,8 +124,7 @@ describe('reducers/game', function() {
   })
 
   describe('determinePositionsOfCreatureAppearance', function() {
-    // TODO: Improve this using the sinon.js.
-    it('probably works', function() {
+    it('works', function() {
       const matrix = createBattleFieldMatrix(3, 3)
       const creatureAppearances = [
         {
@@ -133,7 +132,8 @@ describe('reducers/game', function() {
           creatureIds: ['a', 'b'],
         }
       ]
-      const result = determinePositionsOfCreatureAppearance(matrix, creatureAppearances, 2)
+      const result = determinePositionsOfCreatureAppearance(
+        matrix, creatureAppearances, 2, (elements, num) => elements.slice(0, num))
       assert.strictEqual(result.length, 2)
       assert.strictEqual(result[0].creatureId, 'a')
       assert.strictEqual(result[1].creatureId, 'b')
