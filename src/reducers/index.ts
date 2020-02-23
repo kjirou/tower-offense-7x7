@@ -27,6 +27,7 @@ import {
   determinePositionsOfCreatureAppearance,
   invokeSkill,
   invokeNormalAttack,
+  placePlayerFactionCreature,
   refillCardsOnPlayersHand,
 } from './game'
 
@@ -131,10 +132,16 @@ export function selectBattleFieldElement(
         // 選択先のマスへクリーチャーが配置されていないとき。
         } else {
           // クリーチャーを配置する。
-          battleFieldElement.creatureId = cardUnderCursor.creatureId
-          // 手札のカードを一枚減らす。
-          draft.game.cardsOnPlayersHand = draft.game.cardsOnPlayersHand
-            .filter(e => e.creatureId !== cardUnderCursor.creatureId)
+          // 手札からそのクリーチャーのカードを削除する。
+          draft.game = {
+            ...draft.game,
+            ...placePlayerFactionCreature(
+              draft.game.battleFieldMatrix,
+              draft.game.cardsOnPlayersHand,
+              cardUnderCursor.creatureId,
+              battleFieldElement.position
+            ),
+          }
           // カーソルを外す。
           draft.game.cursor = undefined
         }

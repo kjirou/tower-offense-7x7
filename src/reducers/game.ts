@@ -205,6 +205,38 @@ export function determinePositionsOfCreatureAppearance(
   return []
 }
 
+export function placePlayerFactionCreature(
+  battleFieldMatrix: BattleFieldMatrix,
+  cardsOnPlayersHand: CardRelationship[],
+  creatureId: Creature['id'],
+  position: MatrixPosition
+): {
+  battleFieldMatrix: BattleFieldMatrix,
+  cardsOnPlayersHand: CardRelationship[],
+} {
+  const element = battleFieldMatrix[position.y][position.x]
+  // NOTE: 欲しい仕様ではないが、今はこの状況にならないはず。
+  if (element.creatureId !== undefined) {
+    throw new Error('A creature exist in the battle field element.')
+  }
+
+  let newBattleFieldMatrix = battleFieldMatrix.slice()
+  newBattleFieldMatrix[position.y] = newBattleFieldMatrix[position.y].slice()
+  newBattleFieldMatrix[position.y][position.x] = {
+    ...newBattleFieldMatrix[position.y][position.x],
+    creatureId,
+  }
+  const newCardsOnPlayersHand = cardsOnPlayersHand.filter(e => e.creatureId !== creatureId)
+  if (newCardsOnPlayersHand.length === cardsOnPlayersHand.length) {
+    throw new Error('The `creatureId` does not exist on the player\'s hand.')
+  }
+
+  return {
+    battleFieldMatrix: newBattleFieldMatrix,
+    cardsOnPlayersHand: newCardsOnPlayersHand,
+  }
+}
+
 export function refillCardsOnPlayersHand(
   cardsInDeck: CardRelationship[],
   cardsOnPlayersHand:CardRelationship[]

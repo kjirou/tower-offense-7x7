@@ -1,5 +1,8 @@
 import * as assert from 'assert'
-import {describe, it} from 'mocha'
+import {
+  describe,
+  it,
+} from 'mocha'
 
 import {
   NormalAttackProcessContext,
@@ -16,6 +19,7 @@ import {
   determinePositionsOfCreatureAppearance,
   invokeNormalAttack,
   invokeSkill,
+  placePlayerFactionCreature,
   refillCardsOnPlayersHand,
 } from '../game'
 
@@ -91,6 +95,35 @@ describe('reducers/game', function() {
           assert.strictEqual(newEnemy.lifePoint < enemy.lifePoint, true)
         })
       })
+    })
+  })
+
+  describe('placePlayerFactionCreature', function() {
+    it('指定したマスにクリーチャーが存在するとき、例外を発生する', function() {
+      const matrix = createBattleFieldMatrix(1, 1)
+      matrix[0][0].creatureId = 'a'
+      assert.throws(() => {
+        placePlayerFactionCreature(matrix, [], 'b', {y: 0, x: 0})
+      }, /creature exist/)
+    })
+
+    it('指定したクリーチャーが手札にないとき、例外を発生する', function() {
+      const matrix = createBattleFieldMatrix(1, 1)
+      assert.throws(() => {
+        placePlayerFactionCreature(matrix, [], 'a', {y: 0, x: 0})
+      }, /does not exist/)
+    })
+
+    it('盤上へクリーチャーが配置される', function() {
+      const matrix = createBattleFieldMatrix(1, 1)
+      const result = placePlayerFactionCreature(matrix, [{creatureId: 'a'}], 'a', {y: 0, x: 0})
+      assert.strictEqual(result.battleFieldMatrix[0][0].creatureId, 'a')
+    })
+
+    it('指定したクリーチャーのカードが手札から削除される', function() {
+      const matrix = createBattleFieldMatrix(1, 1)
+      const result = placePlayerFactionCreature(matrix, [{creatureId: 'a'}, {creatureId: 'b'}], 'a', {y: 0, x: 0})
+      assert.deepStrictEqual(result.cardsOnPlayersHand, [{creatureId: 'b'}])
     })
   })
 
