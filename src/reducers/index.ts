@@ -79,11 +79,37 @@ export function selectBattleFieldElement(
                 skillCategoryId: 'attack',
               },
             })
+            // スキル発動により死亡したクリーチャーが存在する位置をまとめる。
+            const positionsOfDeadCreature: MatrixPosition[] = []
+            for (const element of pickBattleFieldElementsWhereCreatureExists(newContext.battleFieldMatrix)) {
+              if (element.creatureId !== undefined) {
+                const creature = findCreatureById(newContext.creatures, element.creatureId)
+                if (creatureUtils.isDead(creature)) {
+                  positionsOfDeadCreature.push(element.position)
+                }
+              }
+            }
             // スキル発動の結果を反映する。
             draft.game.creatures = newContext.creatures
             draft.game.parties = newContext.parties
             draft.game.battleFieldMatrix = newContext.battleFieldMatrix
-            // 手札のカードを一枚減らす。
+            // 盤上から死亡したクリーチャーを削除する。
+            positionsOfDeadCreature.forEach(position => {
+              const element = draft.game.battleFieldMatrix[position.y][position.x]
+              const creatureId = element.creatureId
+              if (creatureId !== undefined) {
+                // 盤上のクリーチャーを削除する。
+                element.creatureId = undefined
+                // プレイヤーのクリーチャーのときは、山札の末尾へ戻す。
+                const {party} = findCreatureWithParty(draft.game.creatures, draft.game.parties, creatureId)
+                if (party.factionId === 'player') {
+                  draft.game.cardsInDeck.push({
+                    creatureId,
+                  })
+                }
+              }
+            })
+            // 消費したカードを手札から削除する。
             draft.game.cardsOnPlayersHand = draft.game.cardsOnPlayersHand
               .filter(e => e.creatureId !== cardUnderCursor.creatureId)
             // 山札のカードへ消費したカードを戻す。
@@ -220,7 +246,7 @@ export function runNormalAttackPhase(
         if (creatureId !== undefined) {
           // 盤上のクリーチャーを削除する。
           element.creatureId = undefined
-          // プレイヤーのクリーチャーのときは、手札の末尾へ戻す。
+          // プレイヤーのクリーチャーのときは、山札の末尾へ戻す。
           const {party} = findCreatureWithParty(creaturesBeingUpdated, partiesBeingUpdated, creatureId)
           if (party.factionId === 'player') {
             cardsInDeckBeingUpdated.push({

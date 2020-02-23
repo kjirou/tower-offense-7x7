@@ -150,7 +150,7 @@ describe('reducers/index', function() {
     })
 
     describe('computer 側の攻撃で死亡する player 側のクリーチャーが存在するとき', function() {
-      it('死亡した player 側のクリーチャーが手札の末尾へ戻る結果を返す', function() {
+      it('死亡した player 側のクリーチャーが山札の末尾へ戻る結果を返す', function() {
         const state = createStateDisplayBattlePageAtStartOfGame()
         const battlePage = ensureBattlePage(state)
         const a = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
