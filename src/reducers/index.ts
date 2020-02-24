@@ -217,18 +217,14 @@ export function runNormalAttackPhase(
       }
 
       // 通常攻撃を行う。
-      // TODO: game を上書きできないプロパティを返さない。
-      const normalAttackResult = invokeNormalAttack({
-        attackerCreatureId,
-        creatures: gameBeingUpdated.creatures,
-        parties: gameBeingUpdated.parties,
-        battleFieldMatrix: gameBeingUpdated.battleFieldMatrix,
-      })
       gameBeingUpdated = {
         ...gameBeingUpdated,
-        creatures: normalAttackResult.creatures,
-        parties: normalAttackResult.parties,
-        battleFieldMatrix: normalAttackResult.battleFieldMatrix,
+        ...invokeNormalAttack({
+          attackerCreatureId,
+          creatures: gameBeingUpdated.creatures,
+          parties: gameBeingUpdated.parties,
+          battleFieldMatrix: gameBeingUpdated.battleFieldMatrix,
+        }),
       }
 
       // 盤上から死亡したクリーチャーを削除する。

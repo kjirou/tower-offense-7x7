@@ -109,7 +109,9 @@ export function removeDeadCreatures(
   }
 }
 
-export function invokeNormalAttack(context: NormalAttackProcessContext): NormalAttackProcessContext {
+export function invokeNormalAttack(context: NormalAttackProcessContext): {
+  creatures: Creature[],
+} {
   const attackerWithParty = findCreatureWithParty(context.creatures, context.parties, context.attackerCreatureId)
 
   // 攻撃者情報を抽出する。
@@ -173,11 +175,10 @@ export function invokeNormalAttack(context: NormalAttackProcessContext): NormalA
       const affected = findCreatureByIdIfPossible(affectedCreatures, creature.id)
       return affected || creature
     })
-  const newContext = Object.assign({}, context, {
-    creatures: newCreatures,
-  })
 
-  return newContext
+  return {
+    creatures: newCreatures,
+  }
 }
 
 function invokeAttackSkill(context: SkillProcessContext): SkillProcessContext {
