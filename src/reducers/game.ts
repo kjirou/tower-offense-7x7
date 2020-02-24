@@ -1,3 +1,6 @@
+/**
+ * This file can be referenced only from the "reducers/index" or tests.
+ */
 import {
   BattleFieldElement,
   BattleFieldMatrix,
@@ -27,7 +30,88 @@ export const creatureUtils = {
   isDead: (creature: Creature): boolean => creature.lifePoint === 0,
 }
 
-export function invokeNormalAttack(context: NormalAttackProcessContext): NormalAttackProcessContext {
+export function placePlayerFactionCreature(
+  battleFieldMatrix: BattleFieldMatrix,
+  cardsOnPlayersHand: CardRelationship[],
+  creatureId: Creature['id'],
+  position: MatrixPosition
+): {
+  battleFieldMatrix: BattleFieldMatrix,
+  cardsOnPlayersHand: CardRelationship[],
+} {
+  const element = battleFieldMatrix[position.y][position.x]
+  // NOTE: 欲しい仕様ではないが、今はこの状況にならないはず。
+  if (element.creatureId !== undefined) {
+    throw new Error('A creature exist in the battle field element.')
+  }
+
+  let newBattleFieldMatrix = battleFieldMatrix.slice()
+  newBattleFieldMatrix[position.y] = newBattleFieldMatrix[position.y].slice()
+  newBattleFieldMatrix[position.y][position.x] = {
+    ...newBattleFieldMatrix[position.y][position.x],
+    creatureId,
+  }
+  const newCardsOnPlayersHand = cardsOnPlayersHand.filter(e => e.creatureId !== creatureId)
+  if (newCardsOnPlayersHand.length === cardsOnPlayersHand.length) {
+    throw new Error('The `creatureId` does not exist on the player\'s hand.')
+  }
+
+  return {
+    battleFieldMatrix: newBattleFieldMatrix,
+    cardsOnPlayersHand: newCardsOnPlayersHand,
+  }
+}
+
+export function removeDeadCreatures(
+  creatures: Creature[],
+  parties: Party[],
+  battleFieldMatrix: BattleFieldMatrix,
+  cardsInDeck: CardRelationship[]
+): {
+  battleFieldMatrix: BattleFieldMatrix,
+  cardsInDeck: CardRelationship[],
+} {
+  // 死亡しているクリーチャーが存在する位置をまとめる。
+  const positionsOfDeadCreature: MatrixPosition[] = []
+  for (const element of pickBattleFieldElementsWhereCreatureExists(battleFieldMatrix)) {
+    if (element.creatureId !== undefined) {
+      const creature = findCreatureById(creatures, element.creatureId)
+      if (creatureUtils.isDead(creature)) {
+        positionsOfDeadCreature.push(element.position)
+      }
+    }
+  }
+
+  let battleFieldMatrixBeingUpdated = battleFieldMatrix.slice().map(row => row.slice())
+  let cardsInDeckBeingUpdated = cardsInDeck.slice()
+
+  positionsOfDeadCreature.forEach(position => {
+    const creatureId = battleFieldMatrixBeingUpdated[position.y][position.x].creatureId
+    if (creatureId !== undefined) {
+      // 盤上のクリーチャーを削除する。
+      battleFieldMatrixBeingUpdated[position.y][position.x] = {
+        ...battleFieldMatrixBeingUpdated[position.y][position.x],
+        creatureId: undefined,
+      }
+      // プレイヤーのクリーチャーのときは、山札の末尾へ戻す。
+      const {party} = findCreatureWithParty(creatures, parties, creatureId)
+      if (party.factionId === 'player') {
+        cardsInDeckBeingUpdated.push({
+          creatureId,
+        })
+      }
+    }
+  })
+
+  return {
+    battleFieldMatrix: battleFieldMatrixBeingUpdated,
+    cardsInDeck: cardsInDeckBeingUpdated,
+  }
+}
+
+export function invokeNormalAttack(context: NormalAttackProcessContext): {
+  creatures: Creature[],
+} {
   const attackerWithParty = findCreatureWithParty(context.creatures, context.parties, context.attackerCreatureId)
 
   // 攻撃者情報を抽出する。
@@ -91,11 +175,10 @@ export function invokeNormalAttack(context: NormalAttackProcessContext): NormalA
       const affected = findCreatureByIdIfPossible(affectedCreatures, creature.id)
       return affected || creature
     })
-  const newContext = Object.assign({}, context, {
-    creatures: newCreatures,
-  })
 
-  return newContext
+  return {
+    creatures: newCreatures,
+  }
 }
 
 function invokeAttackSkill(context: SkillProcessContext): SkillProcessContext {
@@ -203,38 +286,6 @@ export function determinePositionsOfCreatureAppearance(
       })
   }
   return []
-}
-
-export function placePlayerFactionCreature(
-  battleFieldMatrix: BattleFieldMatrix,
-  cardsOnPlayersHand: CardRelationship[],
-  creatureId: Creature['id'],
-  position: MatrixPosition
-): {
-  battleFieldMatrix: BattleFieldMatrix,
-  cardsOnPlayersHand: CardRelationship[],
-} {
-  const element = battleFieldMatrix[position.y][position.x]
-  // NOTE: 欲しい仕様ではないが、今はこの状況にならないはず。
-  if (element.creatureId !== undefined) {
-    throw new Error('A creature exist in the battle field element.')
-  }
-
-  let newBattleFieldMatrix = battleFieldMatrix.slice()
-  newBattleFieldMatrix[position.y] = newBattleFieldMatrix[position.y].slice()
-  newBattleFieldMatrix[position.y][position.x] = {
-    ...newBattleFieldMatrix[position.y][position.x],
-    creatureId,
-  }
-  const newCardsOnPlayersHand = cardsOnPlayersHand.filter(e => e.creatureId !== creatureId)
-  if (newCardsOnPlayersHand.length === cardsOnPlayersHand.length) {
-    throw new Error('The `creatureId` does not exist on the player\'s hand.')
-  }
-
-  return {
-    battleFieldMatrix: newBattleFieldMatrix,
-    cardsOnPlayersHand: newCardsOnPlayersHand,
-  }
 }
 
 export function refillCardsOnPlayersHand(
