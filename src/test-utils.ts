@@ -3,6 +3,7 @@ import {
   Card,
   Creature,
   FactionId,
+  MAX_NUMBER_OF_PLAYERS_HAND,
   Party,
   createBattleFieldMatrix,
   determineRelationshipBetweenFactions,
@@ -90,12 +91,8 @@ export function createStateDisplayBattlePageAtStartOfGame(): ApplicationState {
           ],
           battleFieldMatrix: createBattleFieldMatrix(7, 7),
           cards,
-          cardsInDeck: [],
-          cardsOnPlayersHand: Array.from({length: 5}).map((e, index) => {
-            return {
-              creatureId: allies[index].id,
-            }
-          }),
+          cardsInDeck: cards.slice(MAX_NUMBER_OF_PLAYERS_HAND).map(e => ({creatureId: e.creatureId})),
+          cardsOnPlayersHand: cards.slice(0, MAX_NUMBER_OF_PLAYERS_HAND).map(e => ({creatureId: e.creatureId})),
           creatureAppearances: [],
           cursor: undefined,
           completedNormalAttackPhase: false,
