@@ -32,7 +32,7 @@ function createNumericUidCreator(startingCount: number): () => string {
 
 const createUid = createNumericUidCreator(0)
 
-function createCreature(): Creature {
+export function createCreature(): Creature {
   return {
     id: createUid(),
     jobId: '',

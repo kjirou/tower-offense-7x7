@@ -5,13 +5,17 @@ import {
 } from 'mocha'
 
 import {
+  BattleFieldMatrix,
+  Creature,
   NormalAttackProcessContext,
+  Party,
   SkillProcessContext,
   createBattleFieldMatrix,
   ensureBattlePage,
   findCreatureById,
 } from '../../utils'
 import {
+  createCreature,
   createStateDisplayBattlePageAtStartOfGame,
   findFirstAlly,
 } from '../../test-utils'
@@ -21,9 +25,87 @@ import {
   invokeSkill,
   placePlayerFactionCreature,
   refillCardsOnPlayersHand,
+  removeDeadCreatures,
 } from '../game'
 
 describe('reducers/game', function() {
+  describe('removeDeadCreatures', function() {
+    let creatures: Creature[]
+    let battleFieldMatrix: BattleFieldMatrix
+
+    beforeEach(function() {
+      creatures = [createCreature()]
+      battleFieldMatrix = createBattleFieldMatrix(1, 1)
+    })
+
+    describe('死亡しているクリーチャーがいるとき', function() {
+      describe('死亡しているクリーチャーが player へ所属するとき', function() {
+        let parties: Party[]
+
+        beforeEach(function() {
+          creatures[0].lifePoint = 0
+          battleFieldMatrix[0][0].creatureId = creatures[0].id
+          parties = [{
+            factionId: 'player',
+            creatureIds: creatures.map(e => e.id),
+          }]
+        })
+
+        it('盤上から削除する', function() {
+          const result = removeDeadCreatures(creatures, parties, battleFieldMatrix, [])
+          assert.strictEqual(result.battleFieldMatrix[0][0].creatureId, undefined)
+        })
+
+        it('山札の末尾へ戻る', function() {
+          const result = removeDeadCreatures(creatures, parties, battleFieldMatrix, [])
+          assert.strictEqual(result.cardsInDeck.length, 1)
+          assert.strictEqual(result.cardsInDeck[0].creatureId, creatures[0].id)
+        })
+      })
+
+      describe('死亡しているクリーチャーが computer へ所属するとき', function() {
+        let parties: Party[]
+
+        beforeEach(function() {
+          creatures[0].lifePoint = 0
+          battleFieldMatrix[0][0].creatureId = creatures[0].id
+          parties = [{
+            factionId: 'computer',
+            creatureIds: creatures.map(e => e.id),
+          }]
+        })
+
+        it('盤上から削除する', function() {
+          const result = removeDeadCreatures(creatures, parties, battleFieldMatrix, [])
+          assert.strictEqual(result.battleFieldMatrix[0][0].creatureId, undefined)
+        })
+
+        it('山札は変わらない', function() {
+          const result = removeDeadCreatures(creatures, parties, battleFieldMatrix, [])
+          assert.strictEqual(result.cardsInDeck.length, 0)
+        })
+      })
+    })
+
+    describe('死亡していないクリーチャーがいるとき', function() {
+      let parties: Party[]
+
+      beforeEach(function() {
+        creatures[0].lifePoint = 1
+        battleFieldMatrix[0][0].creatureId = creatures[0].id
+        parties = [{
+          factionId: 'player',
+          creatureIds: creatures.map(e => e.id),
+        }]
+      })
+
+      it('盤上から削除しない', function() {
+        const result = removeDeadCreatures(creatures, parties, battleFieldMatrix, [])
+        assert.strictEqual(result.battleFieldMatrix[0][0].creatureId, creatures[0].id)
+      })
+    })
+  })
+
   describe('invokeNormalAttack', function() {
     describe('When an attacker is adjacent to an enemy', function() {
       it('can attack the enemy', function() {
