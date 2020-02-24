@@ -300,7 +300,7 @@ export function proceedTurn(
     }
 
     // クリーチャーの出現が予約される。
-    const creatureAppearances = determinePositionsOfCreatureAppearance(
+    const reservedCreaturePositions = determinePositionsOfCreatureAppearance(
       draft.game.battleFieldMatrix,
       draft.game.creatureAppearances,
       draft.game.turnNumber,
@@ -317,7 +317,7 @@ export function proceedTurn(
       element.creatureId = element.reservedCreatureId
       element.reservedCreatureId = undefined
     })
-    creatureAppearances.forEach(({position, creatureId}) => {
+    reservedCreaturePositions.forEach(({position, creatureId}) => {
       draft.game.battleFieldMatrix[position.y][position.x].reservedCreatureId = creatureId
     })
     draft.game.cardsInDeck = newCardSets.cardsInDeck

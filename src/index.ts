@@ -93,6 +93,12 @@ const dummyAllCards: Card[] = dummyAllies
       creatureId: creature.id,
     }
   })
+const dummyCreatureAppearances = dummyEnemies.map((creature, index) => {
+  return {
+    turnNumber: index + 1,
+    creatureIds: [creature.id],
+  }
+})
 
 function createInitialGame(): Game {
   const battleFieldMatrix = createBattleFieldMatrix(7, 7)
@@ -125,12 +131,7 @@ function createInitialGame(): Game {
           creatureId: card.creatureId,
         }
       }),
-    creatureAppearances: dummyEnemies.map((creature, index) => {
-      return {
-        turnNumber: index + 1,
-        creatureIds: [creature.id],
-      }
-    }),
+    creatureAppearances: dummyCreatureAppearances,
     cursor: undefined,
     completedNormalAttackPhase: false,
     turnNumber: 1,
