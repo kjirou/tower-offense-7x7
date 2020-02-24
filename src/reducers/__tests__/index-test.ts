@@ -8,16 +8,19 @@ import {
   Party,
   createBattleFieldMatrix,
   ensureBattlePage,
+  findCreatureById,
 } from '../../utils'
 import {
   createStateDisplayBattlePageAtStartOfGame,
-  findAllies,
   findFirstAlly,
 } from '../../test-utils'
 import {
   runNormalAttackPhase,
   selectBattleFieldElement,
 } from '../index'
+import {
+  placePlayerFactionCreature,
+} from '../game'
 
 describe('reducers/index', function() {
   describe('selectBattleFieldElement', function() {
@@ -93,9 +96,17 @@ describe('reducers/index', function() {
       beforeEach(function() {
         state = createStateDisplayBattlePageAtStartOfGame()
         battlePage = ensureBattlePage(state)
-        a = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
+        a = findCreatureById(battlePage.game.creatures, battlePage.game.cardsOnPlayersHand[0].creatureId)
         b = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
-        battlePage.game.battleFieldMatrix[0][0].creatureId = a.id
+        battlePage.game = {
+          ...battlePage.game,
+          ...placePlayerFactionCreature(
+            battlePage.game.battleFieldMatrix,
+            battlePage.game.cardsOnPlayersHand,
+            a.id,
+            {y: 0, x: 0}
+          )
+        }
         battlePage.game.battleFieldMatrix[0][1].creatureId = b.id
       })
 
@@ -106,8 +117,8 @@ describe('reducers/index', function() {
         b.attackPoint = 1
         const newState = runNormalAttackPhase(state)
         const newBattlePage = ensureBattlePage(newState)
-        const newA = findFirstAlly(newBattlePage.game.creatures, newBattlePage.game.parties, 'player')
-        const newB = findFirstAlly(newBattlePage.game.creatures, newBattlePage.game.parties, 'computer')
+        const newA = findCreatureById(newBattlePage.game.creatures, a.id)
+        const newB = findCreatureById(newBattlePage.game.creatures, b.id)
         assert.notStrictEqual(a.lifePoint, newA.lifePoint)
         assert.strictEqual(a.lifePoint > newA.lifePoint, true)
         assert.notStrictEqual(b.lifePoint, newB.lifePoint)
@@ -134,18 +145,36 @@ describe('reducers/index', function() {
       it('互いに攻撃しなかった結果を返す', function() {
         const state = createStateDisplayBattlePageAtStartOfGame()
         const battlePage = ensureBattlePage(state)
-        const allies = findAllies(battlePage.game.creatures, battlePage.game.parties, 'player')
-        allies[0].lifePoint = 2
-        allies[0].attackPoint = 1
-        allies[1].lifePoint = 2
-        allies[1].attackPoint = 1
-        battlePage.game.battleFieldMatrix[0][0].creatureId = allies[0].id
-        battlePage.game.battleFieldMatrix[0][1].creatureId = allies[1].id
+        const a = findCreatureById(battlePage.game.creatures, battlePage.game.cardsOnPlayersHand[0].creatureId)
+        const b = findCreatureById(battlePage.game.creatures, battlePage.game.cardsOnPlayersHand[1].creatureId)
+        a.lifePoint = 2
+        a.attackPoint = 1
+        b.lifePoint = 2
+        b.attackPoint = 1
+        battlePage.game = {
+          ...battlePage.game,
+          ...placePlayerFactionCreature(
+            battlePage.game.battleFieldMatrix,
+            battlePage.game.cardsOnPlayersHand,
+            a.id,
+            {y: 0, x: 0}
+          )
+        }
+        battlePage.game = {
+          ...battlePage.game,
+          ...placePlayerFactionCreature(
+            battlePage.game.battleFieldMatrix,
+            battlePage.game.cardsOnPlayersHand,
+            b.id,
+            {y: 0, x: 1}
+          )
+        }
         const newState = runNormalAttackPhase(state)
         const newBattlePage = ensureBattlePage(newState)
-        const newAllies = findAllies(newBattlePage.game.creatures, newBattlePage.game.parties, 'player')
-        assert.strictEqual(allies[0].lifePoint, newAllies[0].lifePoint)
-        assert.strictEqual(allies[1].lifePoint, newAllies[1].lifePoint)
+        const newA = findCreatureById(newBattlePage.game.creatures, a.id)
+        const newB = findCreatureById(newBattlePage.game.creatures, b.id)
+        assert.strictEqual(a.lifePoint, newA.lifePoint)
+        assert.strictEqual(b.lifePoint, newB.lifePoint)
       })
     })
 
@@ -153,13 +182,21 @@ describe('reducers/index', function() {
       it('死亡した player 側のクリーチャーが山札の末尾へ戻る結果を返す', function() {
         const state = createStateDisplayBattlePageAtStartOfGame()
         const battlePage = ensureBattlePage(state)
-        const a = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
+        const a = findCreatureById(battlePage.game.creatures, battlePage.game.cardsOnPlayersHand[0].creatureId)
         const b = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
         a.lifePoint = 1
         a.attackPoint = 1
         b.lifePoint = 10
         b.attackPoint = 1
-        battlePage.game.battleFieldMatrix[0][0].creatureId = a.id
+        battlePage.game = {
+          ...battlePage.game,
+          ...placePlayerFactionCreature(
+            battlePage.game.battleFieldMatrix,
+            battlePage.game.cardsOnPlayersHand,
+            a.id,
+            {y: 0, x: 0}
+          )
+        }
         battlePage.game.battleFieldMatrix[0][1].creatureId = b.id
         const cardsInDeck = battlePage.game.cardsInDeck
         const newState = runNormalAttackPhase(state)
