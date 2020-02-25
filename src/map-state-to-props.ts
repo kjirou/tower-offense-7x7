@@ -63,7 +63,7 @@ function mapBattlePageStateToProps(
 ): BattlePageProps {
   const game = battlePage.game
 
-  const battleFieldBoardProps: BattlePageProps['battleFieldBoard'] = game.battleFieldMatrix.map(row => {
+  const boardProps: BattlePageProps['battleFieldBoard']['board'] = game.battleFieldMatrix.map(row => {
     return row.map(element => {
       const creatureWithParty = element.creatureId !== undefined
         ? findCreatureWithParty(game.creatures, game.parties, element.creatureId)
@@ -89,9 +89,6 @@ function mapBattlePageStateToProps(
         isSelected: game.cursor
           ? areGlobalPositionsEqual(element.globalPosition, game.cursor.globalPosition)
           : false,
-        handleTouch({y, x}) {
-          setState(s => selectBattleFieldElement(s, y, x))
-        },
       }
     })
   })
@@ -121,7 +118,12 @@ function mapBattlePageStateToProps(
     })
 
   return {
-    battleFieldBoard: battleFieldBoardProps,
+    battleFieldBoard: {
+      board: boardProps,
+      handleTouch({y, x}) {
+        setState(s => selectBattleFieldElement(s, y, x))
+      },
+    },
     cardsOnPlayersHand: {
       cards: cardsProps
     },
