@@ -108,6 +108,7 @@ type BattleFieldBoardProps = {
     x: number,
     y: number,
   }) => void,
+  updatesAreProhibited: boolean,
 }
 
 const BattleFieldBoard: React.FC<BattleFieldBoardProps> = (props) => {
@@ -131,6 +132,8 @@ const BattleFieldBoard: React.FC<BattleFieldBoardProps> = (props) => {
           width: '350px',
           height: '350px',
           zIndex: 1,
+          opacity: props.updatesAreProhibited ? 0.25 : 0,
+          backgroundColor: 'silver',
         }}
         onTouchStart={(event) => {
           const touch = event.changedTouches.item(0)
@@ -348,6 +351,7 @@ export type Props = {
   battleFieldBoard: {
     board: BattleFieldElementProps[][],
     handleTouch: BattleFieldBoardProps['handleTouch'],
+    updatesAreProhibited: boolean,
   },
   cardsOnPlayersHand: CardsOnPlayersHandProps,
   handleTouchBattleButton: FooterProps['handleTouchBattleButton'],
