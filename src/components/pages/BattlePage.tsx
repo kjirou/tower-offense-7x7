@@ -121,14 +121,14 @@ const BattleFieldBoard: React.FC<BattleFieldBoardProps> = (props) => {
     backgroundColor: 'green',
   }
 
-  const squares = flattenMatrix<BattleFieldElementProps>(props.board)
+  const elements = flattenMatrix<BattleFieldElementProps>(props.board)
 
   return (
     <div style={style}>
     {
-      squares.map((square) => {
-        const key = `square-${square.y}-${square.x}`;
-        return <BattleFieldElement key={key} {...square} />;
+      elements.map((element) => {
+        const key = `battle-field-element-${element.y}-${element.x}`;
+        return <BattleFieldElement key={key} {...element} />;
       })
     }
     </div>
