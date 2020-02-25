@@ -78,10 +78,6 @@ const CreatureOnElement: React.FC<CreatureOnElementProps> = (props) => {
 
 type BattleFieldElementProps = {
   creature: CreatureOnElementProps | void,
-  handleTouch: (payload: {
-    x: number,
-    y: number,
-  }) => void,
   isSelected: boolean,
   x: number,
   y: number,
@@ -98,10 +94,7 @@ const BattleFieldElement: React.FC<BattleFieldElementProps> = (props) => {
   }
 
   return (
-    <div
-      style={style}
-      onTouchStart={() => props.handleTouch({x: props.x, y: props.y})}
-    >
+    <div style={style}>
     {
       props.creature ? <CreatureOnElement {...props.creature} /> : undefined
     }
@@ -111,6 +104,10 @@ const BattleFieldElement: React.FC<BattleFieldElementProps> = (props) => {
 
 type BattleFieldBoardProps = {
   board: BattleFieldElementProps[][],
+  handleTouch: (payload: {
+    x: number,
+    y: number,
+  }) => void,
 }
 
 const BattleFieldBoard: React.FC<BattleFieldBoardProps> = (props) => {
@@ -125,12 +122,33 @@ const BattleFieldBoard: React.FC<BattleFieldBoardProps> = (props) => {
 
   return (
     <div style={style}>
-    {
-      elements.map((element) => {
-        const key = `battle-field-element-${element.y}-${element.x}`;
-        return <BattleFieldElement key={key} {...element} />;
-      })
-    }
+      <div
+        style={{
+          position: 'absolute',
+          // TODO: 座標計算を整理する。
+          top: '5px',
+          left: '5px',
+          width: '350px',
+          height: '350px',
+          zIndex: 1,
+        }}
+        onTouchStart={(event) => {
+          const touch = event.changedTouches.item(0)
+          // TODO: "as HTMLElement" が必要な理由が未調査。
+          const rect = (event.target as HTMLElement).getBoundingClientRect()
+          const touchY = touch.clientY - rect.top
+          const touchX = touch.clientX - rect.left
+          const y = Math.floor(Math.round(touchY) / 50)
+          const x = Math.floor(Math.round(touchX) / 50)
+          props.handleTouch({y, x})
+        }}
+      />
+      {
+        elements.map((element) => {
+          const key = `battle-field-element-${element.y}-${element.x}`;
+          return <BattleFieldElement key={key} {...element} />;
+        })
+      }
     </div>
   )
 }
@@ -327,7 +345,10 @@ const Footer: React.FC<FooterProps> = (props) => {
 }
 
 export type Props = {
-  battleFieldBoard: BattleFieldElementProps[][],
+  battleFieldBoard: {
+    board: BattleFieldElementProps[][],
+    handleTouch: BattleFieldBoardProps['handleTouch'],
+  },
   cardsOnPlayersHand: CardsOnPlayersHandProps,
   handleTouchBattleButton: FooterProps['handleTouchBattleButton'],
   handleTouchNextTurnButton: FooterProps['handleTouchNextTurnButton'],
@@ -346,7 +367,7 @@ export const BattlePage: React.FC<Props> = (props) => {
   return (
     <div style={style}>
       <MetaInformationBar turnNumber={props.turnNumber} />
-      <BattleFieldBoard board={props.battleFieldBoard} />
+      <BattleFieldBoard {...props.battleFieldBoard} />
       <SquareMonitor />
       <CardsOnPlayersHand {...props.cardsOnPlayersHand} />
       <Footer
