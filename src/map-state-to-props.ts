@@ -123,6 +123,7 @@ function mapBattlePageStateToProps(
       handleTouch({y, x}) {
         setState(s => selectBattleFieldElement(s, y, x))
       },
+      updatesAreProhibited: game.completedNormalAttackPhase,
     },
     cardsOnPlayersHand: {
       cards: cardsProps
