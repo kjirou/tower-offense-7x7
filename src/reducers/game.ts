@@ -256,15 +256,16 @@ export function invokeSkill(context: SkillProcessContext): SkillProcessContext {
   throw new Error('It is an invalid `skillCategoryId`.')
 }
 
-export function determinePositionsOfCreatureAppearance(
+export function reserveCreatures(
   battleFieldMatrix: BattleFieldMatrix,
   creatureAppearances: CreatureAppearance[],
   turnNumber: Game['turnNumber'],
   choiceElements: (elements: BattleFieldElement[], numberOfElements: number) => BattleFieldElement[]
 ): {
-  creatureId: Creature['id'],
-  position: MatrixPosition,
-}[] {
+  battleFieldMatrix: BattleFieldMatrix,
+} {
+  const newBattleFieldMatrix = battleFieldMatrix.slice().map(row => row.slice())
+
   // 指定ターン数のクリーチャー出現情報を抽出する。
   const creatureAppearance = findCreatureAppearanceByTurnNumber(creatureAppearances, turnNumber)
 
@@ -277,15 +278,28 @@ export function determinePositionsOfCreatureAppearance(
     if (elements.length < creatureAppearance.creatureIds.length) {
       throw new Error('There are no battle field elements for creature appearances.')
     }
-    return choiceElements(elements, creatureAppearance.creatureIds.length)
+
+    // 出現ルールに従って、予約される位置リストを生成する。
+    const reservedCreaturePositions = choiceElements(elements, creatureAppearance.creatureIds.length)
       .map((choicedElement, index) => {
         return {
           creatureId: creatureAppearance.creatureIds[index],
           position: choicedElement.position,
         }
       })
+
+    // 各マスへクリーチャー出現を予約する。
+    reservedCreaturePositions.forEach(({position, creatureId}) => {
+      newBattleFieldMatrix[position.y][position.x] = {
+        ...newBattleFieldMatrix[position.y][position.x],
+        reservedCreatureId: creatureId,
+      }
+    })
   }
-  return []
+
+  return {
+    battleFieldMatrix: newBattleFieldMatrix,
+  }
 }
 
 export function refillCardsOnPlayersHand(

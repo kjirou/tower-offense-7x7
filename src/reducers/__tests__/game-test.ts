@@ -20,12 +20,12 @@ import {
   findFirstAlly,
 } from '../../test-utils'
 import {
-  determinePositionsOfCreatureAppearance,
   invokeNormalAttack,
   invokeSkill,
   placePlayerFactionCreature,
   refillCardsOnPlayersHand,
   removeDeadCreatures,
+  reserveCreatures,
 } from '../game'
 
 describe('reducers/game', function() {
@@ -238,7 +238,7 @@ describe('reducers/game', function() {
     })
   })
 
-  describe('determinePositionsOfCreatureAppearance', function() {
+  describe('reserveCreatures', function() {
     it('works', function() {
       const matrix = createBattleFieldMatrix(3, 3)
       const creatureAppearances = [
@@ -247,11 +247,10 @@ describe('reducers/game', function() {
           creatureIds: ['a', 'b'],
         }
       ]
-      const result = determinePositionsOfCreatureAppearance(
+      const result = reserveCreatures(
         matrix, creatureAppearances, 2, (elements, num) => elements.slice(0, num))
-      assert.strictEqual(result.length, 2)
-      assert.strictEqual(result[0].creatureId, 'a')
-      assert.strictEqual(result[1].creatureId, 'b')
+      assert.strictEqual(result.battleFieldMatrix[0][0].reservedCreatureId, 'a')
+      assert.strictEqual(result.battleFieldMatrix[0][1].reservedCreatureId, 'b')
     })
   })
 })
