@@ -256,8 +256,6 @@ export function proceedTurn(
       throw new Error('The normal-attack phase must be completed.')
     }
 
-    // TODO: Prohibit operation
-
     // 予約されているクリーチャーの出現が実現する。
     const realizedCreatureAppearances: MatrixPosition[] = []
     for (const row of draft.game.battleFieldMatrix) {
