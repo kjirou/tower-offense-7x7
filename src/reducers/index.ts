@@ -265,10 +265,6 @@ export function proceedTurn(
         }
       }
     }
-
-    // プレイヤーの手札を補充する。
-    const newCardSets = refillCardsOnPlayersHand(draft.game.cardsInDeck, draft.game.cardsOnPlayersHand)
-
     realizedCreatureAppearances.forEach(position => {
       const element = draft.game.battleFieldMatrix[position.y][position.x]
       element.creatureId = element.reservedCreatureId
@@ -288,8 +284,12 @@ export function proceedTurn(
       ),
     }
 
-    draft.game.cardsInDeck = newCardSets.cardsInDeck
-    draft.game.cardsOnPlayersHand = newCardSets.cardsOnPlayersHand
+    // プレイヤーの手札を補充する。
+    draft.game = {
+      ...draft.game,
+      ...refillCardsOnPlayersHand(draft.game.cardsInDeck, draft.game.cardsOnPlayersHand),
+    }
+
     draft.game.completedNormalAttackPhase = false
     draft.game.turnNumber += 1
   })
