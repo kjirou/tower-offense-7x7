@@ -6,14 +6,20 @@ import {
 } from './App'
 import {
   ApplicationState,
+  BattleFieldElement,
   Card,
   Creature,
   Game,
   MAX_NUMBER_OF_PLAYERS_HAND,
   Party,
   SkillCategoryId,
+  choiceElementsAtRandom,
   createBattleFieldMatrix,
 } from './utils'
+// TODO: 直接呼び出さない
+import {
+  reserveCreatures,
+} from './reducers/game'
 
 const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => {
   const id = `ally-${index + 1}`
@@ -95,7 +101,7 @@ const dummyAllCards: Card[] = dummyAllies
   })
 const dummyCreatureAppearances = dummyEnemies.map((creature, index) => {
   return {
-    turnNumber: index + 1,
+    turnNumber: index,
     creatureIds: [creature.id],
   }
 })
@@ -103,7 +109,7 @@ const dummyCreatureAppearances = dummyEnemies.map((creature, index) => {
 function createInitialGame(): Game {
   const battleFieldMatrix = createBattleFieldMatrix(7, 7)
 
-  return {
+  let game: Game = {
     creatures: dummyAllies.concat(dummyEnemies),
     parties: [
       {
@@ -136,6 +142,20 @@ function createInitialGame(): Game {
     completedNormalAttackPhase: false,
     turnNumber: 1,
   }
+
+  game = {
+    ...game,
+    ...reserveCreatures(
+      game.battleFieldMatrix,
+      game.creatureAppearances,
+      0,
+      (elements: BattleFieldElement[], numberOfElements: number): BattleFieldElement[] => {
+        return choiceElementsAtRandom<BattleFieldElement>(elements, numberOfElements)
+      }
+    ),
+  }
+
+  return game
 }
 
 function createInitialApplicationState(): ApplicationState {

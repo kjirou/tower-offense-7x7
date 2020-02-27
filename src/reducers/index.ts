@@ -24,12 +24,12 @@ import {
 } from '../utils'
 import {
   creatureUtils,
-  determinePositionsOfCreatureAppearance,
   invokeSkill,
   invokeNormalAttack,
   placePlayerFactionCreature,
   refillCardsOnPlayersHand,
   removeDeadCreatures,
+  reserveCreatures,
 } from './game'
 
 export function selectBattleFieldElement(
@@ -256,8 +256,6 @@ export function proceedTurn(
       throw new Error('The normal-attack phase must be completed.')
     }
 
-    // TODO: Prohibit operation
-
     // 予約されているクリーチャーの出現が実現する。
     const realizedCreatureAppearances: MatrixPosition[] = []
     for (const row of draft.game.battleFieldMatrix) {
@@ -267,30 +265,31 @@ export function proceedTurn(
         }
       }
     }
-
-    // クリーチャーの出現が予約される。
-    const reservedCreaturePositions = determinePositionsOfCreatureAppearance(
-      draft.game.battleFieldMatrix,
-      draft.game.creatureAppearances,
-      draft.game.turnNumber,
-      (elements: BattleFieldElement[], numberOfElements: number): BattleFieldElement[] => {
-        return choiceElementsAtRandom<BattleFieldElement>(elements, numberOfElements)
-      }
-    )
-
-    // プレイヤーの手札を補充する。
-    const newCardSets = refillCardsOnPlayersHand(draft.game.cardsInDeck, draft.game.cardsOnPlayersHand)
-
     realizedCreatureAppearances.forEach(position => {
       const element = draft.game.battleFieldMatrix[position.y][position.x]
       element.creatureId = element.reservedCreatureId
       element.reservedCreatureId = undefined
     })
-    reservedCreaturePositions.forEach(({position, creatureId}) => {
-      draft.game.battleFieldMatrix[position.y][position.x].reservedCreatureId = creatureId
-    })
-    draft.game.cardsInDeck = newCardSets.cardsInDeck
-    draft.game.cardsOnPlayersHand = newCardSets.cardsOnPlayersHand
+
+    // クリーチャーの出現を予約する。
+    draft.game = {
+      ...draft.game,
+      ...reserveCreatures(
+        draft.game.battleFieldMatrix,
+        draft.game.creatureAppearances,
+        draft.game.turnNumber,
+        (elements: BattleFieldElement[], numberOfElements: number): BattleFieldElement[] => {
+          return choiceElementsAtRandom<BattleFieldElement>(elements, numberOfElements)
+        }
+      ),
+    }
+
+    // プレイヤーの手札を補充する。
+    draft.game = {
+      ...draft.game,
+      ...refillCardsOnPlayersHand(draft.game.cardsInDeck, draft.game.cardsOnPlayersHand),
+    }
+
     draft.game.completedNormalAttackPhase = false
     draft.game.turnNumber += 1
   })
