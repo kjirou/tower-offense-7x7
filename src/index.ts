@@ -141,6 +141,7 @@ function createInitialGame(): Game {
     cursor: undefined,
     completedNormalAttackPhase: false,
     turnNumber: 1,
+    headquartersLifePoint: 10,
   }
 
   game = {
