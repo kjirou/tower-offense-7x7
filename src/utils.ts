@@ -100,6 +100,12 @@ type Cursor = {
   globalPosition: GlobalPosition,
 }
 
+type VictoryOrDefeatId = 'victory' | 'defeat' | 'pending'
+
+export type BattleResult = {
+  victoryOrDefeatId: VictoryOrDefeatId,
+}
+
 export type NormalAttackProcessContext = {
   attackerCreatureId: Creature['id'],
   battleFieldMatrix: BattleFieldMatrix,
@@ -117,6 +123,7 @@ export type SkillProcessContext = {
 
 export type Game = {
   battleFieldMatrix: BattleFieldMatrix,
+  battleResult: BattleResult,
   cardsInDeck: CardRelationship[],
   cardsOnPlayersHand: CardRelationship[],
   cards: Card[],

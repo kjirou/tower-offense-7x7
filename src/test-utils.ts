@@ -97,6 +97,9 @@ export function createStateDisplayBattlePageAtStartOfGame(): ApplicationState {
           cursor: undefined,
           completedNormalAttackPhase: false,
           turnNumber: 1,
+          battleResult: {
+            victoryOrDefeatId: 'pending',
+          },
           headquartersLifePoint: 1,
         },
       },

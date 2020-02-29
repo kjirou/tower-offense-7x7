@@ -141,6 +141,9 @@ function createInitialGame(): Game {
     cursor: undefined,
     completedNormalAttackPhase: false,
     turnNumber: 1,
+    battleResult: {
+      victoryOrDefeatId: 'pending',
+    },
     headquartersLifePoint: 10,
   }
 
