@@ -24,6 +24,7 @@ import {
 } from '../utils'
 import {
   creatureUtils,
+  determineVictoryOrDefeat,
   invokeSkill,
   invokeNormalAttack,
   placePlayerFactionCreature,
@@ -289,6 +290,15 @@ export function proceedTurn(
       ...draft.game,
       ...refillCardsOnPlayersHand(draft.game.cardsInDeck, draft.game.cardsOnPlayersHand),
     }
+
+    // 勝敗判定をする。
+    draft.game.battleResult.victoryOrDefeatId = determineVictoryOrDefeat(
+      draft.game.parties,
+      draft.game.battleFieldMatrix,
+      draft.game.creatureAppearances,
+      draft.game.turnNumber,
+      draft.game.headquartersLifePoint
+    )
 
     draft.game.completedNormalAttackPhase = false
     draft.game.turnNumber += 1

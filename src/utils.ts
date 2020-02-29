@@ -100,7 +100,7 @@ type Cursor = {
   globalPosition: GlobalPosition,
 }
 
-type VictoryOrDefeatId = 'victory' | 'defeat' | 'pending'
+export type VictoryOrDefeatId = 'victory' | 'defeat' | 'pending'
 
 export type BattleResult = {
   victoryOrDefeatId: VictoryOrDefeatId,

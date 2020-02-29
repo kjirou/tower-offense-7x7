@@ -21,6 +21,7 @@ import {
   findFirstAlly,
 } from '../../test-utils'
 import {
+  determineVictoryOrDefeat,
   doesPlayerHaveDefeat,
   doesPlayerHaveVictory,
   invokeNormalAttack,
@@ -92,6 +93,28 @@ describe('reducers/game', function() {
     it('works', function() {
       assert.strictEqual(doesPlayerHaveDefeat(0), true)
       assert.strictEqual(doesPlayerHaveDefeat(1), false)
+    })
+  })
+
+  describe('determineVictoryOrDefeat', function() {
+    it('勝利条件と敗北条件を同時に満たすときは勝利を返す', function() {
+      const parties: Party[] = [
+        {factionId: 'computer', creatureIds: ['a']},
+      ]
+      const battleFieldMatrix = createBattleFieldMatrix(1, 1)
+      const creatureAppearances: CreatureAppearance[] = [
+        {turnNumber: 1, creatureIds: ['a']},
+      ]
+      assert.strictEqual(
+        determineVictoryOrDefeat(
+          parties,
+          battleFieldMatrix,
+          creatureAppearances,
+          1,
+          0
+        ),
+        'victory'
+      )
     })
   })
 

@@ -15,6 +15,7 @@ import {
   NormalAttackProcessContext,
   Party,
   SkillProcessContext,
+  VictoryOrDefeatId,
   determineRelationshipBetweenFactions,
   findCreatureAppearanceByTurnNumber,
   findCreatureById,
@@ -55,6 +56,20 @@ export function doesPlayerHaveVictory(
 
 export function doesPlayerHaveDefeat(headquartersLifePoint: Game['headquartersLifePoint']): boolean {
   return headquartersLifePoint === 0
+}
+
+export function determineVictoryOrDefeat(
+  parties: Party[],
+  battleFieldMatrix: BattleFieldMatrix,
+  creatureAppearances: CreatureAppearance[],
+  currentTurnNumber: Game['turnNumber'],
+  headquartersLifePoint: Game['headquartersLifePoint']
+): VictoryOrDefeatId {
+  return doesPlayerHaveVictory(parties, battleFieldMatrix, creatureAppearances, currentTurnNumber)
+    ? 'victory'
+    : doesPlayerHaveDefeat(headquartersLifePoint)
+      ? 'defeat'
+      : 'pending'
 }
 
 export function placePlayerFactionCreature(
