@@ -6,6 +6,7 @@ import {
   BattleFieldMatrix,
   Card,
   MatrixPosition,
+  Party,
   areGlobalPositionsEqual,
   choiceElementsAtRandom,
   createBattleFieldMatrix,
@@ -13,6 +14,7 @@ import {
   findBattleFieldElementsByDistance,
   findCardUnderCursor,
   findCardsByCreatureIds,
+  findPartyByCreatureId,
   flattenMatrix,
   measureDistance,
   pickBattleFieldElementsWhereCreatureExists,
@@ -143,9 +145,29 @@ describe('utils', function() {
       assert.deepStrictEqual(
         flattenMatrix<number>([[1, 2], [3, 4]]),
         [1, 2, 3, 4],
-      );
-    });
-  });
+      )
+    })
+  })
+
+  describe('findPartyByCreatureId', function() {
+    describe('creatureId がいずれかの Party に所属するとき', function() {
+      it('所属先の Party を返す', function() {
+        const parties: Party[] = [
+          {factionId: 'player', creatureIds: ['a']},
+          {factionId: 'computer', creatureIds: ['b']},
+        ]
+        assert.strictEqual(findPartyByCreatureId(parties, 'b'), parties[1])
+      })
+    })
+
+    describe('creatureId がどの Party にも所属しないとき', function() {
+      it('例外を発生する', function() {
+        assert.throws(() => {
+          findPartyByCreatureId([], 'a')
+        }, /creatureId/)
+      })
+    })
+  })
 
   describe('areGlobalPositionsEqual', function() {
     describe('a=BattleFieldMatrixPosition, b=BattleFieldMatrixPosition', function() {

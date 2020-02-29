@@ -22,12 +22,39 @@ import {
   findBattleFieldElementByCreatureId,
   findBattleFieldElementsByDistance,
   findCreatureWithParty,
+  findPartyByCreatureId,
   pickBattleFieldElementsWhereCreatureExists,
 } from '../utils';
 
 export const creatureUtils = {
   canAct: (creature: Creature): boolean => !creatureUtils.isDead(creature),
   isDead: (creature: Creature): boolean => creature.lifePoint === 0,
+}
+
+export function doesPlayerHaveVictory(
+  parties: Party[],
+  battleFieldMatrix: BattleFieldMatrix,
+  creatureAppearances: CreatureAppearance[],
+  currentTurnNumber: Game['turnNumber']
+): boolean {
+  return (
+    creatureAppearances.filter(e => e.turnNumber > currentTurnNumber).length === 0 &&
+    battleFieldMatrix.every(row => {
+      return row.every(element => {
+        return (
+          element.reservedCreatureId === undefined &&
+          (
+            element.creatureId === undefined ||
+            findPartyByCreatureId(parties, element.creatureId).factionId === 'player'
+          )
+        )
+      })
+    })
+  )
+}
+
+export function doesPlayerHaveDefeat(headquartersLifePoint: Game['headquartersLifePoint']): boolean {
+  return headquartersLifePoint === 0
 }
 
 export function placePlayerFactionCreature(

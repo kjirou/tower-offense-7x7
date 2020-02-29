@@ -242,6 +242,15 @@ export function findCreatureWithParty(
   throw new Error('Can not find the `creatureId` from `parties`.')
 }
 
+export function findPartyByCreatureId(parties: Party[], creatureId: Creature['id']): Party {
+  for (const party of parties) {
+    if (party.creatureIds.indexOf(creatureId) !== -1) {
+      return party
+    }
+  }
+  throw new Error('Can not find the `creatureId` in parties.')
+}
+
 export function createBattleFieldMatrix(rowLength: number, columnLength: number): BattleFieldMatrix {
   const battleFieldMatrix: BattleFieldMatrix = []
   for (let y = 0; y < rowLength; y++) {

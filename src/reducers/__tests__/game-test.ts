@@ -7,6 +7,7 @@ import {
 import {
   BattleFieldMatrix,
   Creature,
+  CreatureAppearance,
   NormalAttackProcessContext,
   Party,
   SkillProcessContext,
@@ -20,6 +21,8 @@ import {
   findFirstAlly,
 } from '../../test-utils'
 import {
+  doesPlayerHaveDefeat,
+  doesPlayerHaveVictory,
   invokeNormalAttack,
   invokeSkill,
   placePlayerFactionCreature,
@@ -29,6 +32,69 @@ import {
 } from '../game'
 
 describe('reducers/game', function() {
+  describe('doesPlayerHaveVictory', function() {
+    const parties: Party[] = [
+      {factionId: 'player', creatureIds: ['x']},
+      {factionId: 'computer', creatureIds: ['a', 'b']},
+    ]
+    const creatureAppearances: CreatureAppearance[] = [
+      {turnNumber: 1, creatureIds: ['a']},
+      {turnNumber: 2, creatureIds: ['b']},
+    ]
+
+    describe('ターン数が、computer 側クリーチャーの出現する最後のターンのとき', function() {
+      const currentTurnNumber = 2
+
+      it('予約の computer 側クリーチャーが盤上に存在するとき、勝利ではない', function() {
+        const battleFieldMatrix = createBattleFieldMatrix(1, 1)
+        battleFieldMatrix[0][0].reservedCreatureId = 'a'
+        assert.strictEqual(
+          doesPlayerHaveVictory(parties, battleFieldMatrix, creatureAppearances, currentTurnNumber),
+          false
+        )
+      })
+
+      it('computer 側クリーチャーが盤上に存在するとき、勝利ではない', function() {
+        const battleFieldMatrix = createBattleFieldMatrix(1, 1)
+        battleFieldMatrix[0][0].creatureId = 'a'
+        assert.strictEqual(
+          doesPlayerHaveVictory(parties, battleFieldMatrix, creatureAppearances, currentTurnNumber),
+          false
+        )
+      })
+
+      describe('予約を含む computer 側クリーチャーが盤上に存在しないとき', function() {
+        it('player 側クリーチャーが盤上に存在するときでも、勝利である', function() {
+          const battleFieldMatrix = createBattleFieldMatrix(1, 1)
+          battleFieldMatrix[0][0].creatureId = 'x'
+          assert.strictEqual(
+            doesPlayerHaveVictory(parties, battleFieldMatrix, creatureAppearances, currentTurnNumber),
+            true
+          )
+        })
+      })
+    })
+
+    describe('ターン数が、computer 側クリーチャーの出現する最後のターン未満のとき', function() {
+      const currentTurnNumber = 1
+
+      it('予約を含む computer 側クリーチャーが盤上に存在しないときでも、勝利ではない', function() {
+        const battleFieldMatrix = createBattleFieldMatrix(1, 1)
+        assert.strictEqual(
+          doesPlayerHaveVictory(parties, battleFieldMatrix, creatureAppearances, currentTurnNumber),
+          false
+        )
+      })
+    })
+  })
+
+  describe('doesPlayerHaveDefeat', function() {
+    it('works', function() {
+      assert.strictEqual(doesPlayerHaveDefeat(0), true)
+      assert.strictEqual(doesPlayerHaveDefeat(1), false)
+    })
+  })
+
   describe('removeDeadCreatures', function() {
     let creatures: Creature[]
     let battleFieldMatrix: BattleFieldMatrix
