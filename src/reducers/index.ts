@@ -230,12 +230,12 @@ export function runNormalAttackPhase(
       // 通常攻撃を行う。
       gameBeingUpdated = {
         ...gameBeingUpdated,
-        ...invokeNormalAttack({
+        ...invokeNormalAttack(
+          gameBeingUpdated.creatures,
+          gameBeingUpdated.parties,
+          gameBeingUpdated.battleFieldMatrix,
           attackerCreatureId,
-          creatures: gameBeingUpdated.creatures,
-          parties: gameBeingUpdated.parties,
-          battleFieldMatrix: gameBeingUpdated.battleFieldMatrix,
-        }),
+        ),
       }
 
       // 盤上から死亡したクリーチャーを削除する。

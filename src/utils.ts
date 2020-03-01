@@ -106,13 +106,6 @@ export type BattleResult = {
   victoryOrDefeatId: VictoryOrDefeatId,
 }
 
-export type NormalAttackProcessContext = {
-  attackerCreatureId: Creature['id'],
-  battleFieldMatrix: BattleFieldMatrix,
-  creatures: Creature[],
-  parties: Party[],
-}
-
 export type SkillProcessContext = {
   battleFieldMatrix: BattleFieldMatrix,
   creatures: Creature[],
