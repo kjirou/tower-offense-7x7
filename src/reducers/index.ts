@@ -65,8 +65,17 @@ export function selectBattleFieldElement(
         ? findCardUnderCursor(draft.game.cards, draft.game.cursor)
         : undefined
 
-      // 通常攻撃フェーズ完了前、かつ、手札のカードへカーソルが当たっているとき。
-      if (draft.game.completedNormalAttackPhase === false && cardUnderCursor) {
+      // カードの使用（クリーチャーの配置・スキルの使用）をする。
+      //
+      // 勝敗決定前、または、通常攻撃フェーズ完了前、
+      // かつ、手札のカードへカーソルが当たっているとき。
+      if (
+        (
+          draft.game.battleResult.victoryOrDefeatId === 'pending' &&
+          draft.game.completedNormalAttackPhase === false
+        ) &&
+        cardUnderCursor
+      ) {
         // 選択先のマスへクリーチャーが配置されているとき。
         if (placedCreatureWithParty) {
           // 選択先クリーチャーがプレイヤー側のとき。
@@ -135,8 +144,9 @@ export function selectBattleFieldElement(
           // カーソルを外す。
           draft.game.cursor = undefined
         }
-      // 通常攻撃フェーズ完了後、または、手札のカードへカーソルが当たっていないとき。
+      // カードの使用、ができないとき。
       } else {
+        // カーソルをマスの選択へ変更する。
         draft.game.cursor = {
           globalPosition: {
             globalPlacementId: 'battleFieldMatrix',
