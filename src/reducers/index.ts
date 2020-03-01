@@ -11,7 +11,6 @@ import {
   GlobalPosition,
   MatrixPosition,
   Party,
-  SkillProcessContext,
   areGlobalPositionsEqual,
   choiceElementsAtRandom,
   determineRelationshipBetweenFactions,

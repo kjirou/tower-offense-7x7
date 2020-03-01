@@ -13,7 +13,7 @@ import {
   MAX_NUMBER_OF_PLAYERS_HAND,
   MatrixPosition,
   Party,
-  SkillProcessContext,
+  Skill,
   VictoryOrDefeatId,
   determineRelationshipBetweenFactions,
   findCreatureAppearanceByTurnNumber,
@@ -25,6 +25,19 @@ import {
   findPartyByCreatureId,
   pickBattleFieldElementsWhereCreatureExists,
 } from '../utils';
+
+type SkillProcessContext = {
+  battleFieldMatrix: BattleFieldMatrix,
+  creatures: Creature[],
+  invokerCreatureId: Creature['id'],
+  parties: Party[],
+  skill: Skill,
+}
+
+type SkillProcessResult = {
+  battleFieldMatrix: BattleFieldMatrix,
+  creatures: Creature[],
+}
 
 export const creatureUtils = {
   canAct: (creature: Creature): boolean => !creatureUtils.isDead(creature),
@@ -226,7 +239,7 @@ export function invokeNormalAttack(
   }
 }
 
-function invokeAttackSkill(context: SkillProcessContext): SkillProcessContext {
+function invokeAttackSkill(context: SkillProcessContext): SkillProcessResult {
   const invokerWithParty = findCreatureWithParty(context.creatures, context.parties, context.invokerCreatureId)
 
   // 発動者情報をまとめる。
@@ -294,7 +307,7 @@ function invokeAttackSkill(context: SkillProcessContext): SkillProcessContext {
   return newContext
 }
 
-export function invokeSkill(context: SkillProcessContext): SkillProcessContext {
+export function invokeSkill(context: SkillProcessContext): SkillProcessResult {
   if (context.skill.skillCategoryId === 'attack') {
     return invokeAttackSkill(context)
   }
