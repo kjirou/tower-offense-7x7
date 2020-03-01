@@ -66,8 +66,8 @@ export function doesPlayerHaveVictory(
   )
 }
 
-export function doesPlayerHaveDefeat(headquartersLifePoint: Game['headquartersLifePoint']): boolean {
-  return headquartersLifePoint === 0
+export function doesPlayerHaveDefeat(headquartersLifePoints: Game['headquartersLifePoints']): boolean {
+  return headquartersLifePoints === 0
 }
 
 export function determineVictoryOrDefeat(
@@ -75,11 +75,11 @@ export function determineVictoryOrDefeat(
   battleFieldMatrix: BattleFieldMatrix,
   creatureAppearances: CreatureAppearance[],
   currentTurnNumber: Game['turnNumber'],
-  headquartersLifePoint: Game['headquartersLifePoint']
+  headquartersLifePoints: Game['headquartersLifePoints']
 ): VictoryOrDefeatId {
   return doesPlayerHaveVictory(parties, battleFieldMatrix, creatureAppearances, currentTurnNumber)
     ? 'victory'
-    : doesPlayerHaveDefeat(headquartersLifePoint)
+    : doesPlayerHaveDefeat(headquartersLifePoints)
       ? 'defeat'
       : 'pending'
 }

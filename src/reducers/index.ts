@@ -306,7 +306,7 @@ export function proceedTurn(
       draft.game.battleFieldMatrix,
       draft.game.creatureAppearances,
       draft.game.turnNumber,
-      draft.game.headquartersLifePoint
+      draft.game.headquartersLifePoints
     )
 
     draft.game.completedNormalAttackPhase = false

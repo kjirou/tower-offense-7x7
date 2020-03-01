@@ -100,7 +100,7 @@ export function createStateDisplayBattlePageAtStartOfGame(): ApplicationState {
           battleResult: {
             victoryOrDefeatId: 'pending',
           },
-          headquartersLifePoint: 1,
+          headquartersLifePoints: 1,
         },
       },
     },

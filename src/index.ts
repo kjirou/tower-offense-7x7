@@ -146,7 +146,7 @@ function createInitialGame(): Game {
     battleResult: {
       victoryOrDefeatId: 'pending',
     },
-    headquartersLifePoint: 10,
+    headquartersLifePoints: 10,
   }
 
   game = {
