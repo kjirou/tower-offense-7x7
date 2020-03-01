@@ -270,9 +270,10 @@ const CardsOnPlayersHand: React.FC<CardsOnPlayersHandProps> = (props) => {
 }
 
 type FooterProps = {
-  handleTouchBattleButton: () => void,
-  handleTouchNextTurnButton: () => void,
-  showNextTurnButton: boolean,
+  progressButton: {
+    label: string,
+    handleTouch: () => void,
+  },
 }
 
 const Footer: React.FC<FooterProps> = (props) => {
@@ -320,29 +321,16 @@ const Footer: React.FC<FooterProps> = (props) => {
       }}>
         <div>5</div>
       </div>
-      {
-        props.showNextTurnButton
-        ? <div
-          style={rightSideButtonStyle}
-          onTouchStart={props.handleTouchNextTurnButton}
-        >
-          <div
-            style={{
-              fontSize: '24px',
-            }}
-          >Next</div>
-        </div>
-        : <div
-          style={rightSideButtonStyle}
-          onTouchStart={props.handleTouchBattleButton}
-        >
-          <div
-            style={{
-              fontSize: '24px',
-            }}
-          >Battle</div>
-        </div>
-      }
+      <div
+        style={rightSideButtonStyle}
+        onTouchStart={props.progressButton.handleTouch}
+      >
+        <div
+          style={{
+            fontSize: '24px',
+          }}
+        >{props.progressButton.label}</div>
+      </div>
     </div>
   )
 }
@@ -354,10 +342,8 @@ export type Props = {
     updatesAreProhibited: boolean,
   },
   cardsOnPlayersHand: CardsOnPlayersHandProps,
-  handleTouchBattleButton: FooterProps['handleTouchBattleButton'],
-  handleTouchNextTurnButton: FooterProps['handleTouchNextTurnButton'],
+  progressButton: FooterProps['progressButton'],
   turnNumber: MetaInformationBarProps['turnNumber'],
-  showNextTurnButton: FooterProps['showNextTurnButton'],
 }
 
 export const BattlePage: React.FC<Props> = (props) => {
@@ -375,9 +361,7 @@ export const BattlePage: React.FC<Props> = (props) => {
       <SquareMonitor />
       <CardsOnPlayersHand {...props.cardsOnPlayersHand} />
       <Footer
-        handleTouchBattleButton={props.handleTouchBattleButton}
-        handleTouchNextTurnButton={props.handleTouchNextTurnButton}
-        showNextTurnButton={props.showNextTurnButton}
+        progressButton={props.progressButton}
       />
     </div>
   )
