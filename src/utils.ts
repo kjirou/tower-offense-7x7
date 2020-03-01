@@ -8,6 +8,12 @@ export type FactionRelationshipId = 'ally' | 'enemy'
 
 export type SkillCategoryId = 'attack' | 'defense' | 'support'
 
+export type Job = {
+  attackPower: number,
+  id: string,
+  maxLifePoints: number,
+}
+
 // This is the so-called “Active Skill”.
 export type Skill = {
   id: string,
