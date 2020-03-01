@@ -78,7 +78,7 @@ function mapBattlePageStateToProps(
           isReserved: element.reservedCreatureId !== undefined,
           factionRelationshipId: determineRelationshipBetweenFactions(
             'player', creatureWithParty.party.factionId),
-          lifePoint: creatureWithParty.creature.lifePoint.toString(),
+          lifePoints: creatureWithParty.creature.lifePoints.toString(),
         }
       }
 

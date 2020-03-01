@@ -16,7 +16,7 @@ export type Skill = {
 
 export type Creature = {
   attackPoint: number,
-  lifePoint: number,
+  lifePoints: number,
   id: string,
   jobId: string,
   skillIds: Skill['id'][],

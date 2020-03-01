@@ -39,7 +39,7 @@ export type CreatureOnElementProps = {
   factionRelationshipId: FactionRelationshipId,
   image: string,
   isReserved: boolean,
-  lifePoint: string,
+  lifePoints: string,
 }
 
 const CreatureOnElement: React.FC<CreatureOnElementProps> = (props) => {
@@ -71,7 +71,7 @@ const CreatureOnElement: React.FC<CreatureOnElementProps> = (props) => {
           lineHeight: '12px',
           textAlign: 'right',
         }}
-      >{props.lifePoint}</div>
+      >{props.lifePoints}</div>
     </div>
   )
 }

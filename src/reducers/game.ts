@@ -41,7 +41,7 @@ type SkillProcessResult = {
 
 export const creatureUtils = {
   canAct: (creature: Creature): boolean => !creatureUtils.isDead(creature),
-  isDead: (creature: Creature): boolean => creature.lifePoint === 0,
+  isDead: (creature: Creature): boolean => creature.lifePoints === 0,
 }
 
 export function doesPlayerHaveVictory(
@@ -222,9 +222,9 @@ export function invokeNormalAttack(
   const affectedCreatures: Creature[] = targeteesData
     .map(targeteeData => {
       const dummyDamage = 1
-      const newLifePoint = Math.max(targeteeData.creature.lifePoint - dummyDamage, 0)
+      const newLifePoints = Math.max(targeteeData.creature.lifePoints - dummyDamage, 0)
       return Object.assign({}, targeteeData.creature, {
-        lifePoint: newLifePoint,
+        lifePoints: newLifePoints,
       })
     })
 
@@ -288,9 +288,9 @@ function invokeAttackSkill(context: SkillProcessContext): SkillProcessResult {
   const affectedCreatures: Creature[] = targeteesData
     .map(targeteeData => {
       const dummyDamage = 3
-      const newLifePoint = Math.max(targeteeData.creature.lifePoint - dummyDamage, 0)
+      const newLifePoints = Math.max(targeteeData.creature.lifePoints - dummyDamage, 0)
       return Object.assign({}, targeteeData.creature, {
-        lifePoint: newLifePoint,
+        lifePoints: newLifePoints,
       })
     })
 

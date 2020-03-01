@@ -130,7 +130,7 @@ describe('reducers/game', function() {
         let parties: Party[]
 
         beforeEach(function() {
-          creatures[0].lifePoint = 0
+          creatures[0].lifePoints = 0
           battleFieldMatrix[0][0].creatureId = creatures[0].id
           parties = [{
             factionId: 'player',
@@ -154,7 +154,7 @@ describe('reducers/game', function() {
         let parties: Party[]
 
         beforeEach(function() {
-          creatures[0].lifePoint = 0
+          creatures[0].lifePoints = 0
           battleFieldMatrix[0][0].creatureId = creatures[0].id
           parties = [{
             factionId: 'computer',
@@ -178,7 +178,7 @@ describe('reducers/game', function() {
       let parties: Party[]
 
       beforeEach(function() {
-        creatures[0].lifePoint = 1
+        creatures[0].lifePoints = 1
         battleFieldMatrix[0][0].creatureId = creatures[0].id
         parties = [{
           factionId: 'player',
@@ -201,7 +201,7 @@ describe('reducers/game', function() {
         const attacker = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
         const enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
         attacker.attackPoint = 1
-        enemy.lifePoint = 2
+        enemy.lifePoints = 2
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][1].creatureId = enemy.id
         const result = invokeNormalAttack(
@@ -211,7 +211,7 @@ describe('reducers/game', function() {
           attacker.id,
         )
         const newEnemy = findCreatureById(result.creatures, enemy.id)
-        assert.strictEqual(newEnemy.lifePoint < enemy.lifePoint, true)
+        assert.strictEqual(newEnemy.lifePoints < enemy.lifePoints, true)
       })
     })
 
@@ -222,7 +222,7 @@ describe('reducers/game', function() {
         const attacker = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
         const enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
         attacker.attackPoint = 1
-        enemy.lifePoint = 2
+        enemy.lifePoints = 2
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][2].creatureId = enemy.id
         const result = invokeNormalAttack(
@@ -232,7 +232,7 @@ describe('reducers/game', function() {
           attacker.id,
         )
         const newEnemy = findCreatureById(result.creatures, enemy.id)
-        assert.strictEqual(newEnemy.lifePoint, enemy.lifePoint)
+        assert.strictEqual(newEnemy.lifePoints, enemy.lifePoints)
       })
     })
   })
@@ -258,7 +258,7 @@ describe('reducers/game', function() {
             invokerCreatureId: invoker.id,
           })
           const newEnemy = findCreatureById(result.creatures, enemy.id)
-          assert.strictEqual(newEnemy.lifePoint < enemy.lifePoint, true)
+          assert.strictEqual(newEnemy.lifePoints < enemy.lifePoints, true)
         })
       })
     })

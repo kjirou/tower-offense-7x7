@@ -111,25 +111,25 @@ describe('reducers/index', function() {
       })
 
       it('互いに攻撃した結果を返す', function() {
-        a.lifePoint = 2
+        a.lifePoints = 2
         a.attackPoint = 1
-        b.lifePoint = 2
+        b.lifePoints = 2
         b.attackPoint = 1
         const newState = runNormalAttackPhase(state)
         const newBattlePage = ensureBattlePage(newState)
         const newA = findCreatureById(newBattlePage.game.creatures, a.id)
         const newB = findCreatureById(newBattlePage.game.creatures, b.id)
-        assert.notStrictEqual(a.lifePoint, newA.lifePoint)
-        assert.strictEqual(a.lifePoint > newA.lifePoint, true)
-        assert.notStrictEqual(b.lifePoint, newB.lifePoint)
-        assert.strictEqual(b.lifePoint > newB.lifePoint, true)
+        assert.notStrictEqual(a.lifePoints, newA.lifePoints)
+        assert.strictEqual(a.lifePoints > newA.lifePoints, true)
+        assert.notStrictEqual(b.lifePoints, newB.lifePoints)
+        assert.strictEqual(b.lifePoints > newB.lifePoints, true)
       })
 
       describe('a クリーチャーの攻撃で b クリーチャーが死亡するとき', function() {
         beforeEach(function() {
-          a.lifePoint = 10
+          a.lifePoints = 10
           a.attackPoint = 1
-          b.lifePoint = 1
+          b.lifePoints = 1
           b.attackPoint = 1
         })
 
@@ -147,9 +147,9 @@ describe('reducers/index', function() {
         const battlePage = ensureBattlePage(state)
         const a = findCreatureById(battlePage.game.creatures, battlePage.game.cardsOnPlayersHand[0].creatureId)
         const b = findCreatureById(battlePage.game.creatures, battlePage.game.cardsOnPlayersHand[1].creatureId)
-        a.lifePoint = 2
+        a.lifePoints = 2
         a.attackPoint = 1
-        b.lifePoint = 2
+        b.lifePoints = 2
         b.attackPoint = 1
         battlePage.game = {
           ...battlePage.game,
@@ -173,8 +173,8 @@ describe('reducers/index', function() {
         const newBattlePage = ensureBattlePage(newState)
         const newA = findCreatureById(newBattlePage.game.creatures, a.id)
         const newB = findCreatureById(newBattlePage.game.creatures, b.id)
-        assert.strictEqual(a.lifePoint, newA.lifePoint)
-        assert.strictEqual(b.lifePoint, newB.lifePoint)
+        assert.strictEqual(a.lifePoints, newA.lifePoints)
+        assert.strictEqual(b.lifePoints, newB.lifePoints)
       })
     })
 
@@ -184,9 +184,9 @@ describe('reducers/index', function() {
         const battlePage = ensureBattlePage(state)
         const a = findCreatureById(battlePage.game.creatures, battlePage.game.cardsOnPlayersHand[0].creatureId)
         const b = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
-        a.lifePoint = 1
+        a.lifePoints = 1
         a.attackPoint = 1
-        b.lifePoint = 10
+        b.lifePoints = 10
         b.attackPoint = 1
         battlePage.game = {
           ...battlePage.game,

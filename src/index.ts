@@ -28,7 +28,7 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
       return {
         id,
         jobId: 'fighter',
-        lifePoint: 12,
+        lifePoints: 12,
         attackPoint: 4,
         skillIds: [],
       }
@@ -36,7 +36,7 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
       return {
         id,
         jobId: 'knight',
-        lifePoint: 18,
+        lifePoints: 18,
         attackPoint: 2,
         skillIds: [],
       }
@@ -44,7 +44,7 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
       return {
         id,
         jobId: 'archer',
-        lifePoint: 6,
+        lifePoints: 6,
         attackPoint: 3,
         skillIds: [],
       }
@@ -52,7 +52,7 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
       return {
         id,
         jobId: 'mage',
-        lifePoint: 3,
+        lifePoints: 3,
         attackPoint: 3,
         skillIds: [],
       }
@@ -60,7 +60,7 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
       return {
         id,
         jobId: 'priest',
-        lifePoint: 5,
+        lifePoints: 5,
         attackPoint: 1,
         skillIds: [],
       }
@@ -75,7 +75,7 @@ const dummyEnemies: Creature[] = Array.from({length: 20}).map((unused, index) =>
       return {
         id,
         jobId: 'goblin',
-        lifePoint: 4,
+        lifePoints: 4,
         attackPoint: 1,
         skillIds: [],
       }
@@ -83,7 +83,7 @@ const dummyEnemies: Creature[] = Array.from({length: 20}).map((unused, index) =>
       return {
         id,
         jobId: 'orc',
-        lifePoint: 8,
+        lifePoints: 8,
         attackPoint: 3,
         skillIds: [],
       }
