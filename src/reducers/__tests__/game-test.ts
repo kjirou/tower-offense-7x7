@@ -8,9 +8,7 @@ import {
   BattleFieldMatrix,
   Creature,
   CreatureAppearance,
-  NormalAttackProcessContext,
   Party,
-  SkillProcessContext,
   createBattleFieldMatrix,
   ensureBattlePage,
   findCreatureById,
@@ -206,14 +204,13 @@ describe('reducers/game', function() {
         enemy.lifePoint = 2
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][1].creatureId = enemy.id
-        const context: NormalAttackProcessContext = {
-          creatures: battlePage.game.creatures,
-          parties: battlePage.game.parties,
-          battleFieldMatrix: battlePage.game.battleFieldMatrix,
-          attackerCreatureId: attacker.id,
-        }
-        const newContext = invokeNormalAttack(context)
-        const newEnemy = findCreatureById(newContext.creatures, enemy.id)
+        const result = invokeNormalAttack(
+          battlePage.game.creatures,
+          battlePage.game.parties,
+          battlePage.game.battleFieldMatrix,
+          attacker.id,
+        )
+        const newEnemy = findCreatureById(result.creatures, enemy.id)
         assert.strictEqual(newEnemy.lifePoint < enemy.lifePoint, true)
       })
     })
@@ -228,14 +225,13 @@ describe('reducers/game', function() {
         enemy.lifePoint = 2
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][2].creatureId = enemy.id
-        const context: NormalAttackProcessContext = {
-          creatures: battlePage.game.creatures,
-          parties: battlePage.game.parties,
-          battleFieldMatrix: battlePage.game.battleFieldMatrix,
-          attackerCreatureId: attacker.id,
-        }
-        const newContext = invokeNormalAttack(context)
-        const newEnemy = findCreatureById(newContext.creatures, enemy.id)
+        const result = invokeNormalAttack(
+          battlePage.game.creatures,
+          battlePage.game.parties,
+          battlePage.game.battleFieldMatrix,
+          attacker.id,
+        )
+        const newEnemy = findCreatureById(result.creatures, enemy.id)
         assert.strictEqual(newEnemy.lifePoint, enemy.lifePoint)
       })
     })
@@ -251,7 +247,7 @@ describe('reducers/game', function() {
           const enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
           battlePage.game.battleFieldMatrix[0][0].creatureId = invoker.id
           battlePage.game.battleFieldMatrix[0][1].creatureId = enemy.id
-          const context: SkillProcessContext = {
+          const result = invokeSkill({
             skill: {
               id: '',
               skillCategoryId: 'attack',
@@ -260,9 +256,8 @@ describe('reducers/game', function() {
             parties: battlePage.game.parties,
             battleFieldMatrix: battlePage.game.battleFieldMatrix,
             invokerCreatureId: invoker.id,
-          }
-          const newContext = invokeSkill(context)
-          const newEnemy = findCreatureById(newContext.creatures, enemy.id)
+          })
+          const newEnemy = findCreatureById(result.creatures, enemy.id)
           assert.strictEqual(newEnemy.lifePoint < enemy.lifePoint, true)
         })
       })

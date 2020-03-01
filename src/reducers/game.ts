@@ -12,9 +12,8 @@ import {
   Game,
   MAX_NUMBER_OF_PLAYERS_HAND,
   MatrixPosition,
-  NormalAttackProcessContext,
   Party,
-  SkillProcessContext,
+  Skill,
   VictoryOrDefeatId,
   determineRelationshipBetweenFactions,
   findCreatureAppearanceByTurnNumber,
@@ -26,6 +25,19 @@ import {
   findPartyByCreatureId,
   pickBattleFieldElementsWhereCreatureExists,
 } from '../utils';
+
+type SkillProcessContext = {
+  battleFieldMatrix: BattleFieldMatrix,
+  creatures: Creature[],
+  invokerCreatureId: Creature['id'],
+  parties: Party[],
+  skill: Skill,
+}
+
+type SkillProcessResult = {
+  battleFieldMatrix: BattleFieldMatrix,
+  creatures: Creature[],
+}
 
 export const creatureUtils = {
   canAct: (creature: Creature): boolean => !creatureUtils.isDead(creature),
@@ -151,27 +163,32 @@ export function removeDeadCreatures(
   }
 }
 
-export function invokeNormalAttack(context: NormalAttackProcessContext): {
+export function invokeNormalAttack(
+  creatures: Creature[],
+  parties: Party[],
+  battleFieldMatrix: BattleFieldMatrix,
+  attackerCreatureId: Creature['id'],
+): {
   creatures: Creature[],
 } {
-  const attackerWithParty = findCreatureWithParty(context.creatures, context.parties, context.attackerCreatureId)
+  const attackerWithParty = findCreatureWithParty(creatures, parties, attackerCreatureId)
 
   // 攻撃者情報を抽出する。
   const attackerData: CreatureWithPartyOnBattleFieldElement = {
     creature: attackerWithParty.creature,
     party: attackerWithParty.party,
-    battleFieldElement: findBattleFieldElementByCreatureId(context.battleFieldMatrix, context.attackerCreatureId),
+    battleFieldElement: findBattleFieldElementByCreatureId(battleFieldMatrix, attackerCreatureId),
   }
 
   // 攻撃対象者候補である、射程範囲内で敵対関係のクリーチャー情報を抽出する。
   const targeteeCandidatesData: CreatureWithPartyOnBattleFieldElement[] = []
   const dummyDistance = 1
   const reachableBattleFieldElements = findBattleFieldElementsByDistance(
-    context.battleFieldMatrix, attackerData.battleFieldElement.position, dummyDistance)
+    battleFieldMatrix, attackerData.battleFieldElement.position, dummyDistance)
   for (const reachableBattleFieldElement of reachableBattleFieldElements) {
     if (reachableBattleFieldElement.creatureId !== undefined) {
       const creatureWithParty =
-        findCreatureWithParty(context.creatures, context.parties, reachableBattleFieldElement.creatureId)
+        findCreatureWithParty(creatures, parties, reachableBattleFieldElement.creatureId)
       if (
         determineRelationshipBetweenFactions(
           creatureWithParty.party.factionId, attackerData.party.factionId
@@ -212,8 +229,7 @@ export function invokeNormalAttack(context: NormalAttackProcessContext): {
     })
 
   // コンテキストへ反映する。
-  const newCreatures = context.creatures
-    .map(creature => {
+  const newCreatures = creatures.map(creature => {
       const affected = findCreatureByIdIfPossible(affectedCreatures, creature.id)
       return affected || creature
     })
@@ -223,7 +239,7 @@ export function invokeNormalAttack(context: NormalAttackProcessContext): {
   }
 }
 
-function invokeAttackSkill(context: SkillProcessContext): SkillProcessContext {
+function invokeAttackSkill(context: SkillProcessContext): SkillProcessResult {
   const invokerWithParty = findCreatureWithParty(context.creatures, context.parties, context.invokerCreatureId)
 
   // 発動者情報をまとめる。
@@ -291,7 +307,7 @@ function invokeAttackSkill(context: SkillProcessContext): SkillProcessContext {
   return newContext
 }
 
-export function invokeSkill(context: SkillProcessContext): SkillProcessContext {
+export function invokeSkill(context: SkillProcessContext): SkillProcessResult {
   if (context.skill.skillCategoryId === 'attack') {
     return invokeAttackSkill(context)
   }

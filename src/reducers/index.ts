@@ -11,7 +11,6 @@ import {
   GlobalPosition,
   MatrixPosition,
   Party,
-  SkillProcessContext,
   areGlobalPositionsEqual,
   choiceElementsAtRandom,
   determineRelationshipBetweenFactions,
@@ -203,7 +202,7 @@ export function runNormalAttackPhase(
       pickBattleFieldElementsWhereCreatureExists(game.battleFieldMatrix)
     const attackerDataList: CreatureWithPartyOnBattleFieldElement[] = elementsWhereCreatureExists
       .map((battleFieldElement) => {
-        // `pickBattleFieldElementsWhereCreatureExists` guarantees that each creature exists.
+        // NOTE: pickBattleFieldElementsWhereCreatureExists で creatureId が存在していることを保証している。
         const creatureId = battleFieldElement.creatureId as Creature['id']
         return Object.assign(
           findCreatureWithParty(game.creatures, game.parties, creatureId),
@@ -230,12 +229,12 @@ export function runNormalAttackPhase(
       // 通常攻撃を行う。
       gameBeingUpdated = {
         ...gameBeingUpdated,
-        ...invokeNormalAttack({
+        ...invokeNormalAttack(
+          gameBeingUpdated.creatures,
+          gameBeingUpdated.parties,
+          gameBeingUpdated.battleFieldMatrix,
           attackerCreatureId,
-          creatures: gameBeingUpdated.creatures,
-          parties: gameBeingUpdated.parties,
-          battleFieldMatrix: gameBeingUpdated.battleFieldMatrix,
-        }),
+        ),
       }
 
       // 盤上から死亡したクリーチャーを削除する。

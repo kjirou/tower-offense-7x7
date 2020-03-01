@@ -9,7 +9,7 @@ export type FactionRelationshipId = 'ally' | 'enemy'
 export type SkillCategoryId = 'attack' | 'defense' | 'support'
 
 // This is the so-called “Active Skill”.
-type Skill = {
+export type Skill = {
   id: string,
   skillCategoryId: SkillCategoryId,
 }
@@ -104,21 +104,6 @@ export type VictoryOrDefeatId = 'victory' | 'defeat' | 'pending'
 
 export type BattleResult = {
   victoryOrDefeatId: VictoryOrDefeatId,
-}
-
-export type NormalAttackProcessContext = {
-  attackerCreatureId: Creature['id'],
-  battleFieldMatrix: BattleFieldMatrix,
-  creatures: Creature[],
-  parties: Party[],
-}
-
-export type SkillProcessContext = {
-  battleFieldMatrix: BattleFieldMatrix,
-  creatures: Creature[],
-  invokerCreatureId: Creature['id'],
-  parties: Party[],
-  skill: Skill,
 }
 
 export type Game = {
