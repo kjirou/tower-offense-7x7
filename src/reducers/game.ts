@@ -42,6 +42,12 @@ type SkillProcessResult = {
 export const creatureUtils = {
   canAct: (creature: Creature): boolean => !creatureUtils.isDead(creature),
   isDead: (creature: Creature): boolean => creature.lifePoints === 0,
+  updateLifePoints: (creature: Creature, points: number): Creature => {
+    return {
+      ...creature,
+      lifePoints: Math.min(Math.max(creature.lifePoints + points, 0), creature.maxLifePoints),
+    }
+  },
 }
 
 export function doesPlayerHaveVictory(

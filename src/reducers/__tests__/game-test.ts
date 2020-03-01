@@ -19,6 +19,7 @@ import {
   findFirstAlly,
 } from '../../test-utils'
 import {
+  creatureUtils,
   determineVictoryOrDefeat,
   doesPlayerHaveDefeat,
   doesPlayerHaveVictory,
@@ -31,6 +32,24 @@ import {
 } from '../game'
 
 describe('reducers/game', function() {
+  describe('creatureUtils', function() {
+    const creature = {
+      ...createCreature(),
+      lifePoints: 2,
+      maxLifePoints: 2,
+    }
+
+    describe('updateLifePoints', function() {
+      it('lifePoints は 0 未満にならない', function() {
+        assert.strictEqual(creatureUtils.updateLifePoints(creature, -3).lifePoints, 0)
+      })
+
+      it('lifePoints は maxLifePoints を超えない', function() {
+        assert.strictEqual(creatureUtils.updateLifePoints(creature, 1).lifePoints, 2)
+      })
+    })
+  })
+
   describe('doesPlayerHaveVictory', function() {
     const parties: Party[] = [
       {factionId: 'player', creatureIds: ['x']},
