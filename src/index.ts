@@ -19,7 +19,7 @@ import {
 // TODO: 直接呼び出さない
 import {
   reserveCreatures,
-} from './reducers/game'
+} from './reducers/utils'
 
 const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => {
   const id = `ally-${index + 1}`
@@ -28,7 +28,8 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
       return {
         id,
         jobId: 'fighter',
-        lifePoint: 12,
+        lifePoints: 12,
+        maxLifePoints: 12,
         attackPoint: 4,
         skillIds: [],
       }
@@ -36,7 +37,8 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
       return {
         id,
         jobId: 'knight',
-        lifePoint: 18,
+        lifePoints: 18,
+        maxLifePoints: 18,
         attackPoint: 2,
         skillIds: [],
       }
@@ -44,7 +46,8 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
       return {
         id,
         jobId: 'archer',
-        lifePoint: 6,
+        lifePoints: 6,
+        maxLifePoints: 6,
         attackPoint: 3,
         skillIds: [],
       }
@@ -52,7 +55,8 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
       return {
         id,
         jobId: 'mage',
-        lifePoint: 3,
+        lifePoints: 3,
+        maxLifePoints: 3,
         attackPoint: 3,
         skillIds: [],
       }
@@ -60,7 +64,8 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
       return {
         id,
         jobId: 'priest',
-        lifePoint: 5,
+        lifePoints: 5,
+        maxLifePoints: 5,
         attackPoint: 1,
         skillIds: [],
       }
@@ -75,7 +80,8 @@ const dummyEnemies: Creature[] = Array.from({length: 20}).map((unused, index) =>
       return {
         id,
         jobId: 'goblin',
-        lifePoint: 4,
+        lifePoints: 4,
+        maxLifePoints: 4,
         attackPoint: 1,
         skillIds: [],
       }
@@ -83,7 +89,8 @@ const dummyEnemies: Creature[] = Array.from({length: 20}).map((unused, index) =>
       return {
         id,
         jobId: 'orc',
-        lifePoint: 8,
+        lifePoints: 8,
+        maxLifePoints: 8,
         attackPoint: 3,
         skillIds: [],
       }
@@ -146,7 +153,7 @@ function createInitialGame(): Game {
     battleResult: {
       victoryOrDefeatId: 'pending',
     },
-    headquartersLifePoint: 10,
+    headquartersLifePoints: 10,
   }
 
   game = {

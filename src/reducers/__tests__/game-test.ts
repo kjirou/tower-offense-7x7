@@ -19,6 +19,7 @@ import {
   findFirstAlly,
 } from '../../test-utils'
 import {
+  creatureUtils,
   determineVictoryOrDefeat,
   doesPlayerHaveDefeat,
   doesPlayerHaveVictory,
@@ -28,9 +29,27 @@ import {
   refillCardsOnPlayersHand,
   removeDeadCreatures,
   reserveCreatures,
-} from '../game'
+} from '../utils'
 
-describe('reducers/game', function() {
+describe('reducers/utils', function() {
+  describe('creatureUtils', function() {
+    const creature = {
+      ...createCreature(),
+      lifePoints: 2,
+      maxLifePoints: 2,
+    }
+
+    describe('updateLifePoints', function() {
+      it('lifePoints は 0 未満にならない', function() {
+        assert.strictEqual(creatureUtils.updateLifePoints(creature, -3).lifePoints, 0)
+      })
+
+      it('lifePoints は maxLifePoints を超えない', function() {
+        assert.strictEqual(creatureUtils.updateLifePoints(creature, 1).lifePoints, 2)
+      })
+    })
+  })
+
   describe('doesPlayerHaveVictory', function() {
     const parties: Party[] = [
       {factionId: 'player', creatureIds: ['x']},
@@ -130,7 +149,7 @@ describe('reducers/game', function() {
         let parties: Party[]
 
         beforeEach(function() {
-          creatures[0].lifePoint = 0
+          creatures[0].lifePoints = 0
           battleFieldMatrix[0][0].creatureId = creatures[0].id
           parties = [{
             factionId: 'player',
@@ -154,7 +173,7 @@ describe('reducers/game', function() {
         let parties: Party[]
 
         beforeEach(function() {
-          creatures[0].lifePoint = 0
+          creatures[0].lifePoints = 0
           battleFieldMatrix[0][0].creatureId = creatures[0].id
           parties = [{
             factionId: 'computer',
@@ -178,7 +197,7 @@ describe('reducers/game', function() {
       let parties: Party[]
 
       beforeEach(function() {
-        creatures[0].lifePoint = 1
+        creatures[0].lifePoints = 1
         battleFieldMatrix[0][0].creatureId = creatures[0].id
         parties = [{
           factionId: 'player',
@@ -201,7 +220,7 @@ describe('reducers/game', function() {
         const attacker = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
         const enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
         attacker.attackPoint = 1
-        enemy.lifePoint = 2
+        enemy.lifePoints = 2
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][1].creatureId = enemy.id
         const result = invokeNormalAttack(
@@ -211,7 +230,7 @@ describe('reducers/game', function() {
           attacker.id,
         )
         const newEnemy = findCreatureById(result.creatures, enemy.id)
-        assert.strictEqual(newEnemy.lifePoint < enemy.lifePoint, true)
+        assert.strictEqual(newEnemy.lifePoints < enemy.lifePoints, true)
       })
     })
 
@@ -222,7 +241,7 @@ describe('reducers/game', function() {
         const attacker = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
         const enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
         attacker.attackPoint = 1
-        enemy.lifePoint = 2
+        enemy.lifePoints = 2
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][2].creatureId = enemy.id
         const result = invokeNormalAttack(
@@ -232,7 +251,7 @@ describe('reducers/game', function() {
           attacker.id,
         )
         const newEnemy = findCreatureById(result.creatures, enemy.id)
-        assert.strictEqual(newEnemy.lifePoint, enemy.lifePoint)
+        assert.strictEqual(newEnemy.lifePoints, enemy.lifePoints)
       })
     })
   })
@@ -258,7 +277,7 @@ describe('reducers/game', function() {
             invokerCreatureId: invoker.id,
           })
           const newEnemy = findCreatureById(result.creatures, enemy.id)
-          assert.strictEqual(newEnemy.lifePoint < enemy.lifePoint, true)
+          assert.strictEqual(newEnemy.lifePoints < enemy.lifePoints, true)
         })
       })
     })

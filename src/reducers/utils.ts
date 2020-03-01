@@ -41,7 +41,13 @@ type SkillProcessResult = {
 
 export const creatureUtils = {
   canAct: (creature: Creature): boolean => !creatureUtils.isDead(creature),
-  isDead: (creature: Creature): boolean => creature.lifePoint === 0,
+  isDead: (creature: Creature): boolean => creature.lifePoints === 0,
+  updateLifePoints: (creature: Creature, points: number): Creature => {
+    return {
+      ...creature,
+      lifePoints: Math.min(Math.max(creature.lifePoints + points, 0), creature.maxLifePoints),
+    }
+  },
 }
 
 export function doesPlayerHaveVictory(
@@ -66,8 +72,8 @@ export function doesPlayerHaveVictory(
   )
 }
 
-export function doesPlayerHaveDefeat(headquartersLifePoint: Game['headquartersLifePoint']): boolean {
-  return headquartersLifePoint === 0
+export function doesPlayerHaveDefeat(headquartersLifePoints: Game['headquartersLifePoints']): boolean {
+  return headquartersLifePoints === 0
 }
 
 export function determineVictoryOrDefeat(
@@ -75,11 +81,11 @@ export function determineVictoryOrDefeat(
   battleFieldMatrix: BattleFieldMatrix,
   creatureAppearances: CreatureAppearance[],
   currentTurnNumber: Game['turnNumber'],
-  headquartersLifePoint: Game['headquartersLifePoint']
+  headquartersLifePoints: Game['headquartersLifePoints']
 ): VictoryOrDefeatId {
   return doesPlayerHaveVictory(parties, battleFieldMatrix, creatureAppearances, currentTurnNumber)
     ? 'victory'
-    : doesPlayerHaveDefeat(headquartersLifePoint)
+    : doesPlayerHaveDefeat(headquartersLifePoints)
       ? 'defeat'
       : 'pending'
 }
@@ -222,10 +228,7 @@ export function invokeNormalAttack(
   const affectedCreatures: Creature[] = targeteesData
     .map(targeteeData => {
       const dummyDamage = 1
-      const newLifePoint = Math.max(targeteeData.creature.lifePoint - dummyDamage, 0)
-      return Object.assign({}, targeteeData.creature, {
-        lifePoint: newLifePoint,
-      })
+      return creatureUtils.updateLifePoints(targeteeData.creature, -dummyDamage)
     })
 
   // コンテキストへ反映する。
@@ -288,10 +291,7 @@ function invokeAttackSkill(context: SkillProcessContext): SkillProcessResult {
   const affectedCreatures: Creature[] = targeteesData
     .map(targeteeData => {
       const dummyDamage = 3
-      const newLifePoint = Math.max(targeteeData.creature.lifePoint - dummyDamage, 0)
-      return Object.assign({}, targeteeData.creature, {
-        lifePoint: newLifePoint,
-      })
+      return creatureUtils.updateLifePoints(targeteeData.creature, -dummyDamage)
     })
 
   // コンテキストへ反映する。

@@ -37,7 +37,8 @@ export function createCreature(): Creature {
     id: createUid(),
     jobId: '',
     attackPoint: 1,
-    lifePoint: 1,
+    lifePoints: 1,
+    maxLifePoints: 1,
     skillIds: [],
   }
 }
@@ -100,7 +101,7 @@ export function createStateDisplayBattlePageAtStartOfGame(): ApplicationState {
           battleResult: {
             victoryOrDefeatId: 'pending',
           },
-          headquartersLifePoint: 1,
+          headquartersLifePoints: 1,
         },
       },
     },

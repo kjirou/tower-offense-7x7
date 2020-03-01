@@ -30,7 +30,7 @@ import {
   refillCardsOnPlayersHand,
   removeDeadCreatures,
   reserveCreatures,
-} from './game'
+} from './utils'
 
 export function selectBattleFieldElement(
   state: ApplicationState,
@@ -306,7 +306,7 @@ export function proceedTurn(
       draft.game.battleFieldMatrix,
       draft.game.creatureAppearances,
       draft.game.turnNumber,
-      draft.game.headquartersLifePoint
+      draft.game.headquartersLifePoints
     )
 
     draft.game.completedNormalAttackPhase = false

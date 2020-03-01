@@ -16,9 +16,10 @@ export type Skill = {
 
 export type Creature = {
   attackPoint: number,
-  lifePoint: number,
+  lifePoints: number,
   id: string,
   jobId: string,
+  maxLifePoints: number,
   skillIds: Skill['id'][],
 }
 
@@ -116,7 +117,7 @@ export type Game = {
   creatureAppearances: CreatureAppearance[],
   creatures: Creature[],
   cursor: Cursor | undefined,
-  headquartersLifePoint: number,
+  headquartersLifePoints: number,
   parties: Party[],
   turnNumber: number,
 }
