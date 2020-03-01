@@ -19,6 +19,7 @@ export type Creature = {
   lifePoints: number,
   id: string,
   jobId: string,
+  maxLifePoints: number,
   skillIds: Skill['id'][],
 }
 
