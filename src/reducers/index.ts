@@ -203,7 +203,7 @@ export function runNormalAttackPhase(
       pickBattleFieldElementsWhereCreatureExists(game.battleFieldMatrix)
     const attackerDataList: CreatureWithPartyOnBattleFieldElement[] = elementsWhereCreatureExists
       .map((battleFieldElement) => {
-        // `pickBattleFieldElementsWhereCreatureExists` guarantees that each creature exists.
+        // NOTE: `pickBattleFieldElementsWhereCreatureExists` guarantees that each creature exists.
         const creatureId = battleFieldElement.creatureId as Creature['id']
         return Object.assign(
           findCreatureWithParty(game.creatures, game.parties, creatureId),
