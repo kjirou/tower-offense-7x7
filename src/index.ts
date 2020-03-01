@@ -19,7 +19,7 @@ import {
 // TODO: 直接呼び出さない
 import {
   reserveCreatures,
-} from './reducers/game'
+} from './reducers/utils'
 
 const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => {
   const id = `ally-${index + 1}`

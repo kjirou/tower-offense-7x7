@@ -20,7 +20,7 @@ import {
 } from '../index'
 import {
   placePlayerFactionCreature,
-} from '../game'
+} from '../utils'
 
 describe('reducers/index', function() {
   describe('selectBattleFieldElement', function() {

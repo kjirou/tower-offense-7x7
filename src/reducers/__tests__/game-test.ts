@@ -29,9 +29,9 @@ import {
   refillCardsOnPlayersHand,
   removeDeadCreatures,
   reserveCreatures,
-} from '../game'
+} from '../utils'
 
-describe('reducers/game', function() {
+describe('reducers/utils', function() {
   describe('creatureUtils', function() {
     const creature = {
       ...createCreature(),
