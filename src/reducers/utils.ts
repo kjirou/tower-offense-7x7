@@ -228,10 +228,7 @@ export function invokeNormalAttack(
   const affectedCreatures: Creature[] = targeteesData
     .map(targeteeData => {
       const dummyDamage = 1
-      const newLifePoints = Math.max(targeteeData.creature.lifePoints - dummyDamage, 0)
-      return Object.assign({}, targeteeData.creature, {
-        lifePoints: newLifePoints,
-      })
+      return creatureUtils.updateLifePoints(targeteeData.creature, -dummyDamage)
     })
 
   // コンテキストへ反映する。
@@ -294,10 +291,7 @@ function invokeAttackSkill(context: SkillProcessContext): SkillProcessResult {
   const affectedCreatures: Creature[] = targeteesData
     .map(targeteeData => {
       const dummyDamage = 3
-      const newLifePoints = Math.max(targeteeData.creature.lifePoints - dummyDamage, 0)
-      return Object.assign({}, targeteeData.creature, {
-        lifePoints: newLifePoints,
-      })
+      return creatureUtils.updateLifePoints(targeteeData.creature, -dummyDamage)
     })
 
   // コンテキストへ反映する。
