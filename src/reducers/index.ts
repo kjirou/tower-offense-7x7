@@ -24,6 +24,7 @@ import {
 } from '../utils'
 import {
   creatureUtils,
+  determineVictoryOrDefeat,
   invokeSkill,
   invokeNormalAttack,
   placePlayerFactionCreature,
@@ -64,8 +65,17 @@ export function selectBattleFieldElement(
         ? findCardUnderCursor(draft.game.cards, draft.game.cursor)
         : undefined
 
-      // 通常攻撃フェーズ完了前、かつ、手札のカードへカーソルが当たっているとき。
-      if (draft.game.completedNormalAttackPhase === false && cardUnderCursor) {
+      // カードの使用（クリーチャーの配置・スキルの使用）をする。
+      //
+      // 勝敗決定前、または、通常攻撃フェーズ完了前、
+      // かつ、手札のカードへカーソルが当たっているとき。
+      if (
+        (
+          draft.game.battleResult.victoryOrDefeatId === 'pending' &&
+          draft.game.completedNormalAttackPhase === false
+        ) &&
+        cardUnderCursor
+      ) {
         // 選択先のマスへクリーチャーが配置されているとき。
         if (placedCreatureWithParty) {
           // 選択先クリーチャーがプレイヤー側のとき。
@@ -134,8 +144,9 @@ export function selectBattleFieldElement(
           // カーソルを外す。
           draft.game.cursor = undefined
         }
-      // 通常攻撃フェーズ完了後、または、手札のカードへカーソルが当たっていないとき。
+      // カードの使用、ができないとき。
       } else {
+        // カーソルをマスの選択へ変更する。
         draft.game.cursor = {
           globalPosition: {
             globalPlacementId: 'battleFieldMatrix',
@@ -289,6 +300,15 @@ export function proceedTurn(
       ...draft.game,
       ...refillCardsOnPlayersHand(draft.game.cardsInDeck, draft.game.cardsOnPlayersHand),
     }
+
+    // 勝敗判定をする。
+    draft.game.battleResult.victoryOrDefeatId = determineVictoryOrDefeat(
+      draft.game.parties,
+      draft.game.battleFieldMatrix,
+      draft.game.creatureAppearances,
+      draft.game.turnNumber,
+      draft.game.headquartersLifePoint
+    )
 
     draft.game.completedNormalAttackPhase = false
     draft.game.turnNumber += 1

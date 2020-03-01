@@ -117,25 +117,43 @@ function mapBattlePageStateToProps(
       }
     })
 
+  const progressButton = game.battleResult.victoryOrDefeatId === 'pending'
+    ? game.completedNormalAttackPhase
+      ? {
+        label: 'Next',
+        handleTouch: () => {
+          setState(s => proceedTurn(s))
+        },
+      }
+      : {
+        label: 'Battle',
+        handleTouch: () => {
+          setState(s => runNormalAttackPhase(s))
+        },
+      }
+    : game.battleResult.victoryOrDefeatId === 'victory'
+      ? {
+        label: 'Victory!',
+        handleTouch: () => {},
+      }
+      : {
+        label: 'Defeat...',
+        handleTouch: () => {},
+      }
+
   return {
     battleFieldBoard: {
       board: boardProps,
       handleTouch({y, x}) {
         setState(s => selectBattleFieldElement(s, y, x))
       },
-      updatesAreProhibited: game.completedNormalAttackPhase,
+      updatesAreProhibited: game.battleResult.victoryOrDefeatId !== 'pending' || game.completedNormalAttackPhase,
     },
     cardsOnPlayersHand: {
       cards: cardsProps
     },
     turnNumber: game.turnNumber,
-    showNextTurnButton: game.completedNormalAttackPhase,
-    handleTouchBattleButton: () => {
-      setState(s => runNormalAttackPhase(s))
-    },
-    handleTouchNextTurnButton: () => {
-      setState(s => proceedTurn(s))
-    },
+    progressButton,
   }
 }
 

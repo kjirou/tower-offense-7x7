@@ -100,6 +100,12 @@ type Cursor = {
   globalPosition: GlobalPosition,
 }
 
+export type VictoryOrDefeatId = 'victory' | 'defeat' | 'pending'
+
+export type BattleResult = {
+  victoryOrDefeatId: VictoryOrDefeatId,
+}
+
 export type NormalAttackProcessContext = {
   attackerCreatureId: Creature['id'],
   battleFieldMatrix: BattleFieldMatrix,
@@ -117,6 +123,7 @@ export type SkillProcessContext = {
 
 export type Game = {
   battleFieldMatrix: BattleFieldMatrix,
+  battleResult: BattleResult,
   cardsInDeck: CardRelationship[],
   cardsOnPlayersHand: CardRelationship[],
   cards: Card[],
@@ -124,6 +131,7 @@ export type Game = {
   creatureAppearances: CreatureAppearance[],
   creatures: Creature[],
   cursor: Cursor | undefined,
+  headquartersLifePoint: number,
   parties: Party[],
   turnNumber: number,
 }
@@ -239,6 +247,15 @@ export function findCreatureWithParty(
     }
   }
   throw new Error('Can not find the `creatureId` from `parties`.')
+}
+
+export function findPartyByCreatureId(parties: Party[], creatureId: Creature['id']): Party {
+  for (const party of parties) {
+    if (party.creatureIds.indexOf(creatureId) !== -1) {
+      return party
+    }
+  }
+  throw new Error('Can not find the `creatureId` in parties.')
 }
 
 export function createBattleFieldMatrix(rowLength: number, columnLength: number): BattleFieldMatrix {
