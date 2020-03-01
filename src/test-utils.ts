@@ -36,7 +36,7 @@ export function createCreature(): Creature {
   return {
     id: createUid(),
     jobId: '',
-    attackPoint: 1,
+    attackPower: 1,
     lifePoints: 1,
     maxLifePoints: 1,
     skillIds: [],
