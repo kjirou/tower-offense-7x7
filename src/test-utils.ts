@@ -37,7 +37,6 @@ export function createCreature(): Creature {
     id: createUid(),
     // TODO: jobs に存在するもののみに制約できるようにする。
     jobId: 'dummy-job',
-    attackPower: 1,
     lifePoints: 1,
     maxLifePoints: 1,
     skillIds: [],
