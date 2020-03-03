@@ -44,6 +44,9 @@ type SkillProcessResult = {
 export const creatureUtils = {
   canAct: (creature: Creature): boolean => !creatureUtils.isDead(creature),
   getAttackPower: (creature: Creature, jobs: Job[]): number => {
+    if (creature._attackPowerForTesting !== undefined) {
+      return creature._attackPowerForTesting
+    }
     const job = findJobById(jobs, creature.jobId)
     return job.attackPower
   },

@@ -219,7 +219,7 @@ describe('reducers/utils', function() {
         const battlePage = ensureBattlePage(state)
         const attacker = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
         const enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
-        attacker.attackPower = 1
+        attacker._attackPowerForTesting = 1
         enemy.lifePoints = 2
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][1].creatureId = enemy.id
@@ -241,7 +241,7 @@ describe('reducers/utils', function() {
         const battlePage = ensureBattlePage(state)
         const attacker = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
         const enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
-        attacker.attackPower = 1
+        attacker._attackPowerForTesting = 1
         enemy.lifePoints = 2
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][2].creatureId = enemy.id

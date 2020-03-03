@@ -112,9 +112,9 @@ describe('reducers/index', function() {
 
       it('互いに攻撃した結果を返す', function() {
         a.lifePoints = 2
-        a.attackPower = 1
+        a._attackPowerForTesting = 1
         b.lifePoints = 2
-        b.attackPower = 1
+        b._attackPowerForTesting = 1
         const newState = runNormalAttackPhase(state)
         const newBattlePage = ensureBattlePage(newState)
         const newA = findCreatureById(newBattlePage.game.creatures, a.id)
@@ -128,9 +128,9 @@ describe('reducers/index', function() {
       describe('a クリーチャーの攻撃で b クリーチャーが死亡するとき', function() {
         beforeEach(function() {
           a.lifePoints = 10
-          a.attackPower = 1
+          a._attackPowerForTesting = 1
           b.lifePoints = 1
-          b.attackPower = 1
+          b._attackPowerForTesting = 1
         })
 
         it('b が盤上に存在しない結果を返す', function() {
@@ -148,9 +148,9 @@ describe('reducers/index', function() {
         const a = findCreatureById(battlePage.game.creatures, battlePage.game.cardsOnPlayersHand[0].creatureId)
         const b = findCreatureById(battlePage.game.creatures, battlePage.game.cardsOnPlayersHand[1].creatureId)
         a.lifePoints = 2
-        a.attackPower = 1
+        a._attackPowerForTesting = 1
         b.lifePoints = 2
-        b.attackPower = 1
+        b._attackPowerForTesting = 1
         battlePage.game = {
           ...battlePage.game,
           ...placePlayerFactionCreature(
@@ -185,9 +185,9 @@ describe('reducers/index', function() {
         const a = findCreatureById(battlePage.game.creatures, battlePage.game.cardsOnPlayersHand[0].creatureId)
         const b = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
         a.lifePoints = 1
-        a.attackPower = 1
+        a._attackPowerForTesting = 1
         b.lifePoints = 10
-        b.attackPower = 1
+        b._attackPowerForTesting = 1
         battlePage.game = {
           ...battlePage.game,
           ...placePlayerFactionCreature(
