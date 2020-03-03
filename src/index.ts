@@ -10,6 +10,7 @@ import {
   Card,
   Creature,
   Game,
+  Job,
   MAX_NUMBER_OF_PLAYERS_HAND,
   Party,
   SkillCategoryId,
@@ -21,6 +22,43 @@ import {
   reserveCreatures,
 } from './reducers/utils'
 
+const dummyJobs: Job[] = [
+  {
+    id: 'archer',
+    maxLifePoints: 6,
+    attackPower: 3,
+  },
+  {
+    id: 'fighter',
+    maxLifePoints: 12,
+    attackPower: 4,
+  },
+  {
+    id: 'goblin',
+    maxLifePoints: 5,
+    attackPower: 1,
+  },
+  {
+    id: 'knight',
+    maxLifePoints: 18,
+    attackPower: 2,
+  },
+  {
+    id: 'mage',
+    maxLifePoints: 3,
+    attackPower: 3,
+  },
+  {
+    id: 'orc',
+    maxLifePoints: 10,
+    attackPower: 3,
+  },
+  {
+    id: 'priest',
+    maxLifePoints: 5,
+    attackPower: 1,
+  },
+]
 const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => {
   const id = `ally-${index + 1}`
   switch (index % 5) {
@@ -119,6 +157,7 @@ function createInitialGame(): Game {
   const battleFieldMatrix = createBattleFieldMatrix(7, 7)
 
   let game: Game = {
+    jobs: dummyJobs,
     creatures: dummyAllies.concat(dummyEnemies),
     parties: [
       {

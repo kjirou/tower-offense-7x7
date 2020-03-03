@@ -230,6 +230,7 @@ export function runNormalAttackPhase(
       gameBeingUpdated = {
         ...gameBeingUpdated,
         ...invokeNormalAttack(
+          gameBeingUpdated.jobs,
           gameBeingUpdated.creatures,
           gameBeingUpdated.parties,
           gameBeingUpdated.battleFieldMatrix,

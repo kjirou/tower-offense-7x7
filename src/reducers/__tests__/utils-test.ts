@@ -224,6 +224,7 @@ describe('reducers/utils', function() {
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][1].creatureId = enemy.id
         const result = invokeNormalAttack(
+          battlePage.game.jobs,
           battlePage.game.creatures,
           battlePage.game.parties,
           battlePage.game.battleFieldMatrix,
@@ -245,6 +246,7 @@ describe('reducers/utils', function() {
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][2].creatureId = enemy.id
         const result = invokeNormalAttack(
+          battlePage.game.jobs,
           battlePage.game.creatures,
           battlePage.game.parties,
           battlePage.game.battleFieldMatrix,

@@ -35,7 +35,8 @@ const createUid = createNumericUidCreator(0)
 export function createCreature(): Creature {
   return {
     id: createUid(),
-    jobId: '',
+    // TODO: jobs に存在するもののみに制約できるようにする。
+    jobId: 'dummy-job',
     attackPower: 1,
     lifePoints: 1,
     maxLifePoints: 1,
@@ -66,6 +67,13 @@ export function findFirstAlly(creatures: Creature[], parties: Party[], factionId
  * 戦闘開始直後の BattlePage を想定した状態を生成する。
  */
 export function createStateDisplayBattlePageAtStartOfGame(): ApplicationState {
+  const jobs = [
+    {
+      id: 'dummy-job',
+      attackPower: 1,
+      maxLifePoints: 1,
+    }
+  ]
   const allies = Array.from({length: 10}).map(() => createCreature())
   const enemies = Array.from({length: 10}).map(() => createCreature())
   const creatures = allies.concat(enemies)
@@ -79,6 +87,7 @@ export function createStateDisplayBattlePageAtStartOfGame(): ApplicationState {
     pages: {
       battle: {
         game: {
+          jobs,
           creatures,
           parties: [
             {

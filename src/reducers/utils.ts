@@ -10,18 +10,20 @@ import {
   CreatureWithParty,
   CreatureWithPartyOnBattleFieldElement,
   Game,
+  Job,
   MAX_NUMBER_OF_PLAYERS_HAND,
   MatrixPosition,
   Party,
   Skill,
   VictoryOrDefeatId,
   determineRelationshipBetweenFactions,
+  findBattleFieldElementByCreatureId,
+  findBattleFieldElementsByDistance,
   findCreatureAppearanceByTurnNumber,
   findCreatureById,
   findCreatureByIdIfPossible,
-  findBattleFieldElementByCreatureId,
-  findBattleFieldElementsByDistance,
   findCreatureWithParty,
+  findJobById,
   findPartyByCreatureId,
   pickBattleFieldElementsWhereCreatureExists,
 } from '../utils';
@@ -41,6 +43,10 @@ type SkillProcessResult = {
 
 export const creatureUtils = {
   canAct: (creature: Creature): boolean => !creatureUtils.isDead(creature),
+  getAttackPower: (creature: Creature, jobs: Job[]): number => {
+    const job = findJobById(jobs, creature.jobId)
+    return job.attackPower
+  },
   isDead: (creature: Creature): boolean => creature.lifePoints === 0,
   updateLifePoints: (creature: Creature, points: number): Creature => {
     return {
@@ -170,6 +176,7 @@ export function removeDeadCreatures(
 }
 
 export function invokeNormalAttack(
+  jobs: Job[],
   creatures: Creature[],
   parties: Party[],
   battleFieldMatrix: BattleFieldMatrix,
@@ -227,8 +234,8 @@ export function invokeNormalAttack(
   //       それにより、死亡しているクリーチャーも攻撃対象に含まれることになる。
   const affectedCreatures: Creature[] = targeteesData
     .map(targeteeData => {
-      const dummyDamage = 1
-      return creatureUtils.updateLifePoints(targeteeData.creature, -dummyDamage)
+      const damage = creatureUtils.getAttackPower(attackerData.creature, jobs)
+      return creatureUtils.updateLifePoints(targeteeData.creature, -damage)
     })
 
   // コンテキストへ反映する。

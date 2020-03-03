@@ -124,6 +124,7 @@ export type Game = {
   creatures: Creature[],
   cursor: Cursor | undefined,
   headquartersLifePoints: number,
+  jobs: Job[],
   parties: Party[],
   turnNumber: number,
 }
@@ -208,6 +209,14 @@ export function determineRelationshipBetweenFactions(a: FactionId, b: FactionId)
   return a === b ? 'ally' : 'enemy'
 }
 
+export function findJobById(jobs: Job[], jobId: Job['id']): Job {
+  const found = jobs.find(job => job.id === jobId)
+  if (!found) {
+    throw new Error('Can not find the job.')
+  }
+  return found
+}
+
 export function findCreatureByIdIfPossible(creatures: Creature[], creatureId: Creature['id']): Creature | undefined {
   return creatures.find(creature => creature.id === creatureId)
 }
@@ -215,7 +224,7 @@ export function findCreatureByIdIfPossible(creatures: Creature[], creatureId: Cr
 export function findCreatureById(creatures: Creature[], creatureId: Creature['id']): Creature {
   const found = findCreatureByIdIfPossible(creatures, creatureId)
   if (!found) {
-    throw new Error('Can not found a creature.')
+    throw new Error('Can not find the creature.')
   }
   return found
 }
