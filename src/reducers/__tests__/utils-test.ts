@@ -42,10 +42,10 @@ describe('reducers/utils', function() {
         },
       ]
 
-      it('_attackPowerForTesting が存在しているときはその値を優先して返す', function() {
+      it('_attackPowerForTest が存在しているときはその値を優先して返す', function() {
         const creature = {
           ...createCreature(),
-          _attackPowerForTesting: 99,
+          _attackPowerForTest: 99,
         }
         assert.strictEqual(creatureUtils.getAttackPower(creature, jobs), 99)
       })
@@ -59,10 +59,10 @@ describe('reducers/utils', function() {
         },
       ]
 
-      it('_maxLifePointsForTesting が存在しているときはその値を優先して返す', function() {
+      it('_maxLifePointsForTest が存在しているときはその値を優先して返す', function() {
         const creature = {
           ...createCreature(),
-          _maxLifePointsForTesting: 99,
+          _maxLifePointsForTest: 99,
         }
         assert.strictEqual(creatureUtils.getMaxLifePoints(creature, jobs), 99)
       })
@@ -259,7 +259,7 @@ describe('reducers/utils', function() {
         const battlePage = ensureBattlePage(state)
         const attacker = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
         const enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
-        attacker._attackPowerForTesting = 1
+        attacker._attackPowerForTest = 1
         enemy.lifePoints = 2
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][1].creatureId = enemy.id
@@ -281,7 +281,7 @@ describe('reducers/utils', function() {
         const battlePage = ensureBattlePage(state)
         const attacker = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
         const enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
-        attacker._attackPowerForTesting = 1
+        attacker._attackPowerForTest = 1
         enemy.lifePoints = 2
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][2].creatureId = enemy.id

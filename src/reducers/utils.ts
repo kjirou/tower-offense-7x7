@@ -45,15 +45,15 @@ type SkillProcessResult = {
 export const creatureUtils = {
   canAct: (creature: Creature): boolean => !creatureUtils.isDead(creature),
   getAttackPower: (creature: Creature, jobs: Job[]): number => {
-    if (creature._attackPowerForTesting !== undefined) {
-      return creature._attackPowerForTesting
+    if (creature._attackPowerForTest !== undefined) {
+      return creature._attackPowerForTest
     }
     const job = findJobById(jobs, creature.jobId)
     return job.attackPower
   },
   getMaxLifePoints: (creature: Creature, jobs: Job[]): number => {
-    if (creature._maxLifePointsForTesting !== undefined) {
-      return creature._maxLifePointsForTesting
+    if (creature._maxLifePointsForTest !== undefined) {
+      return creature._maxLifePointsForTest
     }
     const job = findJobById(jobs, creature.jobId)
     return job.maxLifePoints
