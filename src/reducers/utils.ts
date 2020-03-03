@@ -32,6 +32,7 @@ type SkillProcessContext = {
   battleFieldMatrix: BattleFieldMatrix,
   creatures: Creature[],
   invokerCreatureId: Creature['id'],
+  jobs: Job[],
   parties: Party[],
   skill: Skill,
 }
@@ -50,11 +51,19 @@ export const creatureUtils = {
     const job = findJobById(jobs, creature.jobId)
     return job.attackPower
   },
+  getMaxLifePoints: (creature: Creature, jobs: Job[]): number => {
+    if (creature._maxLifePointsForTesting !== undefined) {
+      return creature._maxLifePointsForTesting
+    }
+    const job = findJobById(jobs, creature.jobId)
+    return job.maxLifePoints
+  },
   isDead: (creature: Creature): boolean => creature.lifePoints === 0,
-  updateLifePoints: (creature: Creature, points: number): Creature => {
+  updateLifePoints: (creature: Creature, jobs: Job[], points: number): Creature => {
+    const maxLifePoints = creatureUtils.getMaxLifePoints(creature, jobs)
     return {
       ...creature,
-      lifePoints: Math.min(Math.max(creature.lifePoints + points, 0), creature.maxLifePoints),
+      lifePoints: Math.min(Math.max(creature.lifePoints + points, 0), maxLifePoints),
     }
   },
 }
@@ -238,7 +247,7 @@ export function invokeNormalAttack(
   const affectedCreatures: Creature[] = targeteesData
     .map(targeteeData => {
       const damage = creatureUtils.getAttackPower(attackerData.creature, jobs)
-      return creatureUtils.updateLifePoints(targeteeData.creature, -damage)
+      return creatureUtils.updateLifePoints(targeteeData.creature, jobs, -damage)
     })
 
   // コンテキストへ反映する。
@@ -301,7 +310,7 @@ function invokeAttackSkill(context: SkillProcessContext): SkillProcessResult {
   const affectedCreatures: Creature[] = targeteesData
     .map(targeteeData => {
       const dummyDamage = 3
-      return creatureUtils.updateLifePoints(targeteeData.creature, -dummyDamage)
+      return creatureUtils.updateLifePoints(targeteeData.creature, context.jobs, -dummyDamage)
     })
 
   // コンテキストへ反映する。

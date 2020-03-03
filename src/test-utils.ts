@@ -3,6 +3,7 @@ import {
   Card,
   Creature,
   FactionId,
+  Job,
   MAX_NUMBER_OF_PLAYERS_HAND,
   Party,
   createBattleFieldMatrix,
@@ -32,11 +33,20 @@ function createNumericUidCreator(startingCount: number): () => string {
 
 const createUid = createNumericUidCreator(0)
 
+export function createJob(): Job {
+  return {
+    id: 'dummy-job',
+    attackPower: 1,
+    maxLifePoints: 1,
+  }
+}
+
 export function createCreature(): Creature {
+  const job = createJob()
   return {
     id: createUid(),
     // TODO: jobs に存在するもののみに制約できるようにする。
-    jobId: 'dummy-job',
+    jobId: job.id,
     lifePoints: 1,
     maxLifePoints: 1,
     skillIds: [],

@@ -15,6 +15,7 @@ import {
 } from '../../utils'
 import {
   createCreature,
+  createJob,
   createStateDisplayBattlePageAtStartOfGame,
   findFirstAlly,
 } from '../../test-utils'
@@ -33,19 +34,24 @@ import {
 
 describe('reducers/utils', function() {
   describe('creatureUtils', function() {
+    const jobs = [
+      {
+        ...createJob(),
+        maxLifePoints: 2,
+      },
+    ]
     const creature = {
       ...createCreature(),
       lifePoints: 2,
-      maxLifePoints: 2,
     }
 
     describe('updateLifePoints', function() {
       it('lifePoints は 0 未満にならない', function() {
-        assert.strictEqual(creatureUtils.updateLifePoints(creature, -3).lifePoints, 0)
+        assert.strictEqual(creatureUtils.updateLifePoints(creature, jobs, -3).lifePoints, 0)
       })
 
       it('lifePoints は maxLifePoints を超えない', function() {
-        assert.strictEqual(creatureUtils.updateLifePoints(creature, 1).lifePoints, 2)
+        assert.strictEqual(creatureUtils.updateLifePoints(creature, jobs, 1).lifePoints, 2)
       })
     })
   })
@@ -273,6 +279,7 @@ describe('reducers/utils', function() {
               id: '',
               skillCategoryId: 'attack',
             },
+            jobs: battlePage.game.jobs,
             creatures: battlePage.game.creatures,
             parties: battlePage.game.parties,
             battleFieldMatrix: battlePage.game.battleFieldMatrix,
