@@ -85,6 +85,7 @@ export function selectBattleFieldElement(
               draft.game = {
                 ...draft.game,
                 ...invokeSkill({
+                  jobs: draft.game.jobs,
                   creatures: draft.game.creatures,
                   parties: draft.game.parties,
                   battleFieldMatrix: draft.game.battleFieldMatrix,
@@ -230,6 +231,7 @@ export function runNormalAttackPhase(
       gameBeingUpdated = {
         ...gameBeingUpdated,
         ...invokeNormalAttack(
+          gameBeingUpdated.jobs,
           gameBeingUpdated.creatures,
           gameBeingUpdated.parties,
           gameBeingUpdated.battleFieldMatrix,

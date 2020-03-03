@@ -15,6 +15,7 @@ import {
 } from '../../utils'
 import {
   createCreature,
+  createJob,
   createStateDisplayBattlePageAtStartOfGame,
   findFirstAlly,
 } from '../../test-utils'
@@ -33,19 +34,58 @@ import {
 
 describe('reducers/utils', function() {
   describe('creatureUtils', function() {
-    const creature = {
-      ...createCreature(),
-      lifePoints: 2,
-      maxLifePoints: 2,
-    }
+    describe('getAttackPower', function() {
+      const jobs = [
+        {
+          ...createJob(),
+          attackPower: 2,
+        },
+      ]
+
+      it('_attackPowerForTest が存在しているときはその値を優先して返す', function() {
+        const creature = {
+          ...createCreature(),
+          _attackPowerForTest: 99,
+        }
+        assert.strictEqual(creatureUtils.getAttackPower(creature, jobs), 99)
+      })
+    })
+
+    describe('getMaxLifePoints', function() {
+      const jobs = [
+        {
+          ...createJob(),
+          maxLifePoints: 2,
+        },
+      ]
+
+      it('_maxLifePointsForTest が存在しているときはその値を優先して返す', function() {
+        const creature = {
+          ...createCreature(),
+          _maxLifePointsForTest: 99,
+        }
+        assert.strictEqual(creatureUtils.getMaxLifePoints(creature, jobs), 99)
+      })
+    })
 
     describe('updateLifePoints', function() {
+      const jobs = [
+        {
+          ...createJob(),
+          maxLifePoints: 2,
+        },
+      ]
+      const creature = {
+        ...createCreature(),
+        lifePoints: 2,
+      }
+
       it('lifePoints は 0 未満にならない', function() {
-        assert.strictEqual(creatureUtils.updateLifePoints(creature, -3).lifePoints, 0)
+        assert.strictEqual(creatureUtils.updateLifePoints(creature, jobs, -3).lifePoints, 0)
       })
 
       it('lifePoints は maxLifePoints を超えない', function() {
-        assert.strictEqual(creatureUtils.updateLifePoints(creature, 1).lifePoints, 2)
+        assert.strictEqual(creatureUtils.updateLifePoints(creature, jobs, 1).lifePoints, 2)
       })
     })
   })
@@ -219,11 +259,12 @@ describe('reducers/utils', function() {
         const battlePage = ensureBattlePage(state)
         const attacker = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
         const enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
-        attacker.attackPoint = 1
+        attacker._attackPowerForTest = 1
         enemy.lifePoints = 2
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][1].creatureId = enemy.id
         const result = invokeNormalAttack(
+          battlePage.game.jobs,
           battlePage.game.creatures,
           battlePage.game.parties,
           battlePage.game.battleFieldMatrix,
@@ -240,11 +281,12 @@ describe('reducers/utils', function() {
         const battlePage = ensureBattlePage(state)
         const attacker = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
         const enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
-        attacker.attackPoint = 1
+        attacker._attackPowerForTest = 1
         enemy.lifePoints = 2
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][2].creatureId = enemy.id
         const result = invokeNormalAttack(
+          battlePage.game.jobs,
           battlePage.game.creatures,
           battlePage.game.parties,
           battlePage.game.battleFieldMatrix,
@@ -271,6 +313,7 @@ describe('reducers/utils', function() {
               id: '',
               skillCategoryId: 'attack',
             },
+            jobs: battlePage.game.jobs,
             creatures: battlePage.game.creatures,
             parties: battlePage.game.parties,
             battleFieldMatrix: battlePage.game.battleFieldMatrix,

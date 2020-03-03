@@ -10,17 +10,54 @@ import {
   Card,
   Creature,
   Game,
+  Job,
   MAX_NUMBER_OF_PLAYERS_HAND,
   Party,
   SkillCategoryId,
-  choiceElementsAtRandom,
   createBattleFieldMatrix,
 } from './utils'
 // TODO: 直接呼び出さない
 import {
-  reserveCreatures,
+  initializeGame,
 } from './reducers/utils'
 
+const dummyJobs: Job[] = [
+  {
+    id: 'archer',
+    maxLifePoints: 6,
+    attackPower: 3,
+  },
+  {
+    id: 'fighter',
+    maxLifePoints: 12,
+    attackPower: 4,
+  },
+  {
+    id: 'goblin',
+    maxLifePoints: 5,
+    attackPower: 1,
+  },
+  {
+    id: 'knight',
+    maxLifePoints: 18,
+    attackPower: 2,
+  },
+  {
+    id: 'mage',
+    maxLifePoints: 3,
+    attackPower: 3,
+  },
+  {
+    id: 'orc',
+    maxLifePoints: 10,
+    attackPower: 3,
+  },
+  {
+    id: 'priest',
+    maxLifePoints: 5,
+    attackPower: 1,
+  },
+]
 const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => {
   const id = `ally-${index + 1}`
   switch (index % 5) {
@@ -28,45 +65,35 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
       return {
         id,
         jobId: 'fighter',
-        lifePoints: 12,
-        maxLifePoints: 12,
-        attackPoint: 4,
+        lifePoints: 0,
         skillIds: [],
       }
     case 1:
       return {
         id,
         jobId: 'knight',
-        lifePoints: 18,
-        maxLifePoints: 18,
-        attackPoint: 2,
+        lifePoints: 0,
         skillIds: [],
       }
     case 2:
       return {
         id,
         jobId: 'archer',
-        lifePoints: 6,
-        maxLifePoints: 6,
-        attackPoint: 3,
+        lifePoints: 0,
         skillIds: [],
       }
     case 3:
       return {
         id,
         jobId: 'mage',
-        lifePoints: 3,
-        maxLifePoints: 3,
-        attackPoint: 3,
+        lifePoints: 0,
         skillIds: [],
       }
     case 4:
       return {
         id,
         jobId: 'priest',
-        lifePoints: 5,
-        maxLifePoints: 5,
-        attackPoint: 1,
+        lifePoints: 0,
         skillIds: [],
       }
     default:
@@ -80,18 +107,14 @@ const dummyEnemies: Creature[] = Array.from({length: 20}).map((unused, index) =>
       return {
         id,
         jobId: 'goblin',
-        lifePoints: 4,
-        maxLifePoints: 4,
-        attackPoint: 1,
+        lifePoints: 0,
         skillIds: [],
       }
     case 1:
       return {
         id,
         jobId: 'orc',
-        lifePoints: 8,
-        maxLifePoints: 8,
-        attackPoint: 3,
+        lifePoints: 0,
         skillIds: [],
       }
     default:
@@ -119,6 +142,7 @@ function createInitialGame(): Game {
   const battleFieldMatrix = createBattleFieldMatrix(7, 7)
 
   let game: Game = {
+    jobs: dummyJobs,
     creatures: dummyAllies.concat(dummyEnemies),
     parties: [
       {
@@ -156,19 +180,7 @@ function createInitialGame(): Game {
     headquartersLifePoints: 10,
   }
 
-  game = {
-    ...game,
-    ...reserveCreatures(
-      game.battleFieldMatrix,
-      game.creatureAppearances,
-      0,
-      (elements: BattleFieldElement[], numberOfElements: number): BattleFieldElement[] => {
-        return choiceElementsAtRandom<BattleFieldElement>(elements, numberOfElements)
-      }
-    ),
-  }
-
-  return game
+  return initializeGame(game)
 }
 
 function createInitialApplicationState(): ApplicationState {

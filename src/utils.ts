@@ -8,6 +8,12 @@ export type FactionRelationshipId = 'ally' | 'enemy'
 
 export type SkillCategoryId = 'attack' | 'defense' | 'support'
 
+export type Job = {
+  attackPower: number,
+  id: string,
+  maxLifePoints: number,
+}
+
 // This is the so-called “Active Skill”.
 export type Skill = {
   id: string,
@@ -15,11 +21,11 @@ export type Skill = {
 }
 
 export type Creature = {
-  attackPoint: number,
-  lifePoints: number,
+  _attackPowerForTest?: number,
+  _maxLifePointsForTest?: number,
   id: string,
   jobId: string,
-  maxLifePoints: number,
+  lifePoints: number,
   skillIds: Skill['id'][],
 }
 
@@ -118,6 +124,7 @@ export type Game = {
   creatures: Creature[],
   cursor: Cursor | undefined,
   headquartersLifePoints: number,
+  jobs: Job[],
   parties: Party[],
   turnNumber: number,
 }
@@ -202,6 +209,14 @@ export function determineRelationshipBetweenFactions(a: FactionId, b: FactionId)
   return a === b ? 'ally' : 'enemy'
 }
 
+export function findJobById(jobs: Job[], jobId: Job['id']): Job {
+  const found = jobs.find(job => job.id === jobId)
+  if (!found) {
+    throw new Error('Can not find the job.')
+  }
+  return found
+}
+
 export function findCreatureByIdIfPossible(creatures: Creature[], creatureId: Creature['id']): Creature | undefined {
   return creatures.find(creature => creature.id === creatureId)
 }
@@ -209,7 +224,7 @@ export function findCreatureByIdIfPossible(creatures: Creature[], creatureId: Cr
 export function findCreatureById(creatures: Creature[], creatureId: Creature['id']): Creature {
   const found = findCreatureByIdIfPossible(creatures, creatureId)
   if (!found) {
-    throw new Error('Can not found a creature.')
+    throw new Error('Can not find the creature.')
   }
   return found
 }

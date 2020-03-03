@@ -10,18 +10,21 @@ import {
   CreatureWithParty,
   CreatureWithPartyOnBattleFieldElement,
   Game,
+  Job,
   MAX_NUMBER_OF_PLAYERS_HAND,
   MatrixPosition,
   Party,
   Skill,
   VictoryOrDefeatId,
+  choiceElementsAtRandom,
   determineRelationshipBetweenFactions,
+  findBattleFieldElementByCreatureId,
+  findBattleFieldElementsByDistance,
   findCreatureAppearanceByTurnNumber,
   findCreatureById,
   findCreatureByIdIfPossible,
-  findBattleFieldElementByCreatureId,
-  findBattleFieldElementsByDistance,
   findCreatureWithParty,
+  findJobById,
   findPartyByCreatureId,
   pickBattleFieldElementsWhereCreatureExists,
 } from '../utils';
@@ -30,6 +33,7 @@ type SkillProcessContext = {
   battleFieldMatrix: BattleFieldMatrix,
   creatures: Creature[],
   invokerCreatureId: Creature['id'],
+  jobs: Job[],
   parties: Party[],
   skill: Skill,
 }
@@ -41,11 +45,26 @@ type SkillProcessResult = {
 
 export const creatureUtils = {
   canAct: (creature: Creature): boolean => !creatureUtils.isDead(creature),
+  getAttackPower: (creature: Creature, jobs: Job[]): number => {
+    if (creature._attackPowerForTest !== undefined) {
+      return creature._attackPowerForTest
+    }
+    const job = findJobById(jobs, creature.jobId)
+    return job.attackPower
+  },
+  getMaxLifePoints: (creature: Creature, jobs: Job[]): number => {
+    if (creature._maxLifePointsForTest !== undefined) {
+      return creature._maxLifePointsForTest
+    }
+    const job = findJobById(jobs, creature.jobId)
+    return job.maxLifePoints
+  },
   isDead: (creature: Creature): boolean => creature.lifePoints === 0,
-  updateLifePoints: (creature: Creature, points: number): Creature => {
+  updateLifePoints: (creature: Creature, jobs: Job[], points: number): Creature => {
+    const maxLifePoints = creatureUtils.getMaxLifePoints(creature, jobs)
     return {
       ...creature,
-      lifePoints: Math.min(Math.max(creature.lifePoints + points, 0), creature.maxLifePoints),
+      lifePoints: Math.min(Math.max(creature.lifePoints + points, 0), maxLifePoints),
     }
   },
 }
@@ -170,6 +189,7 @@ export function removeDeadCreatures(
 }
 
 export function invokeNormalAttack(
+  jobs: Job[],
   creatures: Creature[],
   parties: Party[],
   battleFieldMatrix: BattleFieldMatrix,
@@ -227,8 +247,8 @@ export function invokeNormalAttack(
   //       それにより、死亡しているクリーチャーも攻撃対象に含まれることになる。
   const affectedCreatures: Creature[] = targeteesData
     .map(targeteeData => {
-      const dummyDamage = 1
-      return creatureUtils.updateLifePoints(targeteeData.creature, -dummyDamage)
+      const damage = creatureUtils.getAttackPower(attackerData.creature, jobs)
+      return creatureUtils.updateLifePoints(targeteeData.creature, jobs, -damage)
     })
 
   // コンテキストへ反映する。
@@ -291,7 +311,7 @@ function invokeAttackSkill(context: SkillProcessContext): SkillProcessResult {
   const affectedCreatures: Creature[] = targeteesData
     .map(targeteeData => {
       const dummyDamage = 3
-      return creatureUtils.updateLifePoints(targeteeData.creature, -dummyDamage)
+      return creatureUtils.updateLifePoints(targeteeData.creature, context.jobs, -dummyDamage)
     })
 
   // コンテキストへ反映する。
@@ -375,4 +395,32 @@ export function refillCardsOnPlayersHand(
     cardsInDeck: cardsInDeck.slice(delta, cardsInDeck.length),
     cardsOnPlayersHand: cardsOnPlayersHand.concat(cardsInDeck.slice(0, delta)),
   }
+}
+
+export function initializeGame(game: Game): Game {
+  let newGame = {...game}
+
+  // クリーチャーの現在ライフポイントを最大まで回復させる。
+  newGame = {
+    ...newGame,
+    creatures: game.creatures.map(creature => {
+      return creatureUtils.updateLifePoints(
+        creature, game.jobs, creatureUtils.getMaxLifePoints(creature, game.jobs))
+    }),
+  }
+
+  // 1 ターン目のクリーチャーを予約する。
+  newGame = {
+    ...newGame,
+    ...reserveCreatures(
+      game.battleFieldMatrix,
+      game.creatureAppearances,
+      0,
+      (elements: BattleFieldElement[], numberOfElements: number): BattleFieldElement[] => {
+        return choiceElementsAtRandom<BattleFieldElement>(elements, numberOfElements)
+      }
+    ),
+  }
+
+  return newGame
 }
