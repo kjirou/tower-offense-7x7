@@ -34,18 +34,52 @@ import {
 
 describe('reducers/utils', function() {
   describe('creatureUtils', function() {
-    const jobs = [
-      {
-        ...createJob(),
-        maxLifePoints: 2,
-      },
-    ]
-    const creature = {
-      ...createCreature(),
-      lifePoints: 2,
-    }
+    describe('getAttackPower', function() {
+      const jobs = [
+        {
+          ...createJob(),
+          attackPower: 2,
+        },
+      ]
+
+      it('_attackPowerForTesting が存在しているときはその値を優先して返す', function() {
+        const creature = {
+          ...createCreature(),
+          _attackPowerForTesting: 99,
+        }
+        assert.strictEqual(creatureUtils.getAttackPower(creature, jobs), 99)
+      })
+    })
+
+    describe('getMaxLifePoints', function() {
+      const jobs = [
+        {
+          ...createJob(),
+          maxLifePoints: 2,
+        },
+      ]
+
+      it('_maxLifePointsForTesting が存在しているときはその値を優先して返す', function() {
+        const creature = {
+          ...createCreature(),
+          _maxLifePointsForTesting: 99,
+        }
+        assert.strictEqual(creatureUtils.getMaxLifePoints(creature, jobs), 99)
+      })
+    })
 
     describe('updateLifePoints', function() {
+      const jobs = [
+        {
+          ...createJob(),
+          maxLifePoints: 2,
+        },
+      ]
+      const creature = {
+        ...createCreature(),
+        lifePoints: 2,
+      }
+
       it('lifePoints は 0 未満にならない', function() {
         assert.strictEqual(creatureUtils.updateLifePoints(creature, jobs, -3).lifePoints, 0)
       })
