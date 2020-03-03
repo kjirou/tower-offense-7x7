@@ -14,13 +14,11 @@ import {
   MAX_NUMBER_OF_PLAYERS_HAND,
   Party,
   SkillCategoryId,
-  choiceElementsAtRandom,
   createBattleFieldMatrix,
 } from './utils'
 // TODO: 直接呼び出さない
 import {
   initializeGame,
-  reserveCreatures,
 } from './reducers/utils'
 
 const dummyJobs: Job[] = [
@@ -182,19 +180,7 @@ function createInitialGame(): Game {
     headquartersLifePoints: 10,
   }
 
-  game = {
-    ...initializeGame(game),
-    ...reserveCreatures(
-      game.battleFieldMatrix,
-      game.creatureAppearances,
-      0,
-      (elements: BattleFieldElement[], numberOfElements: number): BattleFieldElement[] => {
-        return choiceElementsAtRandom<BattleFieldElement>(elements, numberOfElements)
-      }
-    ),
-  }
-
-  return game
+  return initializeGame(game)
 }
 
 function createInitialApplicationState(): ApplicationState {

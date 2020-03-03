@@ -16,6 +16,7 @@ import {
   Party,
   Skill,
   VictoryOrDefeatId,
+  choiceElementsAtRandom,
   determineRelationshipBetweenFactions,
   findBattleFieldElementByCreatureId,
   findBattleFieldElementsByDistance,
@@ -66,19 +67,6 @@ export const creatureUtils = {
       lifePoints: Math.min(Math.max(creature.lifePoints + points, 0), maxLifePoints),
     }
   },
-}
-
-export function initializeGame(game: Game): Game {
-  // クリーチャーの現在ライフポイントを最大まで回復させる。
-  const newCreatures = game.creatures.map(creature => {
-    return creatureUtils.updateLifePoints(
-      creature, game.jobs, creatureUtils.getMaxLifePoints(creature, game.jobs))
-  })
-
-  return {
-    ...game,
-    creatures: newCreatures,
-  }
 }
 
 export function doesPlayerHaveVictory(
@@ -407,4 +395,32 @@ export function refillCardsOnPlayersHand(
     cardsInDeck: cardsInDeck.slice(delta, cardsInDeck.length),
     cardsOnPlayersHand: cardsOnPlayersHand.concat(cardsInDeck.slice(0, delta)),
   }
+}
+
+export function initializeGame(game: Game): Game {
+  let newGame = {...game}
+
+  // クリーチャーの現在ライフポイントを最大まで回復させる。
+  newGame = {
+    ...newGame,
+    creatures: game.creatures.map(creature => {
+      return creatureUtils.updateLifePoints(
+        creature, game.jobs, creatureUtils.getMaxLifePoints(creature, game.jobs))
+    }),
+  }
+
+  // 1 ターン目のクリーチャーを予約する。
+  newGame = {
+    ...newGame,
+    ...reserveCreatures(
+      game.battleFieldMatrix,
+      game.creatureAppearances,
+      0,
+      (elements: BattleFieldElement[], numberOfElements: number): BattleFieldElement[] => {
+        return choiceElementsAtRandom<BattleFieldElement>(elements, numberOfElements)
+      }
+    ),
+  }
+
+  return newGame
 }
