@@ -48,7 +48,6 @@ export function createCreature(): Creature {
     // TODO: jobs に存在するもののみに制約できるようにする。
     jobId: job.id,
     lifePoints: 1,
-    maxLifePoints: 1,
     skillIds: [],
   }
 }
