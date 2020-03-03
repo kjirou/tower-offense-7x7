@@ -68,6 +68,19 @@ export const creatureUtils = {
   },
 }
 
+export function initializeGame(game: Game): Game {
+  // クリーチャーの現在ライフポイントを最大まで回復させる。
+  const newCreatures = game.creatures.map(creature => {
+    return creatureUtils.updateLifePoints(
+      creature, game.jobs, creatureUtils.getMaxLifePoints(creature, game.jobs))
+  })
+
+  return {
+    ...game,
+    creatures: newCreatures,
+  }
+}
+
 export function doesPlayerHaveVictory(
   parties: Party[],
   battleFieldMatrix: BattleFieldMatrix,

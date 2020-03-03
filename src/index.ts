@@ -19,6 +19,7 @@ import {
 } from './utils'
 // TODO: 直接呼び出さない
 import {
+  initializeGame,
   reserveCreatures,
 } from './reducers/utils'
 
@@ -66,35 +67,35 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
       return {
         id,
         jobId: 'fighter',
-        lifePoints: 12,
+        lifePoints: 0,
         skillIds: [],
       }
     case 1:
       return {
         id,
         jobId: 'knight',
-        lifePoints: 18,
+        lifePoints: 0,
         skillIds: [],
       }
     case 2:
       return {
         id,
         jobId: 'archer',
-        lifePoints: 6,
+        lifePoints: 0,
         skillIds: [],
       }
     case 3:
       return {
         id,
         jobId: 'mage',
-        lifePoints: 3,
+        lifePoints: 0,
         skillIds: [],
       }
     case 4:
       return {
         id,
         jobId: 'priest',
-        lifePoints: 5,
+        lifePoints: 0,
         skillIds: [],
       }
     default:
@@ -108,14 +109,14 @@ const dummyEnemies: Creature[] = Array.from({length: 20}).map((unused, index) =>
       return {
         id,
         jobId: 'goblin',
-        lifePoints: 4,
+        lifePoints: 0,
         skillIds: [],
       }
     case 1:
       return {
         id,
         jobId: 'orc',
-        lifePoints: 8,
+        lifePoints: 0,
         skillIds: [],
       }
     default:
@@ -182,7 +183,7 @@ function createInitialGame(): Game {
   }
 
   game = {
-    ...game,
+    ...initializeGame(game),
     ...reserveCreatures(
       game.battleFieldMatrix,
       game.creatureAppearances,
