@@ -6,6 +6,7 @@ import {
 } from '../../utils'
 
 type MetaInformationBarProps = {
+  headquartersLifePoints: number,
   turnNumber: number,
 }
 
@@ -31,6 +32,17 @@ const MetaInformationBar: React.FC<MetaInformationBarProps> = (props) => {
           backgroundColor: 'silver',
         }}
       >{props.turnNumber}</div>
+      <div
+        style={{
+          marginLeft: '2px',
+          width: '48px',
+          height: '48px',
+          lineHeight: '48px',
+          fontSize: '24px',
+          textAlign: 'center',
+          backgroundColor: 'silver',
+        }}
+      >{props.headquartersLifePoints}</div>
     </div>
   )
 }
@@ -342,6 +354,7 @@ export type Props = {
     updatesAreProhibited: boolean,
   },
   cardsOnPlayersHand: CardsOnPlayersHandProps,
+  headquartersLifePoints: MetaInformationBarProps['headquartersLifePoints'],
   progressButton: FooterProps['progressButton'],
   turnNumber: MetaInformationBarProps['turnNumber'],
 }
@@ -356,7 +369,10 @@ export const BattlePage: React.FC<Props> = (props) => {
 
   return (
     <div style={style}>
-      <MetaInformationBar turnNumber={props.turnNumber} />
+      <MetaInformationBar
+        turnNumber={props.turnNumber}
+        headquartersLifePoints={props.headquartersLifePoints}
+      />
       <BattleFieldBoard {...props.battleFieldBoard} />
       <SquareMonitor />
       <CardsOnPlayersHand {...props.cardsOnPlayersHand} />

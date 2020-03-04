@@ -152,6 +152,7 @@ function mapBattlePageStateToProps(
     cardsOnPlayersHand: {
       cards: cardsProps
     },
+    headquartersLifePoints: game.headquartersLifePoints,
     turnNumber: game.turnNumber,
     progressButton,
   }
