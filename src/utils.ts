@@ -24,6 +24,7 @@ export type Skill = {
 
 export type Creature = {
   _attackPowerForTest?: number,
+  _raidIntervalForTest?: number,
   _maxLifePointsForTest?: number,
   id: string,
   jobId: string,
@@ -399,6 +400,9 @@ export const creatureUtils = {
     return interval - creature.raidCharge
   },
   getRaidInterval: (creature: Creature, jobs: Job[]): number => {
+    if (creature._raidIntervalForTest !== undefined) {
+      return creature._raidIntervalForTest
+    }
     const job = findJobById(jobs, creature.jobId)
     return job.raidInterval
   },

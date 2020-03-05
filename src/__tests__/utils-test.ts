@@ -512,6 +512,23 @@ describe('utils', function() {
       })
     })
 
+    describe('getRaidInterval', function() {
+      const jobs = [
+        {
+          ...createJob(),
+          raidInterval: 2,
+        },
+      ]
+
+      it('_raidIntervalForTest が存在しているときはその値を優先して返す', function() {
+        const creature = {
+          ...createCreature(),
+          _raidIntervalForTest: 99,
+        }
+        assert.strictEqual(creatureUtils.getRaidInterval(creature, jobs), 99)
+      })
+    })
+
     describe('getTurnsUntilRaid', function() {
       it('works', function() {
         const jobs = [
