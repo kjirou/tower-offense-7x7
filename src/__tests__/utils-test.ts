@@ -545,7 +545,7 @@ describe('utils', function() {
       })
     })
 
-    describe('updateLifePoints', function() {
+    describe('alterLifePoints', function() {
       const jobs = [
         {
           ...createJob(),
@@ -558,15 +558,15 @@ describe('utils', function() {
       }
 
       it('lifePoints は 0 未満にならない', function() {
-        assert.strictEqual(creatureUtils.updateLifePoints(creature, jobs, -3).lifePoints, 0)
+        assert.strictEqual(creatureUtils.alterLifePoints(creature, jobs, -3).lifePoints, 0)
       })
 
       it('lifePoints は maxLifePoints を超えない', function() {
-        assert.strictEqual(creatureUtils.updateLifePoints(creature, jobs, 1).lifePoints, 2)
+        assert.strictEqual(creatureUtils.alterLifePoints(creature, jobs, 1).lifePoints, 2)
       })
     })
 
-    describe('updateRaidCharge', function() {
+    describe('alterRaidCharge', function() {
       const jobs = [
         {
           ...createJob(),
@@ -579,11 +579,11 @@ describe('utils', function() {
       }
 
       it('raidCharge は 0 未満にならない', function() {
-        assert.strictEqual(creatureUtils.updateRaidCharge(creature, jobs, -1).raidCharge, 0)
+        assert.strictEqual(creatureUtils.alterRaidCharge(creature, jobs, -1).raidCharge, 0)
       })
 
       it('raidCharge は raidInterval を超えない', function() {
-        assert.strictEqual(creatureUtils.updateRaidCharge(creature, jobs, 3).raidCharge, 2)
+        assert.strictEqual(creatureUtils.alterRaidCharge(creature, jobs, 3).raidCharge, 2)
       })
     })
 
