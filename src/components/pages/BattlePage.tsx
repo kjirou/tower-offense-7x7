@@ -52,6 +52,7 @@ export type CreatureOnElementProps = {
   image: string,
   isReserved: boolean,
   lifePoints: string,
+  raidInterval: number,
 }
 
 const CreatureOnElement: React.FC<CreatureOnElementProps> = (props) => {
@@ -74,11 +75,35 @@ const CreatureOnElement: React.FC<CreatureOnElementProps> = (props) => {
           opacity: props.isReserved ? 0.5 : 1,
         }}
       >{props.image}</div>
+      {
+        props.factionRelationshipId === 'enemy'
+          ? <div
+            style={{
+              position: 'absolute',
+              top: '0',
+              right: '0',
+              paddingLeft: '1px',
+              paddingRight: '1px',
+              fontSize: '10px',
+              lineHeight: '12px',
+              textAlign: 'right',
+              color: '#000',
+              backgroundColor: props.raidInterval === 0
+                ? 'red'
+                : props.raidInterval === 1
+                  ? 'yellow'
+                  : '#fff'
+            }}
+          >{props.raidInterval}</div>
+          : null
+      }
       <div
         style={{
           position: 'absolute',
           bottom: '0',
-          right: '1px',
+          right: '0',
+          paddingLeft: '1px',
+          paddingRight: '1px',
           fontSize: '10px',
           lineHeight: '12px',
           textAlign: 'right',

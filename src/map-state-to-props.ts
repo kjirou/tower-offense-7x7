@@ -26,6 +26,10 @@ import {
   selectBattleFieldElement,
   selectCardOnPlayersHand,
 } from './reducers'
+// TODO: 直接読み込まない。
+import {
+  creatureUtils,
+} from './reducers/utils'
 
 type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>
 
@@ -79,6 +83,7 @@ function mapBattlePageStateToProps(
           factionRelationshipId: determineRelationshipBetweenFactions(
             'player', creatureWithParty.party.factionId),
           lifePoints: creatureWithParty.creature.lifePoints.toString(),
+          raidInterval: creatureUtils.getRaidInterval(creatureWithParty.creature, game.jobs),
         }
       }
 
