@@ -21,23 +21,28 @@ import {
   initializeGame,
 } from './reducers/utils'
 
-// TODO: 差分だけ更新すればいいようにリファクタリング。
+const dummyJobTemplate = {
+  id: '',
+  maxLifePoints: 1,
+  attackPower: 1,
+  raidInterval: 0,
+  raidPower: 0,
+}
 const dummyJobs: Job[] = [
   {
+    ...dummyJobTemplate,
     id: 'archer',
     maxLifePoints: 6,
     attackPower: 3,
-    raidInterval: 0,
-    raidPower: 0,
   },
   {
+    ...dummyJobTemplate,
     id: 'fighter',
     maxLifePoints: 12,
     attackPower: 4,
-    raidInterval: 0,
-    raidPower: 0,
   },
   {
+    ...dummyJobTemplate,
     id: 'goblin',
     maxLifePoints: 5,
     attackPower: 1,
@@ -45,20 +50,19 @@ const dummyJobs: Job[] = [
     raidPower: 1,
   },
   {
+    ...dummyJobTemplate,
     id: 'knight',
     maxLifePoints: 18,
     attackPower: 2,
-    raidInterval: 0,
-    raidPower: 0,
   },
   {
+    ...dummyJobTemplate,
     id: 'mage',
     maxLifePoints: 3,
     attackPower: 3,
-    raidInterval: 0,
-    raidPower: 0,
   },
   {
+    ...dummyJobTemplate,
     id: 'orc',
     maxLifePoints: 10,
     attackPower: 3,
@@ -66,79 +70,68 @@ const dummyJobs: Job[] = [
     raidPower: 3,
   },
   {
+    ...dummyJobTemplate,
     id: 'priest',
     maxLifePoints: 5,
     attackPower: 1,
-    raidInterval: 0,
-    raidPower: 0,
   },
 ]
 const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => {
-  const id = `ally-${index + 1}`
-  // TODO: 差分だけ更新すればいいようにリファクタリング。
+  const dummyAllyTemplate = {
+    id: `ally-${index + 1}`,
+    jobId: '',
+    lifePoints: 0,
+    raidCharge: 0,
+    skillIds: [],
+  }
   switch (index % 5) {
     case 0:
       return {
-        id,
+        ...dummyAllyTemplate,
         jobId: 'fighter',
-        lifePoints: 0,
-        raidCharge: 0,
-        skillIds: [],
       }
     case 1:
       return {
-        id,
+        ...dummyAllyTemplate,
         jobId: 'knight',
-        lifePoints: 0,
-        raidCharge: 0,
-        skillIds: [],
       }
     case 2:
       return {
-        id,
+        ...dummyAllyTemplate,
         jobId: 'archer',
-        lifePoints: 0,
-        raidCharge: 0,
-        skillIds: [],
       }
     case 3:
       return {
-        id,
+        ...dummyAllyTemplate,
         jobId: 'mage',
-        lifePoints: 0,
-        raidCharge: 0,
-        skillIds: [],
       }
     case 4:
       return {
-        id,
+        ...dummyAllyTemplate,
         jobId: 'priest',
-        lifePoints: 0,
-        raidCharge: 0,
-        skillIds: [],
       }
     default:
       throw new Error('')
   }
 })
 const dummyEnemies: Creature[] = Array.from({length: 20}).map((unused, index) => {
-  const id = `enemy-${index + 1}`
+  const dummyEnemyTemplate = {
+    id: `enemy-${index + 1}`,
+    jobId: '',
+    lifePoints: 0,
+    raidCharge: 0,
+    skillIds: [],
+  }
   switch (index % 2) {
     case 0:
       return {
-        id,
+        ...dummyEnemyTemplate,
         jobId: 'goblin',
-        lifePoints: 0,
-        raidCharge: 0,
-        skillIds: [],
       }
     case 1:
       return {
-        id,
+        ...dummyEnemyTemplate,
         jobId: 'orc',
-        lifePoints: 0,
-        raidCharge: 0,
-        skillIds: [],
       }
     default:
       throw new Error('')
