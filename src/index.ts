@@ -21,65 +21,68 @@ import {
   initializeGame,
 } from './reducers/utils'
 
+// TODO: 差分だけ更新すればいいようにリファクタリング。
 const dummyJobs: Job[] = [
   {
     id: 'archer',
     maxLifePoints: 6,
     attackPower: 3,
-    raidPower: 0,
     raidInterval: 0,
+    raidPower: 0,
   },
   {
     id: 'fighter',
     maxLifePoints: 12,
     attackPower: 4,
-    raidPower: 0,
     raidInterval: 0,
+    raidPower: 0,
   },
   {
     id: 'goblin',
     maxLifePoints: 5,
     attackPower: 1,
-    raidPower: 1,
     raidInterval: 1,
+    raidPower: 1,
   },
   {
     id: 'knight',
     maxLifePoints: 18,
     attackPower: 2,
-    raidPower: 0,
     raidInterval: 0,
+    raidPower: 0,
   },
   {
     id: 'mage',
     maxLifePoints: 3,
     attackPower: 3,
-    raidPower: 0,
     raidInterval: 0,
+    raidPower: 0,
   },
   {
     id: 'orc',
     maxLifePoints: 10,
     attackPower: 3,
-    raidPower: 3,
     raidInterval: 2,
+    raidPower: 3,
   },
   {
     id: 'priest',
     maxLifePoints: 5,
     attackPower: 1,
-    raidPower: 0,
     raidInterval: 0,
+    raidPower: 0,
   },
 ]
 const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => {
   const id = `ally-${index + 1}`
+  // TODO: 差分だけ更新すればいいようにリファクタリング。
   switch (index % 5) {
     case 0:
       return {
         id,
         jobId: 'fighter',
         lifePoints: 0,
+        raidCharge: 0,
         skillIds: [],
       }
     case 1:
@@ -87,6 +90,7 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
         id,
         jobId: 'knight',
         lifePoints: 0,
+        raidCharge: 0,
         skillIds: [],
       }
     case 2:
@@ -94,6 +98,7 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
         id,
         jobId: 'archer',
         lifePoints: 0,
+        raidCharge: 0,
         skillIds: [],
       }
     case 3:
@@ -101,6 +106,7 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
         id,
         jobId: 'mage',
         lifePoints: 0,
+        raidCharge: 0,
         skillIds: [],
       }
     case 4:
@@ -108,6 +114,7 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
         id,
         jobId: 'priest',
         lifePoints: 0,
+        raidCharge: 0,
         skillIds: [],
       }
     default:
@@ -122,6 +129,7 @@ const dummyEnemies: Creature[] = Array.from({length: 20}).map((unused, index) =>
         id,
         jobId: 'goblin',
         lifePoints: 0,
+        raidCharge: 0,
         skillIds: [],
       }
     case 1:
@@ -129,6 +137,7 @@ const dummyEnemies: Creature[] = Array.from({length: 20}).map((unused, index) =>
         id,
         jobId: 'orc',
         lifePoints: 0,
+        raidCharge: 0,
         skillIds: [],
       }
     default:

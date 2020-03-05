@@ -38,8 +38,8 @@ export function createJob(): Job {
     id: 'dummy-job',
     attackPower: 1,
     maxLifePoints: 1,
-    raidPower: 1,
     raidInterval: 0,
+    raidPower: 1,
   }
 }
 
@@ -50,6 +50,7 @@ export function createCreature(): Creature {
     // TODO: jobs に存在するもののみに制約できるようにする。
     jobId: job.id,
     lifePoints: 1,
+    raidCharge: 0,
     skillIds: [],
   }
 }

@@ -512,6 +512,22 @@ describe('utils', function() {
       })
     })
 
+    describe('getTurnsUntilRaid', function() {
+      it('works', function() {
+        const jobs = [
+          {
+            ...createJob(),
+            raidInterval: 5,
+          },
+        ]
+        const creature = {
+          ...createCreature(),
+          raidCharge: 2,
+        }
+        assert.strictEqual(creatureUtils.getTurnsUntilRaid(creature, jobs), 3)
+      })
+    })
+
     describe('updateLifePoints', function() {
       const jobs = [
         {
@@ -530,6 +546,27 @@ describe('utils', function() {
 
       it('lifePoints は maxLifePoints を超えない', function() {
         assert.strictEqual(creatureUtils.updateLifePoints(creature, jobs, 1).lifePoints, 2)
+      })
+    })
+
+    describe('updateRaidCharge', function() {
+      const jobs = [
+        {
+          ...createJob(),
+          raidInterval: 2,
+        },
+      ]
+      const creature = {
+        ...createCreature(),
+        raidCharge: 0,
+      }
+
+      it('raidCharge は 0 未満にならない', function() {
+        assert.strictEqual(creatureUtils.updateRaidCharge(creature, jobs, -1).raidCharge, 0)
+      })
+
+      it('raidCharge は raidInterval を超えない', function() {
+        assert.strictEqual(creatureUtils.updateRaidCharge(creature, jobs, 3).raidCharge, 2)
       })
     })
   })

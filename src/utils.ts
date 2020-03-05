@@ -28,6 +28,7 @@ export type Creature = {
   id: string,
   jobId: string,
   lifePoints: number,
+  raidCharge: number,
   skillIds: Skill['id'][],
 }
 
@@ -392,16 +393,19 @@ export const creatureUtils = {
     const job = findJobById(jobs, creature.jobId)
     return job.maxLifePoints
   },
-  getRaidPower: (creature: Creature, jobs: Job[]): number => {
+  getTurnsUntilRaid: (creature: Creature, jobs: Job[]): number => {
     const job = findJobById(jobs, creature.jobId)
-    return job.raidPower
+    const interval = creatureUtils.getRaidInterval(creature, jobs)
+    return interval - creature.raidCharge
   },
   getRaidInterval: (creature: Creature, jobs: Job[]): number => {
     const job = findJobById(jobs, creature.jobId)
     return job.raidInterval
   },
-  isDead: (creature: Creature): boolean => creature.lifePoints === 0,
-  canAct: (creature: Creature): boolean => !creatureUtils.isDead(creature),
+  getRaidPower: (creature: Creature, jobs: Job[]): number => {
+    const job = findJobById(jobs, creature.jobId)
+    return job.raidPower
+  },
   updateLifePoints: (creature: Creature, jobs: Job[], points: number): Creature => {
     const maxLifePoints = creatureUtils.getMaxLifePoints(creature, jobs)
     return {
@@ -409,4 +413,13 @@ export const creatureUtils = {
       lifePoints: Math.min(Math.max(creature.lifePoints + points, 0), maxLifePoints),
     }
   },
+  updateRaidCharge: (creature: Creature, jobs: Job[], turns: number): Creature => {
+    const interval = creatureUtils.getRaidInterval(creature, jobs)
+    return {
+      ...creature,
+      raidCharge: Math.min(Math.max(creature.raidCharge + turns, 0), interval),
+    }
+  },
+  isDead: (creature: Creature): boolean => creature.lifePoints === 0,
+  canAct: (creature: Creature): boolean => !creatureUtils.isDead(creature),
 }

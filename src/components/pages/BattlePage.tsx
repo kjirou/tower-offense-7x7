@@ -52,7 +52,7 @@ export type CreatureOnElementProps = {
   image: string,
   isReserved: boolean,
   lifePoints: string,
-  raidInterval: number,
+  turnsUntilRaid: number,
 }
 
 const CreatureOnElement: React.FC<CreatureOnElementProps> = (props) => {
@@ -88,13 +88,13 @@ const CreatureOnElement: React.FC<CreatureOnElementProps> = (props) => {
               lineHeight: '12px',
               textAlign: 'right',
               color: '#000',
-              backgroundColor: props.raidInterval === 0
+              backgroundColor: props.turnsUntilRaid === 0
                 ? 'red'
-                : props.raidInterval === 1
+                : props.turnsUntilRaid === 1
                   ? 'yellow'
                   : '#fff'
             }}
-          >{props.raidInterval}</div>
+          >{props.turnsUntilRaid}</div>
           : null
       }
       <div
