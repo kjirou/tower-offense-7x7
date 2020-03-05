@@ -309,6 +309,33 @@ export function invokeSkill(context: SkillProcessContext): SkillProcessResult {
   throw new Error('It is an invalid `skillCategoryId`.')
 }
 
+export function increaseRaidChargeForEachComputerCreatures(
+  jobs: Job[],
+  creatures: Creature[],
+  parties: Party[],
+  battleFieldMatrix: BattleFieldMatrix,
+): {
+  creatures: Creature[],
+} {
+  const affectedCreatures: Creature[] = []
+  for (const element of pickBattleFieldElementsWhereCreatureExists(battleFieldMatrix)) {
+    if (element.creatureId !== undefined) {
+      const creatureWithParty = findCreatureWithParty(creatures, parties, element.creatureId)
+      if (creatureWithParty.party.factionId === 'computer') {
+        affectedCreatures.push(creatureUtils.updateRaidChargeWithTurnProgress(creatureWithParty.creature, jobs))
+      }
+    }
+  }
+
+  const newCreatures = creatures.map(creature => {
+    return findCreatureByIdIfPossible(affectedCreatures, creature.id) || creature
+  })
+
+  return {
+    creatures: newCreatures,
+  }
+}
+
 export function reserveCreatures(
   battleFieldMatrix: BattleFieldMatrix,
   creatureAppearances: CreatureAppearance[],

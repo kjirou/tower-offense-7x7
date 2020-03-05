@@ -8,6 +8,7 @@ import {
   BattleFieldMatrix,
   Creature,
   CreatureAppearance,
+  Job,
   Party,
   createBattleFieldMatrix,
   creatureUtils,
@@ -24,6 +25,7 @@ import {
   determineVictoryOrDefeat,
   doesPlayerHaveDefeat,
   doesPlayerHaveVictory,
+  increaseRaidChargeForEachComputerCreatures,
   invokeNormalAttack,
   invokeSkill,
   placePlayerFactionCreature,
@@ -340,6 +342,67 @@ describe('reducers/utils', function() {
         matrix, creatureAppearances, 2, (elements, num) => elements.slice(0, num))
       assert.strictEqual(result.battleFieldMatrix[0][0].reservedCreatureId, 'a')
       assert.strictEqual(result.battleFieldMatrix[0][1].reservedCreatureId, 'b')
+    })
+  })
+
+  describe('increaseRaidChargeForEachComputerCreatures', function() {
+    let jobs: Job[]
+    let creatures: Creature[]
+    let c: Creature
+    let p: Creature
+    let parties: Party[]
+    let battleFieldMatrix: BattleFieldMatrix
+
+    beforeEach(function() {
+      jobs = [
+        {
+          ...createJob(),
+          raidInterval: 2,
+        },
+      ]
+      c = {
+        ...createCreature(),
+        raidCharge: 0,
+      },
+      p = {
+        ...createCreature(),
+        raidCharge: 0,
+      },
+      creatures = [c, p]
+      parties = [
+        {
+          factionId: 'computer',
+          creatureIds: [c.id],
+        },
+        {
+          factionId: 'player',
+          creatureIds: [p.id],
+        },
+      ]
+      battleFieldMatrix = createBattleFieldMatrix(1, 1)
+    })
+
+    it('配置されている computer 側クリーチャーの raidCharge は増加する', function() {
+      battleFieldMatrix[0][0].creatureId = c.id
+      const result = increaseRaidChargeForEachComputerCreatures(
+        jobs, creatures, parties, battleFieldMatrix)
+      const newC = findCreatureById(result.creatures, c.id)
+      assert.strictEqual(newC.raidCharge > c.raidCharge, true)
+    })
+
+    it('配置されていない computer 側クリーチャーの raidCharge は増加しない', function() {
+      const result = increaseRaidChargeForEachComputerCreatures(
+        jobs, creatures, parties, battleFieldMatrix)
+      const newC = findCreatureById(result.creatures, c.id)
+      assert.strictEqual(newC.raidCharge, c.raidCharge)
+    })
+
+    it('配置されている player 側クリーチャーの raidCharge は増加しない', function() {
+      battleFieldMatrix[0][0].creatureId = p.id
+      const result = increaseRaidChargeForEachComputerCreatures(
+        jobs, creatures, parties, battleFieldMatrix)
+      const newP = findCreatureById(result.creatures, p.id)
+      assert.strictEqual(newP.raidCharge, p.raidCharge)
     })
   })
 })

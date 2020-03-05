@@ -406,6 +406,7 @@ export const creatureUtils = {
     const job = findJobById(jobs, creature.jobId)
     return job.raidPower
   },
+  // TODO: update -> alter
   updateLifePoints: (creature: Creature, jobs: Job[], points: number): Creature => {
     const maxLifePoints = creatureUtils.getMaxLifePoints(creature, jobs)
     return {
@@ -413,12 +414,18 @@ export const creatureUtils = {
       lifePoints: Math.min(Math.max(creature.lifePoints + points, 0), maxLifePoints),
     }
   },
+  // TODO: update -> alter
   updateRaidCharge: (creature: Creature, jobs: Job[], turns: number): Creature => {
     const interval = creatureUtils.getRaidInterval(creature, jobs)
     return {
       ...creature,
       raidCharge: Math.min(Math.max(creature.raidCharge + turns, 0), interval),
     }
+  },
+  updateRaidChargeWithTurnProgress: (creature: Creature, jobs: Job[]): Creature => {
+    const interval = creatureUtils.getRaidInterval(creature, jobs)
+    const delta = creature.raidCharge === interval ? -creature.raidCharge : 1
+    return creatureUtils.updateRaidCharge(creature, jobs, delta)
   },
   isDead: (creature: Creature): boolean => creature.lifePoints === 0,
   canAct: (creature: Creature): boolean => !creatureUtils.isDead(creature),

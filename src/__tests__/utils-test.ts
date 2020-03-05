@@ -569,5 +569,30 @@ describe('utils', function() {
         assert.strictEqual(creatureUtils.updateRaidCharge(creature, jobs, 3).raidCharge, 2)
       })
     })
+
+    describe('updateRaidChargeWithTurnProgress', function() {
+      const jobs = [
+        {
+          ...createJob(),
+          raidInterval: 3,
+        },
+      ]
+
+      it('raidCharge が raidInterval より小さいときは 1 を加算する', function() {
+        const creature = {
+          ...createCreature(),
+          raidCharge: 2,
+        }
+        assert.strictEqual(creatureUtils.updateRaidChargeWithTurnProgress(creature, jobs).raidCharge, 3)
+      })
+
+      it('raidCharge が raidInterval と等しいときは 0 へ更新する', function() {
+        const creature = {
+          ...createCreature(),
+          raidCharge: 3,
+        }
+        assert.strictEqual(creatureUtils.updateRaidChargeWithTurnProgress(creature, jobs).raidCharge, 0)
+      })
+    })
   })
 })

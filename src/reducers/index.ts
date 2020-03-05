@@ -24,6 +24,7 @@ import {
 } from '../utils'
 import {
   determineVictoryOrDefeat,
+  increaseRaidChargeForEachComputerCreatures,
   invokeSkill,
   invokeNormalAttack,
   placePlayerFactionCreature,
@@ -266,6 +267,17 @@ export function proceedTurn(
   const newBattlePage = produce(ensureBattlePage(state), draft => {
     if (!draft.game.completedNormalAttackPhase) {
       throw new Error('The normal-attack phase must be completed.')
+    }
+
+    // computer 側クリーチャーの襲撃充電数の自然増加を行う。
+    draft.game = {
+      ...draft.game,
+      ...increaseRaidChargeForEachComputerCreatures(
+        draft.game.jobs,
+        draft.game.creatures,
+        draft.game.parties,
+        draft.game.battleFieldMatrix,
+      ),
     }
 
     // 予約されているクリーチャーの出現が実現する。
