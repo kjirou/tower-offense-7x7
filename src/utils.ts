@@ -12,6 +12,8 @@ export type Job = {
   attackPower: number,
   id: string,
   maxLifePoints: number,
+  raidInterval: number,
+  raidPower: number,
 }
 
 // This is the so-called “Active Skill”.
