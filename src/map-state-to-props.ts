@@ -15,6 +15,7 @@ import {
   GlobalPosition,
   SkillCategoryId,
   areGlobalPositionsEqual,
+  creatureUtils,
   determineRelationshipBetweenFactions,
   findCardByCreatureId,
   findCreatureById,
@@ -26,10 +27,6 @@ import {
   selectBattleFieldElement,
   selectCardOnPlayersHand,
 } from './reducers'
-// TODO: 直接読み込まない。
-import {
-  creatureUtils,
-} from './reducers/utils'
 
 type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>
 

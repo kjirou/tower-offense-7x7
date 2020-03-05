@@ -13,6 +13,7 @@ import {
   Party,
   areGlobalPositionsEqual,
   choiceElementsAtRandom,
+  creatureUtils,
   determineRelationshipBetweenFactions,
   ensureBattlePage,
   findBattleFieldElementByCreatureId,
@@ -22,7 +23,6 @@ import {
   pickBattleFieldElementsWhereCreatureExists,
 } from '../utils'
 import {
-  creatureUtils,
   determineVictoryOrDefeat,
   invokeSkill,
   invokeNormalAttack,

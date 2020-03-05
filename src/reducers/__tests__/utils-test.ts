@@ -10,6 +10,7 @@ import {
   CreatureAppearance,
   Party,
   createBattleFieldMatrix,
+  creatureUtils,
   ensureBattlePage,
   findCreatureById,
 } from '../../utils'
@@ -20,7 +21,6 @@ import {
   findFirstAlly,
 } from '../../test-utils'
 import {
-  creatureUtils,
   determineVictoryOrDefeat,
   doesPlayerHaveDefeat,
   doesPlayerHaveVictory,
@@ -33,63 +33,6 @@ import {
 } from '../utils'
 
 describe('reducers/utils', function() {
-  describe('creatureUtils', function() {
-    describe('getAttackPower', function() {
-      const jobs = [
-        {
-          ...createJob(),
-          attackPower: 2,
-        },
-      ]
-
-      it('_attackPowerForTest が存在しているときはその値を優先して返す', function() {
-        const creature = {
-          ...createCreature(),
-          _attackPowerForTest: 99,
-        }
-        assert.strictEqual(creatureUtils.getAttackPower(creature, jobs), 99)
-      })
-    })
-
-    describe('getMaxLifePoints', function() {
-      const jobs = [
-        {
-          ...createJob(),
-          maxLifePoints: 2,
-        },
-      ]
-
-      it('_maxLifePointsForTest が存在しているときはその値を優先して返す', function() {
-        const creature = {
-          ...createCreature(),
-          _maxLifePointsForTest: 99,
-        }
-        assert.strictEqual(creatureUtils.getMaxLifePoints(creature, jobs), 99)
-      })
-    })
-
-    describe('updateLifePoints', function() {
-      const jobs = [
-        {
-          ...createJob(),
-          maxLifePoints: 2,
-        },
-      ]
-      const creature = {
-        ...createCreature(),
-        lifePoints: 2,
-      }
-
-      it('lifePoints は 0 未満にならない', function() {
-        assert.strictEqual(creatureUtils.updateLifePoints(creature, jobs, -3).lifePoints, 0)
-      })
-
-      it('lifePoints は maxLifePoints を超えない', function() {
-        assert.strictEqual(creatureUtils.updateLifePoints(creature, jobs, 1).lifePoints, 2)
-      })
-    })
-  })
-
   describe('doesPlayerHaveVictory', function() {
     const parties: Party[] = [
       {factionId: 'player', creatureIds: ['x']},

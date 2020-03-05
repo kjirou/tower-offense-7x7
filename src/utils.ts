@@ -376,3 +376,37 @@ export function findCardUnderCursor(cards: Card[], cursor: Cursor): Card | undef
   }
   return undefined
 }
+
+export const creatureUtils = {
+  getAttackPower: (creature: Creature, jobs: Job[]): number => {
+    if (creature._attackPowerForTest !== undefined) {
+      return creature._attackPowerForTest
+    }
+    const job = findJobById(jobs, creature.jobId)
+    return job.attackPower
+  },
+  getMaxLifePoints: (creature: Creature, jobs: Job[]): number => {
+    if (creature._maxLifePointsForTest !== undefined) {
+      return creature._maxLifePointsForTest
+    }
+    const job = findJobById(jobs, creature.jobId)
+    return job.maxLifePoints
+  },
+  getRaidPower: (creature: Creature, jobs: Job[]): number => {
+    const job = findJobById(jobs, creature.jobId)
+    return job.raidPower
+  },
+  getRaidInterval: (creature: Creature, jobs: Job[]): number => {
+    const job = findJobById(jobs, creature.jobId)
+    return job.raidInterval
+  },
+  isDead: (creature: Creature): boolean => creature.lifePoints === 0,
+  canAct: (creature: Creature): boolean => !creatureUtils.isDead(creature),
+  updateLifePoints: (creature: Creature, jobs: Job[], points: number): Creature => {
+    const maxLifePoints = creatureUtils.getMaxLifePoints(creature, jobs)
+    return {
+      ...creature,
+      lifePoints: Math.min(Math.max(creature.lifePoints + points, 0), maxLifePoints),
+    }
+  },
+}
