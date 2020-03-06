@@ -25,6 +25,7 @@ export type Skill = {
 export type Creature = {
   _attackPowerForTest?: number,
   _raidIntervalForTest?: number,
+  _raidPowerForTest?: number,
   _maxLifePointsForTest?: number,
   id: string,
   jobId: string,
@@ -407,6 +408,9 @@ export const creatureUtils = {
     return job.raidInterval
   },
   getRaidPower: (creature: Creature, jobs: Job[]): number => {
+    if (creature._raidPowerForTest !== undefined) {
+      return creature._raidPowerForTest
+    }
     const job = findJobById(jobs, creature.jobId)
     return job.raidPower
   },
@@ -431,4 +435,7 @@ export const creatureUtils = {
   },
   isDead: (creature: Creature): boolean => creature.lifePoints === 0,
   canAct: (creature: Creature): boolean => !creatureUtils.isDead(creature),
+  isRaidChageFull: (creature: Creature, jobs: Job[]): boolean => {
+    return creatureUtils.getRaidInterval(creature, jobs) === creature.raidCharge
+  },
 }

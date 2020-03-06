@@ -207,6 +207,55 @@ describe('reducers/index', function() {
         assert.strictEqual(newCardsInDeck[newCardsInDeck.length - 1].creatureId, a.id)
       })
     })
+
+    describe('襲撃の充電が満タンな computer 側クリーチャーが配置されているとき', function() {
+      let state: ApplicationState
+      let battlePage: BattlePage
+      let c: Creature
+      let p: Creature
+
+      beforeEach(function() {
+        state = createStateDisplayBattlePageAtStartOfGame()
+        battlePage = ensureBattlePage(state)
+        c = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
+        c._raidIntervalForTest = 1
+        c.raidCharge = 1
+        c._raidPowerForTest = 1
+        p = findCreatureById(battlePage.game.creatures, battlePage.game.cardsOnPlayersHand[0].creatureId)
+        battlePage.game.battleFieldMatrix[0][0].creatureId = c.id
+      })
+
+      describe('player 側クリーチャーが通常攻撃の範囲内にいるとき', function() {
+        beforeEach(function() {
+          battlePage.game = {
+            ...battlePage.game,
+            ...placePlayerFactionCreature(
+              battlePage.game.battleFieldMatrix,
+              battlePage.game.cardsOnPlayersHand,
+              p.id,
+              {y: 0, x: 1},
+            )
+          }
+        })
+
+        it('本拠地は襲撃されない', function() {
+          const newState = runNormalAttackPhase(state)
+          const newBattlePage = ensureBattlePage(newState)
+          assert.strictEqual(newBattlePage.game.headquartersLifePoints, battlePage.game.headquartersLifePoints)
+        })
+      })
+
+      describe('player 側クリーチャーが通常攻撃の範囲内にいないとき', function() {
+        it('本拠地は襲撃される', function() {
+          const newState = runNormalAttackPhase(state)
+          const newBattlePage = ensureBattlePage(newState)
+          assert.strictEqual(
+            newBattlePage.game.headquartersLifePoints < battlePage.game.headquartersLifePoints,
+            true
+          )
+        })
+      })
+    })
   })
 
   describe('proceedTurn', function() {

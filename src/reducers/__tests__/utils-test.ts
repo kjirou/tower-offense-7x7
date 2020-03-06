@@ -27,6 +27,7 @@ import {
   doesPlayerHaveVictory,
   increaseRaidChargeForEachComputerCreatures,
   invokeNormalAttack,
+  invokeRaid,
   invokeSkill,
   placePlayerFactionCreature,
   refillCardsOnPlayersHand,
@@ -194,6 +195,20 @@ describe('reducers/utils', function() {
         const result = removeDeadCreatures(creatures, parties, battleFieldMatrix, [])
         assert.strictEqual(result.battleFieldMatrix[0][0].creatureId, creatures[0].id)
       })
+    })
+  })
+
+  describe('invokeRaid', function() {
+    it('headquartersLifePoints は 0 未満にならない', function() {
+      const jobs = [createJob()]
+      const creatures = [
+        {
+          ...createCreature(),
+          _raidPowerForTest: 2,
+        },
+      ]
+      const result = invokeRaid(jobs, creatures, creatures[0].id, 1)
+      assert.strictEqual(result.headquartersLifePoints, 0)
     })
   })
 

@@ -529,6 +529,23 @@ describe('utils', function() {
       })
     })
 
+    describe('getRaidPower', function() {
+      const jobs = [
+        {
+          ...createJob(),
+          raidPower: 2,
+        },
+      ]
+
+      it('_raidPowerForTest が存在しているときはその値を優先して返す', function() {
+        const creature = {
+          ...createCreature(),
+          _raidPowerForTest: 99,
+        }
+        assert.strictEqual(creatureUtils.getRaidPower(creature, jobs), 99)
+      })
+    })
+
     describe('getTurnsUntilRaid', function() {
       it('works', function() {
         const jobs = [

@@ -24,9 +24,11 @@ import {
 } from '../utils'
 import {
   determineVictoryOrDefeat,
+  findNormalAttackTargeteeCandidates,
   increaseRaidChargeForEachComputerCreatures,
-  invokeSkill,
   invokeNormalAttack,
+  invokeRaid,
+  invokeSkill,
   placePlayerFactionCreature,
   refillCardsOnPlayersHand,
   removeDeadCreatures,
@@ -216,40 +218,68 @@ export function runNormalAttackPhase(
 
     let gameBeingUpdated = {...game}
 
-    // 攻撃者リストをループしてそれぞれの通常攻撃を発動する。
+    // 攻撃者リストをループし、それぞれの通常攻撃または襲撃を発動する。
     attackerDataList.forEach((attackerData) => {
       const attackerCreatureId = attackerData.creature.id
 
       const attackerWithParty = findCreatureWithParty(
         gameBeingUpdated.creatures, gameBeingUpdated.parties, attackerCreatureId)
 
-      // 攻撃者が行動不能のときは通常攻撃を行わない。
+      // 攻撃者が行動不能のときは通常攻撃または襲撃を行わない。
       if (!creatureUtils.canAct(attackerWithParty.creature)) {
         return
       }
 
-      // 通常攻撃を行う。
-      gameBeingUpdated = {
-        ...gameBeingUpdated,
-        ...invokeNormalAttack(
-          gameBeingUpdated.jobs,
-          gameBeingUpdated.creatures,
-          gameBeingUpdated.parties,
-          gameBeingUpdated.battleFieldMatrix,
-          attackerCreatureId,
-        ),
-      }
+      // 通常攻撃の範囲内に敵が存在するかを判定する。
+      const hasTargeteeCandidates = findNormalAttackTargeteeCandidates(
+        gameBeingUpdated.jobs,
+        gameBeingUpdated.creatures,
+        gameBeingUpdated.parties,
+        gameBeingUpdated.battleFieldMatrix,
+        attackerCreatureId,
+      ).length > 0
 
-      // 盤上から死亡したクリーチャーを削除する。
-      // 削除されたプレイヤーのクリーチャーは山札の末尾へ戻す。
-      gameBeingUpdated = {
-        ...gameBeingUpdated,
-        ...removeDeadCreatures(
-          gameBeingUpdated.creatures,
-          gameBeingUpdated.parties,
-          gameBeingUpdated.battleFieldMatrix,
-          gameBeingUpdated.cardsInDeck
-        )
+      // 通常攻撃の範囲内に対象が存在するとき。
+      if (hasTargeteeCandidates) {
+        // 通常攻撃を行う。
+        gameBeingUpdated = {
+          ...gameBeingUpdated,
+          ...invokeNormalAttack(
+            gameBeingUpdated.jobs,
+            gameBeingUpdated.creatures,
+            gameBeingUpdated.parties,
+            gameBeingUpdated.battleFieldMatrix,
+            attackerCreatureId,
+          ),
+        }
+
+        // 盤上から死亡したクリーチャーを削除する。
+        // 削除されたプレイヤーのクリーチャーは山札の末尾へ戻す。
+        gameBeingUpdated = {
+          ...gameBeingUpdated,
+          ...removeDeadCreatures(
+            gameBeingUpdated.creatures,
+            gameBeingUpdated.parties,
+            gameBeingUpdated.battleFieldMatrix,
+            gameBeingUpdated.cardsInDeck
+          )
+        }
+      // 通常攻撃の範囲内に対象が存在しない、
+      // かつ、computer 側クリーチャー、かつ、襲撃充電が満タンのとき。
+      } else if (
+        attackerData.party.factionId === 'computer' &&
+        creatureUtils.isRaidChageFull(attackerData.creature, game.jobs)
+      ) {
+        // 襲撃をする。
+        gameBeingUpdated = {
+          ...gameBeingUpdated,
+          ...invokeRaid(
+            gameBeingUpdated.jobs,
+            gameBeingUpdated.creatures,
+            attackerData.creature.id,
+            gameBeingUpdated.headquartersLifePoints,
+          ),
+        }
       }
     })
 

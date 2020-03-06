@@ -163,15 +163,13 @@ export function removeDeadCreatures(
   }
 }
 
-export function invokeNormalAttack(
+export function findNormalAttackTargeteeCandidates(
   jobs: Job[],
   creatures: Creature[],
   parties: Party[],
   battleFieldMatrix: BattleFieldMatrix,
   attackerCreatureId: Creature['id'],
-): {
-  creatures: Creature[],
-} {
+): CreatureWithPartyOnBattleFieldElement[] {
   const attackerWithParty = findCreatureWithParty(creatures, parties, attackerCreatureId)
 
   // 攻撃者情報を抽出する。
@@ -204,6 +202,31 @@ export function invokeNormalAttack(
     }
   }
 
+  return targeteeCandidatesData
+}
+
+export function invokeNormalAttack(
+  jobs: Job[],
+  creatures: Creature[],
+  parties: Party[],
+  battleFieldMatrix: BattleFieldMatrix,
+  attackerCreatureId: Creature['id'],
+): {
+  creatures: Creature[],
+} {
+  const attackerWithParty = findCreatureWithParty(creatures, parties, attackerCreatureId)
+
+  // 攻撃者情報を抽出する。
+  const attackerData: CreatureWithPartyOnBattleFieldElement = {
+    creature: attackerWithParty.creature,
+    party: attackerWithParty.party,
+    battleFieldElement: findBattleFieldElementByCreatureId(battleFieldMatrix, attackerCreatureId),
+  }
+
+  // 攻撃対象者候補である、射程範囲内で敵対関係のクリーチャー情報を抽出する。
+  const targeteeCandidatesData = findNormalAttackTargeteeCandidates(
+    jobs, creatures, parties, battleFieldMatrix, attackerData.creature.id)
+
   // 最大攻撃対象数を算出する。
   const dummyMaxNumberOfTargetees = 1
 
@@ -234,6 +257,20 @@ export function invokeNormalAttack(
 
   return {
     creatures: newCreatures,
+  }
+}
+
+export function invokeRaid(
+  jobs: Job[],
+  creatures: Creature[],
+  raiderCreatureId: Creature['id'],
+  headquartersLifePoints: Game['headquartersLifePoints'],
+): {
+  headquartersLifePoints: Game['headquartersLifePoints'],
+} {
+  const raider = findCreatureById(creatures, raiderCreatureId)
+  return {
+    headquartersLifePoints: Math.max(headquartersLifePoints - creatureUtils.getRaidPower(raider, jobs), 0),
   }
 }
 
