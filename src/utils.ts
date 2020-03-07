@@ -429,8 +429,7 @@ export const creatureUtils = {
     }
   },
   updateRaidChargeWithTurnProgress: (creature: Creature, jobs: Job[]): Creature => {
-    const interval = creatureUtils.getRaidInterval(creature, jobs)
-    const delta = creature.raidCharge === interval ? -creature.raidCharge : 1
+    const delta = creatureUtils.isRaidChageFull(creature, jobs) ? -creature.raidCharge : 1
     return creatureUtils.alterRaidCharge(creature, jobs, delta)
   },
   isDead: (creature: Creature): boolean => creature.lifePoints === 0,

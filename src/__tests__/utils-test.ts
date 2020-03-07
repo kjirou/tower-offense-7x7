@@ -604,6 +604,31 @@ describe('utils', function() {
       })
     })
 
+    describe('isRaidChageFull', function() {
+      const jobs = [
+        {
+          ...createJob(),
+          raidInterval: 3,
+        },
+      ]
+
+      it('raidCharge が raidInterval と等しいときは true を返す', function() {
+        const creature = {
+          ...createCreature(),
+          raidCharge: 3,
+        }
+        assert.strictEqual(creatureUtils.isRaidChageFull(creature, jobs), true)
+      })
+
+      it('raidCharge が raidInterval より小さいときは false を返す', function() {
+        const creature = {
+          ...createCreature(),
+          raidCharge: 2,
+        }
+        assert.strictEqual(creatureUtils.isRaidChageFull(creature, jobs), false)
+      })
+    })
+
     describe('updateRaidChargeWithTurnProgress', function() {
       const jobs = [
         {
@@ -612,20 +637,20 @@ describe('utils', function() {
         },
       ]
 
-      it('raidCharge が raidInterval より小さいときは 1 を加算する', function() {
-        const creature = {
-          ...createCreature(),
-          raidCharge: 2,
-        }
-        assert.strictEqual(creatureUtils.updateRaidChargeWithTurnProgress(creature, jobs).raidCharge, 3)
-      })
-
       it('raidCharge が raidInterval と等しいときは 0 へ更新する', function() {
         const creature = {
           ...createCreature(),
           raidCharge: 3,
         }
         assert.strictEqual(creatureUtils.updateRaidChargeWithTurnProgress(creature, jobs).raidCharge, 0)
+      })
+
+      it('raidCharge が raidInterval より小さいときは 1 を加算する', function() {
+        const creature = {
+          ...createCreature(),
+          raidCharge: 2,
+        }
+        assert.strictEqual(creatureUtils.updateRaidChargeWithTurnProgress(creature, jobs).raidCharge, 3)
       })
     })
   })
