@@ -38,6 +38,8 @@ export function createJob(): Job {
     id: 'dummy-job',
     attackPower: 1,
     maxLifePoints: 1,
+    raidInterval: 0,
+    raidPower: 1,
   }
 }
 
@@ -48,7 +50,9 @@ export function createCreature(): Creature {
     // TODO: jobs に存在するもののみに制約できるようにする。
     jobId: job.id,
     lifePoints: 1,
+    raidCharge: 0,
     skillIds: [],
+    normalAttackInvoked: false,
   }
 }
 
@@ -76,11 +80,7 @@ export function findFirstAlly(creatures: Creature[], parties: Party[], factionId
  */
 export function createStateDisplayBattlePageAtStartOfGame(): ApplicationState {
   const jobs = [
-    {
-      id: 'dummy-job',
-      attackPower: 1,
-      maxLifePoints: 1,
-    }
+    createJob(),
   ]
   const allies = Array.from({length: 10}).map(() => createCreature())
   const enemies = Array.from({length: 10}).map(() => createCreature())

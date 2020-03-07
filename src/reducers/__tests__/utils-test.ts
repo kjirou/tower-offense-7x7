@@ -1,15 +1,20 @@
 import * as assert from 'assert'
 import {
+  beforeEach,
   describe,
   it,
 } from 'mocha'
 
 import {
+  ApplicationState,
   BattleFieldMatrix,
+  BattlePage,
   Creature,
   CreatureAppearance,
+  Job,
   Party,
   createBattleFieldMatrix,
+  creatureUtils,
   ensureBattlePage,
   findCreatureById,
 } from '../../utils'
@@ -20,11 +25,12 @@ import {
   findFirstAlly,
 } from '../../test-utils'
 import {
-  creatureUtils,
   determineVictoryOrDefeat,
   doesPlayerHaveDefeat,
   doesPlayerHaveVictory,
+  increaseRaidChargeForEachComputerCreatures,
   invokeNormalAttack,
+  invokeRaid,
   invokeSkill,
   placePlayerFactionCreature,
   refillCardsOnPlayersHand,
@@ -33,63 +39,6 @@ import {
 } from '../utils'
 
 describe('reducers/utils', function() {
-  describe('creatureUtils', function() {
-    describe('getAttackPower', function() {
-      const jobs = [
-        {
-          ...createJob(),
-          attackPower: 2,
-        },
-      ]
-
-      it('_attackPowerForTest が存在しているときはその値を優先して返す', function() {
-        const creature = {
-          ...createCreature(),
-          _attackPowerForTest: 99,
-        }
-        assert.strictEqual(creatureUtils.getAttackPower(creature, jobs), 99)
-      })
-    })
-
-    describe('getMaxLifePoints', function() {
-      const jobs = [
-        {
-          ...createJob(),
-          maxLifePoints: 2,
-        },
-      ]
-
-      it('_maxLifePointsForTest が存在しているときはその値を優先して返す', function() {
-        const creature = {
-          ...createCreature(),
-          _maxLifePointsForTest: 99,
-        }
-        assert.strictEqual(creatureUtils.getMaxLifePoints(creature, jobs), 99)
-      })
-    })
-
-    describe('updateLifePoints', function() {
-      const jobs = [
-        {
-          ...createJob(),
-          maxLifePoints: 2,
-        },
-      ]
-      const creature = {
-        ...createCreature(),
-        lifePoints: 2,
-      }
-
-      it('lifePoints は 0 未満にならない', function() {
-        assert.strictEqual(creatureUtils.updateLifePoints(creature, jobs, -3).lifePoints, 0)
-      })
-
-      it('lifePoints は maxLifePoints を超えない', function() {
-        assert.strictEqual(creatureUtils.updateLifePoints(creature, jobs, 1).lifePoints, 2)
-      })
-    })
-  })
-
   describe('doesPlayerHaveVictory', function() {
     const parties: Party[] = [
       {factionId: 'player', creatureIds: ['x']},
@@ -252,48 +201,92 @@ describe('reducers/utils', function() {
     })
   })
 
+  describe('invokeRaid', function() {
+    it('headquartersLifePoints は 0 未満にならない', function() {
+      const jobs = [createJob()]
+      const creatures = [
+        {
+          ...createCreature(),
+          _raidPowerForTest: 2,
+        },
+      ]
+      const result = invokeRaid(jobs, creatures, creatures[0].id, 1)
+      assert.strictEqual(result.headquartersLifePoints, 0)
+    })
+  })
+
   describe('invokeNormalAttack', function() {
-    describe('When an attacker is adjacent to an enemy', function() {
-      it('can attack the enemy', function() {
-        const state = createStateDisplayBattlePageAtStartOfGame()
-        const battlePage = ensureBattlePage(state)
-        const attacker = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
-        const enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
+    describe('攻撃者の通常攻撃範囲内に敵が配置されている状況で、通常攻撃を行なったとき', function() {
+      let state: ApplicationState
+      let battlePage: BattlePage
+      let attacker: Creature
+      let enemy: Creature
+      let result: ReturnType<typeof invokeNormalAttack>
+
+      beforeEach(function() {
+        state = createStateDisplayBattlePageAtStartOfGame()
+        battlePage = ensureBattlePage(state)
+        attacker = findCreatureById(battlePage.game.creatures, battlePage.game.cardsOnPlayersHand[0].creatureId)
         attacker._attackPowerForTest = 1
+        enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
+        enemy._maxLifePointsForTest = 2
         enemy.lifePoints = 2
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][1].creatureId = enemy.id
-        const result = invokeNormalAttack(
+        result = invokeNormalAttack(
           battlePage.game.jobs,
           battlePage.game.creatures,
           battlePage.game.parties,
           battlePage.game.battleFieldMatrix,
           attacker.id,
         )
+      })
+
+      it('敵へダメージを与える', function() {
         const newEnemy = findCreatureById(result.creatures, enemy.id)
         assert.strictEqual(newEnemy.lifePoints < enemy.lifePoints, true)
       })
+
+      it('攻撃者の通常攻撃発動済みフラグが true である', function() {
+        const newAttacker = findCreatureById(result.creatures, attacker.id)
+        assert.strictEqual(newAttacker.normalAttackInvoked, true)
+      })
     })
 
-    describe('When an attacker and its enemy are two distances apart', function() {
-      it('can not attack the enemy', function() {
-        const state = createStateDisplayBattlePageAtStartOfGame()
-        const battlePage = ensureBattlePage(state)
-        const attacker = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
-        const enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
+    describe('攻撃者の通常攻撃範囲外に敵が配置されている状況で、通常攻撃を行なったとき', function() {
+      let state: ApplicationState
+      let battlePage: BattlePage
+      let attacker: Creature
+      let enemy: Creature
+      let result: ReturnType<typeof invokeNormalAttack>
+
+      beforeEach(function() {
+        state = createStateDisplayBattlePageAtStartOfGame()
+        battlePage = ensureBattlePage(state)
+        attacker = findCreatureById(battlePage.game.creatures, battlePage.game.cardsOnPlayersHand[0].creatureId)
         attacker._attackPowerForTest = 1
+        enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
+        enemy._maxLifePointsForTest = 2
         enemy.lifePoints = 2
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][2].creatureId = enemy.id
-        const result = invokeNormalAttack(
+        result = invokeNormalAttack(
           battlePage.game.jobs,
           battlePage.game.creatures,
           battlePage.game.parties,
           battlePage.game.battleFieldMatrix,
           attacker.id,
         )
+      })
+
+      it('敵へダメージを与えない', function() {
         const newEnemy = findCreatureById(result.creatures, enemy.id)
         assert.strictEqual(newEnemy.lifePoints, enemy.lifePoints)
+      })
+
+      it('攻撃者の通常攻撃発動済みフラグが false である', function() {
+        const newAttacker = findCreatureById(result.creatures, attacker.id)
+        assert.strictEqual(newAttacker.normalAttackInvoked, false)
       })
     })
   })
@@ -397,6 +390,91 @@ describe('reducers/utils', function() {
         matrix, creatureAppearances, 2, (elements, num) => elements.slice(0, num))
       assert.strictEqual(result.battleFieldMatrix[0][0].reservedCreatureId, 'a')
       assert.strictEqual(result.battleFieldMatrix[0][1].reservedCreatureId, 'b')
+    })
+  })
+
+  describe('increaseRaidChargeForEachComputerCreatures', function() {
+    let jobs: Job[]
+    let creatures: Creature[]
+    let c: Creature
+    let p: Creature
+    let parties: Party[]
+    let battleFieldMatrix: BattleFieldMatrix
+
+    beforeEach(function() {
+      jobs = [
+        {
+          ...createJob(),
+          raidInterval: 2,
+        },
+      ]
+      c = {
+        ...createCreature(),
+        raidCharge: 0,
+      },
+      p = {
+        ...createCreature(),
+        raidCharge: 0,
+      },
+      creatures = [c, p]
+      parties = [
+        {
+          factionId: 'computer',
+          creatureIds: [c.id],
+        },
+        {
+          factionId: 'player',
+          creatureIds: [p.id],
+        },
+      ]
+      battleFieldMatrix = createBattleFieldMatrix(1, 1)
+    })
+
+    it('配置されている player 側クリーチャーの raidCharge は増加しない', function() {
+      battleFieldMatrix[0][0].creatureId = p.id
+      const result = increaseRaidChargeForEachComputerCreatures(
+        jobs, creatures, parties, battleFieldMatrix)
+      const newP = findCreatureById(result.creatures, p.id)
+      assert.strictEqual(newP.raidCharge, p.raidCharge)
+    })
+
+    it('配置されていない computer 側クリーチャーの raidCharge は増加しない', function() {
+      const result = increaseRaidChargeForEachComputerCreatures(
+        jobs, creatures, parties, battleFieldMatrix)
+      const newC = findCreatureById(result.creatures, c.id)
+      assert.strictEqual(newC.raidCharge, c.raidCharge)
+    })
+
+    describe('配置されている computer 側クリーチャーが存在するとき', function() {
+      beforeEach(function() {
+        battleFieldMatrix[0][0].creatureId = c.id
+      })
+
+      describe('そのクリーチャーの通常攻撃発動済みフラグが false のとき', function() {
+        beforeEach(function() {
+          c.normalAttackInvoked = false
+        })
+
+        it('そのクリーチャーの raidCharge を増加する', function() {
+          const result = increaseRaidChargeForEachComputerCreatures(
+            jobs, creatures, parties, battleFieldMatrix)
+          const newC = findCreatureById(result.creatures, c.id)
+          assert.strictEqual(newC.raidCharge > c.raidCharge, true)
+        })
+      })
+
+      describe('そのクリーチャーの通常攻撃発動済みフラグが true のとき', function() {
+        beforeEach(function() {
+          c.normalAttackInvoked = true
+        })
+
+        it('そのクリーチャーの raidCharge は変化しない', function() {
+          const result = increaseRaidChargeForEachComputerCreatures(
+            jobs, creatures, parties, battleFieldMatrix)
+          const newC = findCreatureById(result.creatures, c.id)
+          assert.strictEqual(newC.raidCharge, c.raidCharge)
+        })
+      })
     })
   })
 })

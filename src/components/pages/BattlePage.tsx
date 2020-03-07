@@ -6,6 +6,7 @@ import {
 } from '../../utils'
 
 type MetaInformationBarProps = {
+  headquartersLifePoints: number,
   turnNumber: number,
 }
 
@@ -31,6 +32,17 @@ const MetaInformationBar: React.FC<MetaInformationBarProps> = (props) => {
           backgroundColor: 'silver',
         }}
       >{props.turnNumber}</div>
+      <div
+        style={{
+          marginLeft: '2px',
+          width: '48px',
+          height: '48px',
+          lineHeight: '48px',
+          fontSize: '24px',
+          textAlign: 'center',
+          backgroundColor: 'silver',
+        }}
+      >{props.headquartersLifePoints}</div>
     </div>
   )
 }
@@ -40,6 +52,7 @@ export type CreatureOnElementProps = {
   image: string,
   isReserved: boolean,
   lifePoints: string,
+  turnsUntilRaid: number,
 }
 
 const CreatureOnElement: React.FC<CreatureOnElementProps> = (props) => {
@@ -62,11 +75,35 @@ const CreatureOnElement: React.FC<CreatureOnElementProps> = (props) => {
           opacity: props.isReserved ? 0.5 : 1,
         }}
       >{props.image}</div>
+      {
+        props.factionRelationshipId === 'enemy'
+          ? <div
+            style={{
+              position: 'absolute',
+              top: '0',
+              right: '0',
+              paddingLeft: '1px',
+              paddingRight: '1px',
+              fontSize: '10px',
+              lineHeight: '12px',
+              textAlign: 'right',
+              color: '#000',
+              backgroundColor: props.turnsUntilRaid === 0
+                ? 'red'
+                : props.turnsUntilRaid === 1
+                  ? 'yellow'
+                  : '#fff'
+            }}
+          >{props.turnsUntilRaid}</div>
+          : null
+      }
       <div
         style={{
           position: 'absolute',
           bottom: '0',
-          right: '1px',
+          right: '0',
+          paddingLeft: '1px',
+          paddingRight: '1px',
           fontSize: '10px',
           lineHeight: '12px',
           textAlign: 'right',
@@ -342,6 +379,7 @@ export type Props = {
     updatesAreProhibited: boolean,
   },
   cardsOnPlayersHand: CardsOnPlayersHandProps,
+  headquartersLifePoints: MetaInformationBarProps['headquartersLifePoints'],
   progressButton: FooterProps['progressButton'],
   turnNumber: MetaInformationBarProps['turnNumber'],
 }
@@ -356,7 +394,10 @@ export const BattlePage: React.FC<Props> = (props) => {
 
   return (
     <div style={style}>
-      <MetaInformationBar turnNumber={props.turnNumber} />
+      <MetaInformationBar
+        turnNumber={props.turnNumber}
+        headquartersLifePoints={props.headquartersLifePoints}
+      />
       <BattleFieldBoard {...props.battleFieldBoard} />
       <SquareMonitor />
       <CardsOnPlayersHand {...props.cardsOnPlayersHand} />

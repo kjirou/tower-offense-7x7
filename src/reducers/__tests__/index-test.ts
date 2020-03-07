@@ -1,5 +1,9 @@
 import * as assert from 'assert'
-import {describe, it, beforeEach} from 'mocha'
+import {
+  beforeEach,
+  describe,
+  it,
+} from 'mocha'
 
 import {
   ApplicationState,
@@ -15,6 +19,7 @@ import {
   findFirstAlly,
 } from '../../test-utils'
 import {
+  proceedTurn,
   runNormalAttackPhase,
   selectBattleFieldElement,
 } from '../index'
@@ -205,6 +210,85 @@ describe('reducers/index', function() {
         assert.strictEqual(newCardsInDeck.length > cardsInDeck.length, true)
         assert.strictEqual(newCardsInDeck[newCardsInDeck.length - 1].creatureId, a.id)
       })
+    })
+
+    describe('襲撃の充電が満タンな computer 側クリーチャーが配置されているとき', function() {
+      let state: ApplicationState
+      let battlePage: BattlePage
+      let c: Creature
+      let p: Creature
+
+      beforeEach(function() {
+        state = createStateDisplayBattlePageAtStartOfGame()
+        battlePage = ensureBattlePage(state)
+        c = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
+        c._raidIntervalForTest = 1
+        c.raidCharge = 1
+        c._raidPowerForTest = 1
+        p = findCreatureById(battlePage.game.creatures, battlePage.game.cardsOnPlayersHand[0].creatureId)
+        battlePage.game.battleFieldMatrix[0][0].creatureId = c.id
+      })
+
+      describe('player 側クリーチャーが通常攻撃の範囲内にいるとき', function() {
+        beforeEach(function() {
+          battlePage.game = {
+            ...battlePage.game,
+            ...placePlayerFactionCreature(
+              battlePage.game.battleFieldMatrix,
+              battlePage.game.cardsOnPlayersHand,
+              p.id,
+              {y: 0, x: 1},
+            )
+          }
+        })
+
+        it('本拠地は襲撃されない', function() {
+          const newState = runNormalAttackPhase(state)
+          const newBattlePage = ensureBattlePage(newState)
+          assert.strictEqual(newBattlePage.game.headquartersLifePoints, battlePage.game.headquartersLifePoints)
+        })
+      })
+
+      describe('player 側クリーチャーが通常攻撃の範囲内にいないとき', function() {
+        it('本拠地は襲撃される', function() {
+          const newState = runNormalAttackPhase(state)
+          const newBattlePage = ensureBattlePage(newState)
+          assert.strictEqual(
+            newBattlePage.game.headquartersLifePoints < battlePage.game.headquartersLifePoints,
+            true
+          )
+        })
+      })
+    })
+  })
+
+  describe('proceedTurn', function() {
+    let state: ApplicationState
+    let battlePage: BattlePage
+
+    beforeEach(function() {
+      state = createStateDisplayBattlePageAtStartOfGame()
+      battlePage = ensureBattlePage(state)
+    })
+
+    it('予約中の computer 側クリーチャーの raidCharge は自然増加しない', function() {
+      const a = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
+      a._raidIntervalForTest = 1
+      a.raidCharge = 0
+      battlePage.game.battleFieldMatrix[0][0].reservedCreatureId = a.id
+      const newState = proceedTurn(runNormalAttackPhase(state))
+      const newBattlePage = ensureBattlePage(newState)
+      const newA = findCreatureById(newBattlePage.game.creatures, a.id)
+      assert.strictEqual(newA.raidCharge, 0)
+    })
+
+    it('クリーチャーの通常攻撃発動済みフラグを一律 false へ更新する', function() {
+      const a = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
+      a.normalAttackInvoked = true
+      const newState = proceedTurn(runNormalAttackPhase(state))
+      const newBattlePage = ensureBattlePage(newState)
+      const newA = findCreatureById(newBattlePage.game.creatures, a.id)
+      assert.strictEqual(newA.normalAttackInvoked, false)
     })
   })
 })

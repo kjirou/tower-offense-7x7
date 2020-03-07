@@ -15,6 +15,7 @@ import {
   GlobalPosition,
   SkillCategoryId,
   areGlobalPositionsEqual,
+  creatureUtils,
   determineRelationshipBetweenFactions,
   findCardByCreatureId,
   findCreatureById,
@@ -79,6 +80,7 @@ function mapBattlePageStateToProps(
           factionRelationshipId: determineRelationshipBetweenFactions(
             'player', creatureWithParty.party.factionId),
           lifePoints: creatureWithParty.creature.lifePoints.toString(),
+          turnsUntilRaid: creatureUtils.getTurnsUntilRaid(creatureWithParty.creature, game.jobs),
         }
       }
 
@@ -152,6 +154,7 @@ function mapBattlePageStateToProps(
     cardsOnPlayersHand: {
       cards: cardsProps
     },
+    headquartersLifePoints: game.headquartersLifePoints,
     turnNumber: game.turnNumber,
     progressButton,
   }

@@ -13,6 +13,7 @@ import {
   Party,
   areGlobalPositionsEqual,
   choiceElementsAtRandom,
+  creatureUtils,
   determineRelationshipBetweenFactions,
   ensureBattlePage,
   findBattleFieldElementByCreatureId,
@@ -22,10 +23,11 @@ import {
   pickBattleFieldElementsWhereCreatureExists,
 } from '../utils'
 import {
-  creatureUtils,
   determineVictoryOrDefeat,
-  invokeSkill,
+  increaseRaidChargeForEachComputerCreatures,
   invokeNormalAttack,
+  invokeRaid,
+  invokeSkill,
   placePlayerFactionCreature,
   refillCardsOnPlayersHand,
   removeDeadCreatures,
@@ -215,19 +217,19 @@ export function runNormalAttackPhase(
 
     let gameBeingUpdated = {...game}
 
-    // 攻撃者リストをループしてそれぞれの通常攻撃を発動する。
+    // 攻撃者リストをループし、それぞれの通常攻撃または襲撃を発動する。
     attackerDataList.forEach((attackerData) => {
       const attackerCreatureId = attackerData.creature.id
 
       const attackerWithParty = findCreatureWithParty(
         gameBeingUpdated.creatures, gameBeingUpdated.parties, attackerCreatureId)
 
-      // 攻撃者が行動不能のときは通常攻撃を行わない。
+      // 攻撃者が行動不能のときは通常攻撃または襲撃を行わない。
       if (!creatureUtils.canAct(attackerWithParty.creature)) {
         return
       }
 
-      // 通常攻撃を行う。
+      // 通常攻撃を試みる。
       gameBeingUpdated = {
         ...gameBeingUpdated,
         ...invokeNormalAttack(
@@ -237,6 +239,26 @@ export function runNormalAttackPhase(
           gameBeingUpdated.battleFieldMatrix,
           attackerCreatureId,
         ),
+      }
+
+      // computer 側クリーチャー、かつ、襲撃の充電が満タン、かつ、通常攻撃を行わなかった、とき。
+      const attackerWithPartyAfterAttack = findCreatureWithParty(
+        gameBeingUpdated.creatures, gameBeingUpdated.parties, attackerCreatureId)
+      if (
+        attackerWithPartyAfterAttack.party.factionId === 'computer' &&
+        creatureUtils.isRaidChageFull(attackerWithPartyAfterAttack.creature, game.jobs) &&
+        attackerWithPartyAfterAttack.creature.normalAttackInvoked === false
+      ) {
+        // 襲撃を行う。
+        gameBeingUpdated = {
+          ...gameBeingUpdated,
+          ...invokeRaid(
+            gameBeingUpdated.jobs,
+            gameBeingUpdated.creatures,
+            attackerWithPartyAfterAttack.creature.id,
+            gameBeingUpdated.headquartersLifePoints,
+          ),
+        }
       }
 
       // 盤上から死亡したクリーチャーを削除する。
@@ -266,6 +288,26 @@ export function proceedTurn(
   const newBattlePage = produce(ensureBattlePage(state), draft => {
     if (!draft.game.completedNormalAttackPhase) {
       throw new Error('The normal-attack phase must be completed.')
+    }
+
+    // computer 側クリーチャーの襲撃充電数の自然増加を行う。
+    draft.game = {
+      ...draft.game,
+      ...increaseRaidChargeForEachComputerCreatures(
+        draft.game.jobs,
+        draft.game.creatures,
+        draft.game.parties,
+        draft.game.battleFieldMatrix,
+      ),
+    }
+
+    // 通常攻撃発動済みフラグを false へ戻す。
+    draft.game = {
+      ...draft.game,
+      creatures: draft.game.creatures.map(creature => ({
+        ...creature,
+        normalAttackInvoked: false,
+      }))
     }
 
     // 予約されているクリーチャーの出現が実現する。

@@ -17,6 +17,7 @@ import {
   Skill,
   VictoryOrDefeatId,
   choiceElementsAtRandom,
+  creatureUtils,
   determineRelationshipBetweenFactions,
   findBattleFieldElementByCreatureId,
   findBattleFieldElementsByDistance,
@@ -41,32 +42,6 @@ type SkillProcessContext = {
 type SkillProcessResult = {
   battleFieldMatrix: BattleFieldMatrix,
   creatures: Creature[],
-}
-
-export const creatureUtils = {
-  canAct: (creature: Creature): boolean => !creatureUtils.isDead(creature),
-  getAttackPower: (creature: Creature, jobs: Job[]): number => {
-    if (creature._attackPowerForTest !== undefined) {
-      return creature._attackPowerForTest
-    }
-    const job = findJobById(jobs, creature.jobId)
-    return job.attackPower
-  },
-  getMaxLifePoints: (creature: Creature, jobs: Job[]): number => {
-    if (creature._maxLifePointsForTest !== undefined) {
-      return creature._maxLifePointsForTest
-    }
-    const job = findJobById(jobs, creature.jobId)
-    return job.maxLifePoints
-  },
-  isDead: (creature: Creature): boolean => creature.lifePoints === 0,
-  updateLifePoints: (creature: Creature, jobs: Job[], points: number): Creature => {
-    const maxLifePoints = creatureUtils.getMaxLifePoints(creature, jobs)
-    return {
-      ...creature,
-      lifePoints: Math.min(Math.max(creature.lifePoints + points, 0), maxLifePoints),
-    }
-  },
 }
 
 export function doesPlayerHaveVictory(
@@ -188,15 +163,16 @@ export function removeDeadCreatures(
   }
 }
 
-export function invokeNormalAttack(
+// TODO: creature.normalAttackInvoked を作ったことで、現在は関数に分けることが不要になっている。不要なら消す。
+//       元々は、通常攻撃を試みた際に実行されるのか、を予測できるように範囲内判定だけ分離した。
+//       今は上記フラグに集約したので不要になった。また、同じ抽出を重複して行なっているので煩雑になっている。
+export function findNormalAttackTargeteeCandidates(
   jobs: Job[],
   creatures: Creature[],
   parties: Party[],
   battleFieldMatrix: BattleFieldMatrix,
   attackerCreatureId: Creature['id'],
-): {
-  creatures: Creature[],
-} {
+): CreatureWithPartyOnBattleFieldElement[] {
   const attackerWithParty = findCreatureWithParty(creatures, parties, attackerCreatureId)
 
   // 攻撃者情報を抽出する。
@@ -229,36 +205,92 @@ export function invokeNormalAttack(
     }
   }
 
-  // 最大攻撃対象数を算出する。
-  const dummyMaxNumberOfTargetees = 1
+  return targeteeCandidatesData
+}
 
-  // 優先順位を考慮して攻撃対象を決定する。
-  const targeteesData = targeteeCandidatesData
-    .slice()
-    // TODO: Priority calculation
-    .sort((a, b) => {
-      return -1
-    })
-    .slice(0, dummyMaxNumberOfTargetees)
+export function invokeNormalAttack(
+  jobs: Job[],
+  creatures: Creature[],
+  parties: Party[],
+  battleFieldMatrix: BattleFieldMatrix,
+  attackerCreatureId: Creature['id'],
+): {
+  creatures: Creature[],
+} {
+  const attackerWithParty = findCreatureWithParty(creatures, parties, attackerCreatureId)
 
-  // 影響を決定する。
-  // NOTE: このループ内で攻撃対象が死亡するなどしても、対象から除外しなくても良い。
-  //       通常攻撃の副作用で攻撃者に有利な効果が発生することもあり、それが意図せずに発生しないと損な感じが強そう。
-  //       それにより、死亡しているクリーチャーも攻撃対象に含まれることになる。
-  const affectedCreatures: Creature[] = targeteesData
-    .map(targeteeData => {
-      const damage = creatureUtils.getAttackPower(attackerData.creature, jobs)
-      return creatureUtils.updateLifePoints(targeteeData.creature, jobs, -damage)
-    })
+  // 攻撃者情報を抽出する。
+  const attackerData: CreatureWithPartyOnBattleFieldElement = {
+    creature: attackerWithParty.creature,
+    party: attackerWithParty.party,
+    battleFieldElement: findBattleFieldElementByCreatureId(battleFieldMatrix, attackerCreatureId),
+  }
 
-  // コンテキストへ反映する。
-  const newCreatures = creatures.map(creature => {
+  if (attackerData.creature.normalAttackInvoked) {
+    throw new Error('The creature had already invoked a normal-attack.')
+  }
+
+  // 攻撃対象者候補である、射程範囲内で敵対関係のクリーチャー情報を抽出する。
+  const targeteeCandidatesData = findNormalAttackTargeteeCandidates(
+    jobs, creatures, parties, battleFieldMatrix, attackerData.creature.id)
+
+  let newCreatures = creatures.slice()
+
+  // 範囲内に攻撃対象がいたとき。
+  if (targeteeCandidatesData.length > 0) {
+    // 最大攻撃対象数を算出する。
+    const dummyMaxNumberOfTargetees = 1
+
+    // 優先順位を考慮して攻撃対象を決定する。
+    const targeteesData = targeteeCandidatesData
+      .slice()
+      // TODO: Priority calculation
+      .sort((a, b) => {
+        return -1
+      })
+      .slice(0, dummyMaxNumberOfTargetees)
+
+    // 影響を決定する。
+    // NOTE: このループ内で攻撃対象が死亡するなどしても、対象から除外しなくても良い。
+    //       通常攻撃の副作用で攻撃者に有利な効果が発生することもあり、それが意図せずに発生しないと損な感じが強そう。
+    //       それにより、死亡しているクリーチャーも攻撃対象に含まれることになる。
+    const affectedCreatures: Creature[] = targeteesData
+      .map(targeteeData => {
+        const damage = creatureUtils.getAttackPower(attackerData.creature, jobs)
+        return creatureUtils.alterLifePoints(targeteeData.creature, jobs, -damage)
+      })
+
+    // 攻撃対象へ影響を反映する。
+    newCreatures = newCreatures.map(creature => {
       const affected = findCreatureByIdIfPossible(affectedCreatures, creature.id)
       return affected || creature
     })
 
+    // 通常攻撃攻撃者の通常攻撃実行済みフラグを true にする。
+    newCreatures = newCreatures.map(creature => {
+      if (creature.id === attackerData.creature.id) {
+        creature.normalAttackInvoked = true
+      }
+      return creature
+    })
+  }
+
   return {
     creatures: newCreatures,
+  }
+}
+
+export function invokeRaid(
+  jobs: Job[],
+  creatures: Creature[],
+  raiderCreatureId: Creature['id'],
+  headquartersLifePoints: Game['headquartersLifePoints'],
+): {
+  headquartersLifePoints: Game['headquartersLifePoints'],
+} {
+  const raider = findCreatureById(creatures, raiderCreatureId)
+  return {
+    headquartersLifePoints: Math.max(headquartersLifePoints - creatureUtils.getRaidPower(raider, jobs), 0),
   }
 }
 
@@ -311,7 +343,7 @@ function invokeAttackSkill(context: SkillProcessContext): SkillProcessResult {
   const affectedCreatures: Creature[] = targeteesData
     .map(targeteeData => {
       const dummyDamage = 3
-      return creatureUtils.updateLifePoints(targeteeData.creature, context.jobs, -dummyDamage)
+      return creatureUtils.alterLifePoints(targeteeData.creature, context.jobs, -dummyDamage)
     })
 
   // コンテキストへ反映する。
@@ -332,6 +364,36 @@ export function invokeSkill(context: SkillProcessContext): SkillProcessResult {
     return invokeAttackSkill(context)
   }
   throw new Error('It is an invalid `skillCategoryId`.')
+}
+
+export function increaseRaidChargeForEachComputerCreatures(
+  jobs: Job[],
+  creatures: Creature[],
+  parties: Party[],
+  battleFieldMatrix: BattleFieldMatrix,
+): {
+  creatures: Creature[],
+} {
+  const affectedCreatures: Creature[] = []
+  for (const element of pickBattleFieldElementsWhereCreatureExists(battleFieldMatrix)) {
+    if (element.creatureId !== undefined) {
+      const creatureWithParty = findCreatureWithParty(creatures, parties, element.creatureId)
+      if (
+        creatureWithParty.party.factionId === 'computer' &&
+        creatureWithParty.creature.normalAttackInvoked === false
+      ) {
+        affectedCreatures.push(creatureUtils.updateRaidChargeWithTurnProgress(creatureWithParty.creature, jobs))
+      }
+    }
+  }
+
+  const newCreatures = creatures.map(creature => {
+    return findCreatureByIdIfPossible(affectedCreatures, creature.id) || creature
+  })
+
+  return {
+    creatures: newCreatures,
+  }
 }
 
 export function reserveCreatures(
@@ -404,7 +466,7 @@ export function initializeGame(game: Game): Game {
   newGame = {
     ...newGame,
     creatures: game.creatures.map(creature => {
-      return creatureUtils.updateLifePoints(
+      return creatureUtils.alterLifePoints(
         creature, game.jobs, creatureUtils.getMaxLifePoints(creature, game.jobs))
     }),
   }
