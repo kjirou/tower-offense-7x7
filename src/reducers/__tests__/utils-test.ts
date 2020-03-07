@@ -286,7 +286,7 @@ describe('reducers/utils', function() {
 
       it('攻撃者の通常攻撃発動済みフラグが false である', function() {
         const newAttacker = findCreatureById(result.creatures, attacker.id)
-        assert.strictEqual(newAttacker.normalAttackInvoked, true)
+        assert.strictEqual(newAttacker.normalAttackInvoked, false)
       })
     })
   })

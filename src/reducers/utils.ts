@@ -163,6 +163,9 @@ export function removeDeadCreatures(
   }
 }
 
+// TODO: creature.normalAttackInvoked を作ったことで、現在は関数に分けることが不要になっている。不要なら消す。
+//       元々は、通常攻撃を試みた際に実行されるのか、を予測できるように範囲内判定だけ分離した。
+//       今は上記フラグに集約したので不要になった。また、同じ抽出を重複して行なっているので煩雑になっている。
 export function findNormalAttackTargeteeCandidates(
   jobs: Job[],
   creatures: Creature[],
@@ -231,41 +234,46 @@ export function invokeNormalAttack(
   const targeteeCandidatesData = findNormalAttackTargeteeCandidates(
     jobs, creatures, parties, battleFieldMatrix, attackerData.creature.id)
 
-  // 最大攻撃対象数を算出する。
-  const dummyMaxNumberOfTargetees = 1
+  let newCreatures = creatures.slice()
 
-  // 優先順位を考慮して攻撃対象を決定する。
-  const targeteesData = targeteeCandidatesData
-    .slice()
-    // TODO: Priority calculation
-    .sort((a, b) => {
-      return -1
-    })
-    .slice(0, dummyMaxNumberOfTargetees)
+  // 範囲内に攻撃対象がいたとき。
+  if (targeteeCandidatesData.length > 0) {
+    // 最大攻撃対象数を算出する。
+    const dummyMaxNumberOfTargetees = 1
 
-  // 影響を決定する。
-  // NOTE: このループ内で攻撃対象が死亡するなどしても、対象から除外しなくても良い。
-  //       通常攻撃の副作用で攻撃者に有利な効果が発生することもあり、それが意図せずに発生しないと損な感じが強そう。
-  //       それにより、死亡しているクリーチャーも攻撃対象に含まれることになる。
-  const affectedCreatures: Creature[] = targeteesData
-    .map(targeteeData => {
-      const damage = creatureUtils.getAttackPower(attackerData.creature, jobs)
-      return creatureUtils.alterLifePoints(targeteeData.creature, jobs, -damage)
-    })
+    // 優先順位を考慮して攻撃対象を決定する。
+    const targeteesData = targeteeCandidatesData
+      .slice()
+      // TODO: Priority calculation
+      .sort((a, b) => {
+        return -1
+      })
+      .slice(0, dummyMaxNumberOfTargetees)
 
-  // 攻撃対象へ影響を反映する。
-  let newCreatures = creatures.map(creature => {
+    // 影響を決定する。
+    // NOTE: このループ内で攻撃対象が死亡するなどしても、対象から除外しなくても良い。
+    //       通常攻撃の副作用で攻撃者に有利な効果が発生することもあり、それが意図せずに発生しないと損な感じが強そう。
+    //       それにより、死亡しているクリーチャーも攻撃対象に含まれることになる。
+    const affectedCreatures: Creature[] = targeteesData
+      .map(targeteeData => {
+        const damage = creatureUtils.getAttackPower(attackerData.creature, jobs)
+        return creatureUtils.alterLifePoints(targeteeData.creature, jobs, -damage)
+      })
+
+    // 攻撃対象へ影響を反映する。
+    newCreatures = newCreatures.map(creature => {
       const affected = findCreatureByIdIfPossible(affectedCreatures, creature.id)
       return affected || creature
     })
 
-  // 攻撃者の通常攻撃実行済みフラグを true にする。
-  newCreatures = newCreatures.map(creature => {
-    if (creature.id === attackerData.creature.id) {
-      creature.normalAttackInvoked = true
-    }
-    return creature
-  })
+    // 通常攻撃攻撃者の通常攻撃実行済みフラグを true にする。
+    newCreatures = newCreatures.map(creature => {
+      if (creature.id === attackerData.creature.id) {
+        creature.normalAttackInvoked = true
+      }
+      return creature
+    })
+  }
 
   return {
     creatures: newCreatures,
