@@ -1,11 +1,14 @@
 import * as assert from 'assert'
 import {
+  beforeEach,
   describe,
   it,
 } from 'mocha'
 
 import {
+  ApplicationState,
   BattleFieldMatrix,
+  BattlePage,
   Creature,
   CreatureAppearance,
   Job,
@@ -213,47 +216,77 @@ describe('reducers/utils', function() {
   })
 
   describe('invokeNormalAttack', function() {
-    describe('When an attacker is adjacent to an enemy', function() {
-      it('can attack the enemy', function() {
-        const state = createStateDisplayBattlePageAtStartOfGame()
-        const battlePage = ensureBattlePage(state)
-        const attacker = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
-        const enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
+    describe('攻撃者の通常攻撃範囲内に敵が配置されている状況で、通常攻撃を行なったとき', function() {
+      let state: ApplicationState
+      let battlePage: BattlePage
+      let attacker: Creature
+      let enemy: Creature
+      let result: ReturnType<typeof invokeNormalAttack>
+
+      beforeEach(function() {
+        state = createStateDisplayBattlePageAtStartOfGame()
+        battlePage = ensureBattlePage(state)
+        attacker = findCreatureById(battlePage.game.creatures, battlePage.game.cardsOnPlayersHand[0].creatureId)
         attacker._attackPowerForTest = 1
+        enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
+        enemy._maxLifePointsForTest = 2
         enemy.lifePoints = 2
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][1].creatureId = enemy.id
-        const result = invokeNormalAttack(
+        result = invokeNormalAttack(
           battlePage.game.jobs,
           battlePage.game.creatures,
           battlePage.game.parties,
           battlePage.game.battleFieldMatrix,
           attacker.id,
         )
+      })
+
+      it('敵へダメージを与える', function() {
         const newEnemy = findCreatureById(result.creatures, enemy.id)
         assert.strictEqual(newEnemy.lifePoints < enemy.lifePoints, true)
       })
+
+      it('攻撃者の通常攻撃発動済みフラグが true である', function() {
+        const newAttacker = findCreatureById(result.creatures, attacker.id)
+        assert.strictEqual(newAttacker.normalAttackInvoked, true)
+      })
     })
 
-    describe('When an attacker and its enemy are two distances apart', function() {
-      it('can not attack the enemy', function() {
-        const state = createStateDisplayBattlePageAtStartOfGame()
-        const battlePage = ensureBattlePage(state)
-        const attacker = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
-        const enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
+    describe('攻撃者の通常攻撃範囲外に敵が配置されている状況で、通常攻撃を行なったとき', function() {
+      let state: ApplicationState
+      let battlePage: BattlePage
+      let attacker: Creature
+      let enemy: Creature
+      let result: ReturnType<typeof invokeNormalAttack>
+
+      beforeEach(function() {
+        state = createStateDisplayBattlePageAtStartOfGame()
+        battlePage = ensureBattlePage(state)
+        attacker = findCreatureById(battlePage.game.creatures, battlePage.game.cardsOnPlayersHand[0].creatureId)
         attacker._attackPowerForTest = 1
+        enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
+        enemy._maxLifePointsForTest = 2
         enemy.lifePoints = 2
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][2].creatureId = enemy.id
-        const result = invokeNormalAttack(
+        result = invokeNormalAttack(
           battlePage.game.jobs,
           battlePage.game.creatures,
           battlePage.game.parties,
           battlePage.game.battleFieldMatrix,
           attacker.id,
         )
+      })
+
+      it('敵へダメージを与えない', function() {
         const newEnemy = findCreatureById(result.creatures, enemy.id)
         assert.strictEqual(newEnemy.lifePoints, enemy.lifePoints)
+      })
+
+      it('攻撃者の通常攻撃発動済みフラグが false である', function() {
+        const newAttacker = findCreatureById(result.creatures, attacker.id)
+        assert.strictEqual(newAttacker.normalAttackInvoked, true)
       })
     })
   })
@@ -397,12 +430,12 @@ describe('reducers/utils', function() {
       battleFieldMatrix = createBattleFieldMatrix(1, 1)
     })
 
-    it('配置されている computer 側クリーチャーの raidCharge は増加する', function() {
-      battleFieldMatrix[0][0].creatureId = c.id
+    it('配置されている player 側クリーチャーの raidCharge は増加しない', function() {
+      battleFieldMatrix[0][0].creatureId = p.id
       const result = increaseRaidChargeForEachComputerCreatures(
         jobs, creatures, parties, battleFieldMatrix)
-      const newC = findCreatureById(result.creatures, c.id)
-      assert.strictEqual(newC.raidCharge > c.raidCharge, true)
+      const newP = findCreatureById(result.creatures, p.id)
+      assert.strictEqual(newP.raidCharge, p.raidCharge)
     })
 
     it('配置されていない computer 側クリーチャーの raidCharge は増加しない', function() {
@@ -412,12 +445,36 @@ describe('reducers/utils', function() {
       assert.strictEqual(newC.raidCharge, c.raidCharge)
     })
 
-    it('配置されている player 側クリーチャーの raidCharge は増加しない', function() {
-      battleFieldMatrix[0][0].creatureId = p.id
-      const result = increaseRaidChargeForEachComputerCreatures(
-        jobs, creatures, parties, battleFieldMatrix)
-      const newP = findCreatureById(result.creatures, p.id)
-      assert.strictEqual(newP.raidCharge, p.raidCharge)
+    describe('配置されている computer 側クリーチャーが存在するとき', function() {
+      beforeEach(function() {
+        battleFieldMatrix[0][0].creatureId = c.id
+      })
+
+      describe('そのクリーチャーの通常攻撃発動済みフラグが false のとき', function() {
+        beforeEach(function() {
+          c.normalAttackInvoked = false
+        })
+
+        it('そのクリーチャーの raidCharge を増加する', function() {
+          const result = increaseRaidChargeForEachComputerCreatures(
+            jobs, creatures, parties, battleFieldMatrix)
+          const newC = findCreatureById(result.creatures, c.id)
+          assert.strictEqual(newC.raidCharge > c.raidCharge, true)
+        })
+      })
+
+      describe('そのクリーチャーの通常攻撃発動済みフラグが true のとき', function() {
+        beforeEach(function() {
+          c.normalAttackInvoked = true
+        })
+
+        it('そのクリーチャーの raidCharge は変化しない', function() {
+          const result = increaseRaidChargeForEachComputerCreatures(
+            jobs, creatures, parties, battleFieldMatrix)
+          const newC = findCreatureById(result.creatures, c.id)
+          assert.strictEqual(newC.raidCharge, c.raidCharge)
+        })
+      })
     })
   })
 })

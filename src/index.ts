@@ -83,6 +83,7 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
     lifePoints: 0,
     raidCharge: 0,
     skillIds: [],
+    normalAttackInvoked: false,
   }
   switch (index % 5) {
     case 0:
@@ -121,6 +122,7 @@ const dummyEnemies: Creature[] = Array.from({length: 20}).map((unused, index) =>
     lifePoints: 0,
     raidCharge: 0,
     skillIds: [],
+    normalAttackInvoked: false,
   }
   switch (index % 2) {
     case 0:

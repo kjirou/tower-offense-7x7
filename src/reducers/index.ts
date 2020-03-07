@@ -310,6 +310,15 @@ export function proceedTurn(
       ),
     }
 
+    // 通常攻撃発動済みフラグを false へ戻す。
+    draft.game = {
+      ...draft.game,
+      creatures: draft.game.creatures.map(creature => ({
+        ...creature,
+        normalAttackInvoked: false,
+      }))
+    }
+
     // 予約されているクリーチャーの出現が実現する。
     const realizedCreatureAppearances: MatrixPosition[] = []
     for (const row of draft.game.battleFieldMatrix) {

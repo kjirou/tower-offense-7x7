@@ -30,6 +30,7 @@ export type Creature = {
   id: string,
   jobId: string,
   lifePoints: number,
+  normalAttackInvoked: boolean,
   raidCharge: number,
   skillIds: Skill['id'][],
 }

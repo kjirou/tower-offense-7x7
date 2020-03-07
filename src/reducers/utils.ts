@@ -223,6 +223,10 @@ export function invokeNormalAttack(
     battleFieldElement: findBattleFieldElementByCreatureId(battleFieldMatrix, attackerCreatureId),
   }
 
+  if (attackerData.creature.normalAttackInvoked) {
+    throw new Error('The creature had already invoked a normal-attack.')
+  }
+
   // 攻撃対象者候補である、射程範囲内で敵対関係のクリーチャー情報を抽出する。
   const targeteeCandidatesData = findNormalAttackTargeteeCandidates(
     jobs, creatures, parties, battleFieldMatrix, attackerData.creature.id)
@@ -249,11 +253,19 @@ export function invokeNormalAttack(
       return creatureUtils.alterLifePoints(targeteeData.creature, jobs, -damage)
     })
 
-  // コンテキストへ反映する。
-  const newCreatures = creatures.map(creature => {
+  // 攻撃対象へ影響を反映する。
+  let newCreatures = creatures.map(creature => {
       const affected = findCreatureByIdIfPossible(affectedCreatures, creature.id)
       return affected || creature
     })
+
+  // 攻撃者の通常攻撃実行済みフラグを true にする。
+  newCreatures = newCreatures.map(creature => {
+    if (creature.id === attackerData.creature.id) {
+      creature.normalAttackInvoked = true
+    }
+    return creature
+  })
 
   return {
     creatures: newCreatures,
@@ -358,7 +370,10 @@ export function increaseRaidChargeForEachComputerCreatures(
   for (const element of pickBattleFieldElementsWhereCreatureExists(battleFieldMatrix)) {
     if (element.creatureId !== undefined) {
       const creatureWithParty = findCreatureWithParty(creatures, parties, element.creatureId)
-      if (creatureWithParty.party.factionId === 'computer') {
+      if (
+        creatureWithParty.party.factionId === 'computer' &&
+        creatureWithParty.creature.normalAttackInvoked === false
+      ) {
         affectedCreatures.push(creatureUtils.updateRaidChargeWithTurnProgress(creatureWithParty.creature, jobs))
       }
     }

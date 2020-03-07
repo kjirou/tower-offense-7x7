@@ -1,5 +1,9 @@
 import * as assert from 'assert'
-import {describe, it, beforeEach} from 'mocha'
+import {
+  beforeEach,
+  describe,
+  it,
+} from 'mocha'
 
 import {
   ApplicationState,
@@ -259,18 +263,32 @@ describe('reducers/index', function() {
   })
 
   describe('proceedTurn', function() {
+    let state: ApplicationState
+    let battlePage: BattlePage
+
+    beforeEach(function() {
+      state = createStateDisplayBattlePageAtStartOfGame()
+      battlePage = ensureBattlePage(state)
+    })
+
     it('予約中の computer 側クリーチャーの raidCharge は自然増加しない', function() {
-      const state = createStateDisplayBattlePageAtStartOfGame()
-      const battlePage = ensureBattlePage(state)
       const a = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
       a._raidIntervalForTest = 1
       a.raidCharge = 0
       battlePage.game.battleFieldMatrix[0][0].reservedCreatureId = a.id
       const newState = proceedTurn(runNormalAttackPhase(state))
       const newBattlePage = ensureBattlePage(newState)
-      const newCreatures = newBattlePage.game.creatures
-      const newA = findCreatureById(newCreatures, a.id)
+      const newA = findCreatureById(newBattlePage.game.creatures, a.id)
       assert.strictEqual(newA.raidCharge, 0)
+    })
+
+    it('クリーチャーの通常攻撃発動済みフラグを一律 false へ更新する', function() {
+      const a = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
+      a.normalAttackInvoked = true
+      const newState = proceedTurn(runNormalAttackPhase(state))
+      const newBattlePage = ensureBattlePage(newState)
+      const newA = findCreatureById(newBattlePage.game.creatures, a.id)
+      assert.strictEqual(newA.normalAttackInvoked, false)
     })
   })
 })
