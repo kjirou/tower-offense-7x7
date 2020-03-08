@@ -120,6 +120,7 @@ export type BattleResult = {
 }
 
 export type Game = {
+  actionPoints: number,
   battleFieldMatrix: BattleFieldMatrix,
   battleResult: BattleResult,
   cardsInDeck: CardRelationship[],
