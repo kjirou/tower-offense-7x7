@@ -3,6 +3,7 @@ import {
   Card,
   Creature,
   FactionId,
+  Game,
   Job,
   MAX_NUMBER_OF_PLAYERS_HAND,
   Party,
@@ -43,6 +44,14 @@ export function createJob(): Job {
   }
 }
 
+export function createConstants(): Game['constants'] {
+  return {
+    jobs: [
+      createJob(),
+    ],
+  }
+}
+
 export function createCreature(): Creature {
   const job = createJob()
   return {
@@ -79,9 +88,8 @@ export function findFirstAlly(creatures: Creature[], parties: Party[], factionId
  * 戦闘開始直後の BattlePage を想定した状態を生成する。
  */
 export function createStateDisplayBattlePageAtStartOfGame(): ApplicationState {
-  const jobs = [
-    createJob(),
-  ]
+  const constants = createConstants()
+  const {jobs} = constants
   const allies = Array.from({length: 10}).map(() => createCreature())
   const enemies = Array.from({length: 10}).map(() => createCreature())
   const creatures = allies.concat(enemies)
@@ -95,6 +103,7 @@ export function createStateDisplayBattlePageAtStartOfGame(): ApplicationState {
     pages: {
       battle: {
         game: {
+          constants,
           jobs,
           creatures,
           parties: [

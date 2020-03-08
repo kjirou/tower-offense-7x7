@@ -126,6 +126,9 @@ export type Game = {
   cardsOnPlayersHand: CardRelationship[],
   cards: Card[],
   completedNormalAttackPhase: boolean,
+  constants: {
+    jobs: Job[],
+  },
   creatureAppearances: CreatureAppearance[],
   creatures: Creature[],
   cursor: Cursor | undefined,

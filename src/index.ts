@@ -160,6 +160,9 @@ function createInitialGame(): Game {
   const battleFieldMatrix = createBattleFieldMatrix(7, 7)
 
   let game: Game = {
+    constants: {
+      jobs: dummyJobs,
+    },
     jobs: dummyJobs,
     creatures: dummyAllies.concat(dummyEnemies),
     parties: [
