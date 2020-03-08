@@ -87,7 +87,7 @@ export function selectBattleFieldElement(
               draft.game = {
                 ...draft.game,
                 ...invokeSkill({
-                  jobs: draft.game.jobs,
+                  constants: draft.game.constants,
                   creatures: draft.game.creatures,
                   parties: draft.game.parties,
                   battleFieldMatrix: draft.game.battleFieldMatrix,
@@ -233,7 +233,7 @@ export function runNormalAttackPhase(
       gameBeingUpdated = {
         ...gameBeingUpdated,
         ...invokeNormalAttack(
-          gameBeingUpdated.jobs,
+          gameBeingUpdated.constants,
           gameBeingUpdated.creatures,
           gameBeingUpdated.parties,
           gameBeingUpdated.battleFieldMatrix,
@@ -246,14 +246,14 @@ export function runNormalAttackPhase(
         gameBeingUpdated.creatures, gameBeingUpdated.parties, attackerCreatureId)
       if (
         attackerWithPartyAfterAttack.party.factionId === 'computer' &&
-        creatureUtils.isRaidChageFull(attackerWithPartyAfterAttack.creature, game.jobs) &&
+        creatureUtils.isRaidChageFull(attackerWithPartyAfterAttack.creature, game.constants) &&
         attackerWithPartyAfterAttack.creature.normalAttackInvoked === false
       ) {
         // 襲撃を行う。
         gameBeingUpdated = {
           ...gameBeingUpdated,
           ...invokeRaid(
-            gameBeingUpdated.jobs,
+            gameBeingUpdated.constants,
             gameBeingUpdated.creatures,
             attackerWithPartyAfterAttack.creature.id,
             gameBeingUpdated.headquartersLifePoints,
@@ -294,7 +294,7 @@ export function proceedTurn(
     draft.game = {
       ...draft.game,
       ...increaseRaidChargeForEachComputerCreatures(
-        draft.game.jobs,
+        draft.game.constants,
         draft.game.creatures,
         draft.game.parties,
         draft.game.battleFieldMatrix,

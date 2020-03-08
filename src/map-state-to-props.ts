@@ -80,7 +80,7 @@ function mapBattlePageStateToProps(
           factionRelationshipId: determineRelationshipBetweenFactions(
             'player', creatureWithParty.party.factionId),
           lifePoints: creatureWithParty.creature.lifePoints.toString(),
-          turnsUntilRaid: creatureUtils.getTurnsUntilRaid(creatureWithParty.creature, game.jobs),
+          turnsUntilRaid: creatureUtils.getTurnsUntilRaid(creatureWithParty.creature, game.constants),
         }
       }
 

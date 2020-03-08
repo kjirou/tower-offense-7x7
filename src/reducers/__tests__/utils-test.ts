@@ -11,6 +11,7 @@ import {
   BattlePage,
   Creature,
   CreatureAppearance,
+  Game,
   Job,
   Party,
   createBattleFieldMatrix,
@@ -20,6 +21,7 @@ import {
 } from '../../utils'
 import {
   createCreature,
+  createConstants,
   createJob,
   createStateDisplayBattlePageAtStartOfGame,
   findFirstAlly,
@@ -203,14 +205,14 @@ describe('reducers/utils', function() {
 
   describe('invokeRaid', function() {
     it('headquartersLifePoints は 0 未満にならない', function() {
-      const jobs = [createJob()]
+      const constants = createConstants()
       const creatures = [
         {
           ...createCreature(),
           _raidPowerForTest: 2,
         },
       ]
-      const result = invokeRaid(jobs, creatures, creatures[0].id, 1)
+      const result = invokeRaid(constants, creatures, creatures[0].id, 1)
       assert.strictEqual(result.headquartersLifePoints, 0)
     })
   })
@@ -234,7 +236,7 @@ describe('reducers/utils', function() {
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][1].creatureId = enemy.id
         result = invokeNormalAttack(
-          battlePage.game.jobs,
+          battlePage.game.constants,
           battlePage.game.creatures,
           battlePage.game.parties,
           battlePage.game.battleFieldMatrix,
@@ -271,7 +273,7 @@ describe('reducers/utils', function() {
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][2].creatureId = enemy.id
         result = invokeNormalAttack(
-          battlePage.game.jobs,
+          battlePage.game.constants,
           battlePage.game.creatures,
           battlePage.game.parties,
           battlePage.game.battleFieldMatrix,
@@ -302,11 +304,11 @@ describe('reducers/utils', function() {
           battlePage.game.battleFieldMatrix[0][0].creatureId = invoker.id
           battlePage.game.battleFieldMatrix[0][1].creatureId = enemy.id
           const result = invokeSkill({
+            constants: battlePage.game.constants,
             skill: {
               id: '',
               skillCategoryId: 'attack',
             },
-            jobs: battlePage.game.jobs,
             creatures: battlePage.game.creatures,
             parties: battlePage.game.parties,
             battleFieldMatrix: battlePage.game.battleFieldMatrix,
@@ -394,7 +396,7 @@ describe('reducers/utils', function() {
   })
 
   describe('increaseRaidChargeForEachComputerCreatures', function() {
-    let jobs: Job[]
+    let constants: Game['constants']
     let creatures: Creature[]
     let c: Creature
     let p: Creature
@@ -402,12 +404,8 @@ describe('reducers/utils', function() {
     let battleFieldMatrix: BattleFieldMatrix
 
     beforeEach(function() {
-      jobs = [
-        {
-          ...createJob(),
-          raidInterval: 2,
-        },
-      ]
+      constants = createConstants()
+      constants.jobs[0].raidInterval = 2
       c = {
         ...createCreature(),
         raidCharge: 0,
@@ -433,14 +431,14 @@ describe('reducers/utils', function() {
     it('配置されている player 側クリーチャーの raidCharge は増加しない', function() {
       battleFieldMatrix[0][0].creatureId = p.id
       const result = increaseRaidChargeForEachComputerCreatures(
-        jobs, creatures, parties, battleFieldMatrix)
+        constants, creatures, parties, battleFieldMatrix)
       const newP = findCreatureById(result.creatures, p.id)
       assert.strictEqual(newP.raidCharge, p.raidCharge)
     })
 
     it('配置されていない computer 側クリーチャーの raidCharge は増加しない', function() {
       const result = increaseRaidChargeForEachComputerCreatures(
-        jobs, creatures, parties, battleFieldMatrix)
+        constants, creatures, parties, battleFieldMatrix)
       const newC = findCreatureById(result.creatures, c.id)
       assert.strictEqual(newC.raidCharge, c.raidCharge)
     })
@@ -457,7 +455,7 @@ describe('reducers/utils', function() {
 
         it('そのクリーチャーの raidCharge を増加する', function() {
           const result = increaseRaidChargeForEachComputerCreatures(
-            jobs, creatures, parties, battleFieldMatrix)
+            constants, creatures, parties, battleFieldMatrix)
           const newC = findCreatureById(result.creatures, c.id)
           assert.strictEqual(newC.raidCharge > c.raidCharge, true)
         })
@@ -470,7 +468,7 @@ describe('reducers/utils', function() {
 
         it('そのクリーチャーの raidCharge は変化しない', function() {
           const result = increaseRaidChargeForEachComputerCreatures(
-            jobs, creatures, parties, battleFieldMatrix)
+            constants, creatures, parties, battleFieldMatrix)
           const newC = findCreatureById(result.creatures, c.id)
           assert.strictEqual(newC.raidCharge, c.raidCharge)
         })

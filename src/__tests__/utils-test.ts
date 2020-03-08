@@ -1,14 +1,21 @@
 import * as assert from 'assert';
-import {describe, it} from 'mocha';
+import {
+  beforeEach,
+  describe,
+  it,
+} from 'mocha';
 
 import {
   createCreature,
+  createConstants,
   createJob,
 } from '../test-utils';
 import {
   BattleFieldElement,
   BattleFieldMatrix,
   Card,
+  Creature,
+  Game,
   MatrixPosition,
   Party,
   areGlobalPositionsEqual,
@@ -478,179 +485,114 @@ describe('utils', function() {
   })
 
   describe('creatureUtils', function() {
-    describe('getAttackPower', function() {
-      const jobs = [
-        {
-          ...createJob(),
-          attackPower: 2,
-        },
-      ]
+    let constants: Game['constants']
+    let creature: Creature
 
+    beforeEach(function() {
+      constants = createConstants()
+      creature = createCreature()
+    })
+
+    describe('getAttackPower', function() {
       it('_attackPowerForTest が存在しているときはその値を優先して返す', function() {
-        const creature = {
-          ...createCreature(),
-          _attackPowerForTest: 99,
-        }
-        assert.strictEqual(creatureUtils.getAttackPower(creature, jobs), 99)
+        constants.jobs[0].attackPower = 2
+        creature._attackPowerForTest = 99
+        assert.strictEqual(creatureUtils.getAttackPower(creature, constants), 99)
       })
     })
 
     describe('getMaxLifePoints', function() {
-      const jobs = [
-        {
-          ...createJob(),
-          maxLifePoints: 2,
-        },
-      ]
-
       it('_maxLifePointsForTest が存在しているときはその値を優先して返す', function() {
-        const creature = {
-          ...createCreature(),
-          _maxLifePointsForTest: 99,
-        }
-        assert.strictEqual(creatureUtils.getMaxLifePoints(creature, jobs), 99)
+        constants.jobs[0].maxLifePoints = 2
+        creature._maxLifePointsForTest = 99
+        assert.strictEqual(creatureUtils.getMaxLifePoints(creature, constants), 99)
       })
     })
 
     describe('getRaidInterval', function() {
-      const jobs = [
-        {
-          ...createJob(),
-          raidInterval: 2,
-        },
-      ]
-
       it('_raidIntervalForTest が存在しているときはその値を優先して返す', function() {
-        const creature = {
-          ...createCreature(),
-          _raidIntervalForTest: 99,
-        }
-        assert.strictEqual(creatureUtils.getRaidInterval(creature, jobs), 99)
+        constants.jobs[0].raidInterval = 2
+        creature._raidIntervalForTest = 99
+        assert.strictEqual(creatureUtils.getRaidInterval(creature, constants), 99)
       })
     })
 
     describe('getRaidPower', function() {
-      const jobs = [
-        {
-          ...createJob(),
-          raidPower: 2,
-        },
-      ]
+      beforeEach(function() {
+        constants.jobs[0].raidPower = 2
+      })
 
       it('_raidPowerForTest が存在しているときはその値を優先して返す', function() {
-        const creature = {
-          ...createCreature(),
-          _raidPowerForTest: 99,
-        }
-        assert.strictEqual(creatureUtils.getRaidPower(creature, jobs), 99)
+        creature._raidPowerForTest = 99
+        assert.strictEqual(creatureUtils.getRaidPower(creature, constants), 99)
       })
     })
 
     describe('getTurnsUntilRaid', function() {
       it('works', function() {
-        const jobs = [
-          {
-            ...createJob(),
-            raidInterval: 5,
-          },
-        ]
-        const creature = {
-          ...createCreature(),
-          raidCharge: 2,
-        }
-        assert.strictEqual(creatureUtils.getTurnsUntilRaid(creature, jobs), 3)
+        constants.jobs[0].raidInterval = 5
+        creature.raidCharge = 2
+        assert.strictEqual(creatureUtils.getTurnsUntilRaid(creature, constants), 3)
       })
     })
 
     describe('alterLifePoints', function() {
-      const jobs = [
-        {
-          ...createJob(),
-          maxLifePoints: 2,
-        },
-      ]
-      const creature = {
-        ...createCreature(),
-        lifePoints: 2,
-      }
+      beforeEach(function() {
+        constants.jobs[0].maxLifePoints = 2
+        creature.lifePoints = 2
+      })
 
       it('lifePoints は 0 未満にならない', function() {
-        assert.strictEqual(creatureUtils.alterLifePoints(creature, jobs, -3).lifePoints, 0)
+        assert.strictEqual(creatureUtils.alterLifePoints(creature, constants, -3).lifePoints, 0)
       })
 
       it('lifePoints は maxLifePoints を超えない', function() {
-        assert.strictEqual(creatureUtils.alterLifePoints(creature, jobs, 1).lifePoints, 2)
+        assert.strictEqual(creatureUtils.alterLifePoints(creature, constants, 1).lifePoints, 2)
       })
     })
 
     describe('alterRaidCharge', function() {
-      const jobs = [
-        {
-          ...createJob(),
-          raidInterval: 2,
-        },
-      ]
-      const creature = {
-        ...createCreature(),
-        raidCharge: 0,
-      }
+      beforeEach(function() {
+        constants.jobs[0].raidInterval = 2
+        creature.raidCharge = 0
+      })
 
       it('raidCharge は 0 未満にならない', function() {
-        assert.strictEqual(creatureUtils.alterRaidCharge(creature, jobs, -1).raidCharge, 0)
+        assert.strictEqual(creatureUtils.alterRaidCharge(creature, constants, -1).raidCharge, 0)
       })
 
       it('raidCharge は raidInterval を超えない', function() {
-        assert.strictEqual(creatureUtils.alterRaidCharge(creature, jobs, 3).raidCharge, 2)
+        assert.strictEqual(creatureUtils.alterRaidCharge(creature, constants, 3).raidCharge, 2)
       })
     })
 
     describe('isRaidChageFull', function() {
-      const jobs = [
-        {
-          ...createJob(),
-          raidInterval: 3,
-        },
-      ]
-
       it('raidCharge が raidInterval と等しいときは true を返す', function() {
-        const creature = {
-          ...createCreature(),
-          raidCharge: 3,
-        }
-        assert.strictEqual(creatureUtils.isRaidChageFull(creature, jobs), true)
+        constants.jobs[0].raidInterval = 3
+        creature.raidCharge = 3
+        assert.strictEqual(creatureUtils.isRaidChageFull(creature, constants), true)
       })
 
       it('raidCharge が raidInterval より小さいときは false を返す', function() {
-        const creature = {
-          ...createCreature(),
-          raidCharge: 2,
-        }
-        assert.strictEqual(creatureUtils.isRaidChageFull(creature, jobs), false)
+        constants.jobs[0].raidInterval = 3
+        creature.raidCharge = 2
+        assert.strictEqual(creatureUtils.isRaidChageFull(creature, constants), false)
       })
     })
 
     describe('updateRaidChargeWithTurnProgress', function() {
-      const jobs = [
-        {
-          ...createJob(),
-          raidInterval: 3,
-        },
-      ]
+      beforeEach(function() {
+        constants.jobs[0].raidInterval = 3
+      })
 
       it('raidCharge が raidInterval と等しいときは 0 へ更新する', function() {
-        const creature = {
-          ...createCreature(),
-          raidCharge: 3,
-        }
-        assert.strictEqual(creatureUtils.updateRaidChargeWithTurnProgress(creature, jobs).raidCharge, 0)
+        creature.raidCharge = 3
+        assert.strictEqual(creatureUtils.updateRaidChargeWithTurnProgress(creature, constants).raidCharge, 0)
       })
 
       it('raidCharge が raidInterval より小さいときは 1 を加算する', function() {
-        const creature = {
-          ...createCreature(),
-          raidCharge: 2,
-        }
-        assert.strictEqual(creatureUtils.updateRaidChargeWithTurnProgress(creature, jobs).raidCharge, 3)
+        creature.raidCharge = 2
+        assert.strictEqual(creatureUtils.updateRaidChargeWithTurnProgress(creature, constants).raidCharge, 3)
       })
     })
   })
