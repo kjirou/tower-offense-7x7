@@ -163,7 +163,6 @@ function createInitialGame(): Game {
     constants: {
       jobs: dummyJobs,
     },
-    jobs: dummyJobs,
     creatures: dummyAllies.concat(dummyEnemies),
     parties: [
       {

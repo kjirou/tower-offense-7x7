@@ -89,7 +89,6 @@ export function findFirstAlly(creatures: Creature[], parties: Party[], factionId
  */
 export function createStateDisplayBattlePageAtStartOfGame(): ApplicationState {
   const constants = createConstants()
-  const {jobs} = constants
   const allies = Array.from({length: 10}).map(() => createCreature())
   const enemies = Array.from({length: 10}).map(() => createCreature())
   const creatures = allies.concat(enemies)
@@ -104,7 +103,6 @@ export function createStateDisplayBattlePageAtStartOfGame(): ApplicationState {
       battle: {
         game: {
           constants,
-          jobs,
           creatures,
           parties: [
             {

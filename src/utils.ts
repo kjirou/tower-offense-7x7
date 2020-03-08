@@ -133,7 +133,6 @@ export type Game = {
   creatures: Creature[],
   cursor: Cursor | undefined,
   headquartersLifePoints: number,
-  jobs: Job[],
   parties: Party[],
   turnNumber: number,
 }
