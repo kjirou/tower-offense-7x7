@@ -33,8 +33,8 @@ import {
 type SkillProcessContext = {
   battleFieldMatrix: BattleFieldMatrix,
   creatures: Creature[],
+  constants: Game['constants'],
   invokerCreatureId: Creature['id'],
-  jobs: Job[],
   parties: Party[],
   skill: Skill,
 }
@@ -209,7 +209,7 @@ export function findNormalAttackTargeteeCandidates(
 }
 
 export function invokeNormalAttack(
-  jobs: Job[],
+  constants: Game['constants'],
   creatures: Creature[],
   parties: Party[],
   battleFieldMatrix: BattleFieldMatrix,
@@ -217,6 +217,7 @@ export function invokeNormalAttack(
 ): {
   creatures: Creature[],
 } {
+  const {jobs} = constants
   const attackerWithParty = findCreatureWithParty(creatures, parties, attackerCreatureId)
 
   // 攻撃者情報を抽出する。
@@ -256,8 +257,8 @@ export function invokeNormalAttack(
     //       それにより、死亡しているクリーチャーも攻撃対象に含まれることになる。
     const affectedCreatures: Creature[] = targeteesData
       .map(targeteeData => {
-        const damage = creatureUtils.getAttackPower(attackerData.creature, jobs)
-        return creatureUtils.alterLifePoints(targeteeData.creature, jobs, -damage)
+        const damage = creatureUtils.getAttackPower(attackerData.creature, constants)
+        return creatureUtils.alterLifePoints(targeteeData.creature, constants, -damage)
       })
 
     // 攻撃対象へ影響を反映する。
@@ -281,7 +282,7 @@ export function invokeNormalAttack(
 }
 
 export function invokeRaid(
-  jobs: Job[],
+  constants: Game['constants'],
   creatures: Creature[],
   raiderCreatureId: Creature['id'],
   headquartersLifePoints: Game['headquartersLifePoints'],
@@ -290,7 +291,7 @@ export function invokeRaid(
 } {
   const raider = findCreatureById(creatures, raiderCreatureId)
   return {
-    headquartersLifePoints: Math.max(headquartersLifePoints - creatureUtils.getRaidPower(raider, jobs), 0),
+    headquartersLifePoints: Math.max(headquartersLifePoints - creatureUtils.getRaidPower(raider, constants), 0),
   }
 }
 
@@ -343,7 +344,7 @@ function invokeAttackSkill(context: SkillProcessContext): SkillProcessResult {
   const affectedCreatures: Creature[] = targeteesData
     .map(targeteeData => {
       const dummyDamage = 3
-      return creatureUtils.alterLifePoints(targeteeData.creature, context.jobs, -dummyDamage)
+      return creatureUtils.alterLifePoints(targeteeData.creature, context.constants, -dummyDamage)
     })
 
   // コンテキストへ反映する。
@@ -367,7 +368,7 @@ export function invokeSkill(context: SkillProcessContext): SkillProcessResult {
 }
 
 export function increaseRaidChargeForEachComputerCreatures(
-  jobs: Job[],
+  constants: Game['constants'],
   creatures: Creature[],
   parties: Party[],
   battleFieldMatrix: BattleFieldMatrix,
@@ -382,7 +383,7 @@ export function increaseRaidChargeForEachComputerCreatures(
         creatureWithParty.party.factionId === 'computer' &&
         creatureWithParty.creature.normalAttackInvoked === false
       ) {
-        affectedCreatures.push(creatureUtils.updateRaidChargeWithTurnProgress(creatureWithParty.creature, jobs))
+        affectedCreatures.push(creatureUtils.updateRaidChargeWithTurnProgress(creatureWithParty.creature, constants))
       }
     }
   }
@@ -467,7 +468,7 @@ export function initializeGame(game: Game): Game {
     ...newGame,
     creatures: game.creatures.map(creature => {
       return creatureUtils.alterLifePoints(
-        creature, game.jobs, creatureUtils.getMaxLifePoints(creature, game.jobs))
+        creature, game.constants, creatureUtils.getMaxLifePoints(creature, game.constants))
     }),
   }
 
