@@ -121,6 +121,7 @@ export type BattleResult = {
 
 export type Game = {
   actionPoints: number,
+  actionPointsRecovery: number,
   battleFieldMatrix: BattleFieldMatrix,
   battleResult: BattleResult,
   cardsInDeck: CardRelationship[],
