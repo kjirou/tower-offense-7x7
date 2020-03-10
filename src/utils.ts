@@ -149,6 +149,8 @@ export type ApplicationState = {
 }
 
 export const MAX_NUMBER_OF_PLAYERS_HAND = 5
+export const ACTION_POINTS_REQUIRED_FOR_CREATURE_PLACEMENT = 2
+export const ACTION_POINTS_REQUIRED_FOR_SKILL_USE = 1
 
 /**
  * Shuffle an array with the Fisher–Yates algorithm.

@@ -1,6 +1,8 @@
 import produce from 'immer'
 
 import {
+  ACTION_POINTS_REQUIRED_FOR_CREATURE_PLACEMENT,
+  ACTION_POINTS_REQUIRED_FOR_SKILL_USE,
   ApplicationState,
   BattleFieldElement,
   BattlePage,
@@ -81,8 +83,11 @@ export function selectBattleFieldElement(
         if (placedCreatureWithParty) {
           // 選択先クリーチャーがプレイヤー側のとき。
           if (placedCreatureWithParty.party.factionId === 'player') {
-            // 行動可能なとき。
-            if (creatureUtils.canAct(placedCreatureWithParty.creature)) {
+            // AP が 1 以上のとき、または、行動可能なとき。
+            if (
+              draft.game.actionPoints >= ACTION_POINTS_REQUIRED_FOR_SKILL_USE &&
+              creatureUtils.canAct(placedCreatureWithParty.creature)
+            ) {
               // スキルを発動する。
               draft.game = {
                 ...draft.game,
@@ -120,9 +125,11 @@ export function selectBattleFieldElement(
                 ),
               }
 
+              // AP を 1 消費する。
+              draft.game.actionPoints -= ACTION_POINTS_REQUIRED_FOR_SKILL_USE
               // カーソルを外す。
               draft.game.cursor = undefined
-            // 行動不能なとき。
+            // AP が 1 未満のとき、または、行動不能なとき。
             } else {
               /* no-op */
             }
@@ -132,19 +139,24 @@ export function selectBattleFieldElement(
           }
         // 選択先のマスへクリーチャーが配置されていないとき。
         } else {
-          // クリーチャーを配置する。
-          // 手札からそのクリーチャーのカードを削除する。
-          draft.game = {
-            ...draft.game,
-            ...placePlayerFactionCreature(
-              draft.game.battleFieldMatrix,
-              draft.game.cardsOnPlayersHand,
-              cardUnderCursor.creatureId,
-              battleFieldElement.position
-            ),
+          // AP が 2 以上のとき。
+          if (draft.game.actionPoints >= ACTION_POINTS_REQUIRED_FOR_CREATURE_PLACEMENT) {
+            // クリーチャーを配置する。
+            // 手札からそのクリーチャーのカードを削除する。
+            draft.game = {
+              ...draft.game,
+              ...placePlayerFactionCreature(
+                draft.game.battleFieldMatrix,
+                draft.game.cardsOnPlayersHand,
+                cardUnderCursor.creatureId,
+                battleFieldElement.position
+              ),
+            }
+            // AP を 2 消費する。
+            draft.game.actionPoints -= ACTION_POINTS_REQUIRED_FOR_CREATURE_PLACEMENT
+            // カーソルを外す。
+            draft.game.cursor = undefined
           }
-          // カーソルを外す。
-          draft.game.cursor = undefined
         }
       // カードの使用、ができないとき。
       } else {
