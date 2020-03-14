@@ -307,6 +307,7 @@ const CardsOnPlayersHand: React.FC<CardsOnPlayersHandProps> = (props) => {
 }
 
 type FooterProps = {
+  actionPoints: number,
   progressButton: {
     label: string,
     handleTouch: () => void,
@@ -356,7 +357,7 @@ const Footer: React.FC<FooterProps> = (props) => {
         fontSize: '32px',
         backgroundColor: 'silver',
       }}>
-        <div>5</div>
+        <div>{props.actionPoints}</div>
       </div>
       <div
         style={rightSideButtonStyle}
@@ -373,6 +374,7 @@ const Footer: React.FC<FooterProps> = (props) => {
 }
 
 export type Props = {
+  actionPoints: FooterProps['actionPoints'],
   battleFieldBoard: {
     board: BattleFieldElementProps[][],
     handleTouch: BattleFieldBoardProps['handleTouch'],
@@ -402,6 +404,7 @@ export const BattlePage: React.FC<Props> = (props) => {
       <SquareMonitor />
       <CardsOnPlayersHand {...props.cardsOnPlayersHand} />
       <Footer
+        actionPoints={props.actionPoints}
         progressButton={props.progressButton}
       />
     </div>

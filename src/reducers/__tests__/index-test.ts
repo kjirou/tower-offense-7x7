@@ -290,5 +290,13 @@ describe('reducers/index', function() {
       const newA = findCreatureById(newBattlePage.game.creatures, a.id)
       assert.strictEqual(newA.normalAttackInvoked, false)
     })
+
+    it('actionPoints を actionPointsRecovery の分回復する', function() {
+      battlePage.game.actionPoints = 2
+      battlePage.game.actionPointsRecovery = 3
+      const newState = proceedTurn(runNormalAttackPhase(state))
+      const newBattlePage = ensureBattlePage(newState)
+      assert.strictEqual(newBattlePage.game.actionPoints, 5)
+    })
   })
 })

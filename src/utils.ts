@@ -120,6 +120,8 @@ export type BattleResult = {
 }
 
 export type Game = {
+  actionPoints: number,
+  actionPointsRecovery: number,
   battleFieldMatrix: BattleFieldMatrix,
   battleResult: BattleResult,
   cardsInDeck: CardRelationship[],
@@ -148,6 +150,8 @@ export type ApplicationState = {
 }
 
 export const MAX_NUMBER_OF_PLAYERS_HAND = 5
+export const ACTION_POINTS_REQUIRED_FOR_CREATURE_PLACEMENT = 2
+export const ACTION_POINTS_REQUIRED_FOR_SKILL_USE = 1
 
 /**
  * Shuffle an array with the Fisher–Yates algorithm.
@@ -439,5 +443,17 @@ export const creatureUtils = {
   updateRaidChargeWithTurnProgress: (creature: Creature, constants: Game['constants']): Creature => {
     const delta = creatureUtils.isRaidChageFull(creature, constants) ? -creature.raidCharge : 1
     return creatureUtils.alterRaidCharge(creature, constants, delta)
+  },
+}
+
+export const gameParameterUtils = {
+  getActionPointsRecovery: (game: Game): number => {
+    return game.actionPointsRecovery
+  },
+  alterActionPoints: (game: Game, delta: number): Game => {
+    return {
+      ...game,
+      actionPoints: Math.min(Math.max(game.actionPoints + delta, 0), 99),
+    }
   },
 }
