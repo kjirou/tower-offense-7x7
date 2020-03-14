@@ -9,6 +9,7 @@ import {
   createCreature,
   createConstants,
   createJob,
+  createStateDisplayBattlePageAtStartOfGame,
 } from '../test-utils';
 import {
   BattleFieldElement,
@@ -22,12 +23,14 @@ import {
   choiceElementsAtRandom,
   createBattleFieldMatrix,
   creatureUtils,
+  ensureBattlePage,
   findBattleFieldElementByCreatureId,
   findBattleFieldElementsByDistance,
   findCardUnderCursor,
   findCardsByCreatureIds,
   findPartyByCreatureId,
   flattenMatrix,
+  gameParameterUtils,
   measureDistance,
   pickBattleFieldElementsWhereCreatureExists,
   shuffleArray,
@@ -593,6 +596,28 @@ describe('utils', function() {
       it('raidCharge が raidInterval より小さいときは 1 を加算する', function() {
         creature.raidCharge = 2
         assert.strictEqual(creatureUtils.updateRaidChargeWithTurnProgress(creature, constants).raidCharge, 3)
+      })
+    })
+  })
+
+  describe('gameParameterUtils', function() {
+    let game: Game
+
+    beforeEach(function() {
+      game = ensureBattlePage(createStateDisplayBattlePageAtStartOfGame()).game
+    })
+
+    describe('alterActionPoints', function() {
+      it('actionPoints は 0 未満にならない', function() {
+        game.actionPoints = 1
+        game = gameParameterUtils.alterActionPoints(game, -2)
+        assert.strictEqual(game.actionPoints, 0)
+      })
+
+      it('actionPoints は 99 を超えない', function() {
+        game.actionPoints = 98
+        game = gameParameterUtils.alterActionPoints(game, 2)
+        assert.strictEqual(game.actionPoints, 99)
       })
     })
   })

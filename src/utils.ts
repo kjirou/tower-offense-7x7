@@ -445,3 +445,15 @@ export const creatureUtils = {
     return creatureUtils.alterRaidCharge(creature, constants, delta)
   },
 }
+
+export const gameParameterUtils = {
+  getActionPointsRecovery: (game: Game): number => {
+    return game.actionPointsRecovery
+  },
+  alterActionPoints: (game: Game, delta: number): Game => {
+    return {
+      ...game,
+      actionPoints: Math.min(Math.max(game.actionPoints + delta, 0), 99),
+    }
+  },
+}
