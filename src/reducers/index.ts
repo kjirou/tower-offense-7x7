@@ -22,6 +22,7 @@ import {
   findCardUnderCursor,
   findCreatureById,
   findCreatureWithParty,
+  gameParameterUtils,
   pickBattleFieldElementsWhereCreatureExists,
 } from '../utils'
 import {
@@ -363,6 +364,12 @@ export function proceedTurn(
       draft.game.creatureAppearances,
       draft.game.turnNumber,
       draft.game.headquartersLifePoints
+    )
+
+    // AP を回復する。
+    draft.game = gameParameterUtils.alterActionPoints(
+      draft.game,
+      gameParameterUtils.getActionPointsRecovery(draft.game)
     )
 
     draft.game.completedNormalAttackPhase = false
