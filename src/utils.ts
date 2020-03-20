@@ -455,22 +455,6 @@ export function measureDistance(from: MatrixPosition, to: MatrixPosition): numbe
   return Math.abs(deltaY) + Math.abs(deltaX)
 }
 
-export function findBattleFieldElementsByDistance(
-  matrix: BattleFieldMatrix,
-  startPoint: MatrixPosition,
-  distance: number
-): BattleFieldElement[] {
-  const elements: BattleFieldElement[] = []
-  for (let y = 0; y < matrix.length; y++) {
-    for (let x = 0; x < matrix[y].length; x++) {
-      if (measureDistance(startPoint, matrix[y][x].position) <= distance) {
-        elements.push(matrix[y][x])
-      }
-    }
-  }
-  return elements
-}
-
 /**
  * 指定範囲のマスリストを返す。
  *
