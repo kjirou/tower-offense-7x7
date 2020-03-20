@@ -25,6 +25,11 @@ export type SkillCategoryId = 'attack' | 'defense' | 'support'
 
 export type Job = {
   attackPower: number,
+  autoAttackRange: {
+    maxReach: number,
+    minReach: number,
+    rangeShapeKey: string,
+  },
   id: string,
   maxLifePoints: number,
   raidInterval: number,
