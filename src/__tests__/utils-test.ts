@@ -18,14 +18,19 @@ import {
   Creature,
   Game,
   MatrixPosition,
+  MatrixPositionDelta,
   Party,
+  RANGE_SHAPES,
+  RangeShapeFragment,
   areGlobalPositionsEqual,
   choiceElementsAtRandom,
   createBattleFieldMatrix,
+  createCircularRangeForReach,
   creatureUtils,
   ensureBattlePage,
   findBattleFieldElementByCreatureId,
   findBattleFieldElementsByDistance,
+  findBattleFieldElementsByRange,
   findCardUnderCursor,
   findCardsByCreatureIds,
   findPartyByCreatureId,
@@ -162,6 +167,43 @@ describe('utils', function() {
         [1, 2, 3, 4],
       )
     })
+  })
+
+  describe('createCircularRangeForReach', function() {
+    const testCases: {
+      reach: number,
+      positionDeltas: MatrixPositionDelta[],
+    }[] = [
+      {
+        reach: 0,
+        positionDeltas: [{y: 0, x: 0}],
+      },
+      {
+        reach: 1,
+        positionDeltas: [{y: 1, x: 0}, {y: 0, x: 1}, {y: -1, x: 0}, {y: 0, x: -1}],
+      },
+      {
+        reach: 2,
+        positionDeltas: [
+          {y: 2, x: 0}, {y: 1, x: 1}, {y: 0, x: 2}, {y: -1, x: 1},
+          {y: -2, x: 0}, {y: -1, x: -1}, {y: 0, x: -2}, {y: 1, x: -1},
+        ],
+      },
+      {
+        reach: 3,
+        positionDeltas: [
+          {y: 3, x: 0}, {y: 2, x: 1}, {y: 1, x: 2},
+          {y: 0, x: 3}, {y: -1, x: 2}, {y: -2, x: 1},
+          {y: -3, x: 0}, {y: -2, x: -1}, {y: -1, x: -2},
+          {y: 0, x: -3}, {y: 1, x: -2}, {y: 2, x: -1},
+        ],
+      },
+    ]
+    for (const testCase of testCases) {
+      it(`reach=${testCase.reach} に対する期待通りの範囲を生成する`, function() {
+        assert.deepStrictEqual(createCircularRangeForReach(testCase.reach), testCase.positionDeltas)
+      })
+    }
   })
 
   describe('findPartyByCreatureId', function() {
@@ -396,6 +438,112 @@ describe('utils', function() {
       assert.strictEqual(elements[2].position.x, 0)
       assert.strictEqual(elements[3].position.y, 1)
       assert.strictEqual(elements[3].position.x, 1)
+    })
+  })
+
+  describe('RANGE_SHAPES', function() {
+    for (const rangeShapeKey of Object.keys(RANGE_SHAPES)) {
+      describe(rangeShapeKey, function() {
+        let rangeShape: RangeShapeFragment[]
+        beforeEach(function() {
+          rangeShape = RANGE_SHAPES[rangeShapeKey]
+        })
+
+        it('断片同士が同じリーチを持たない', function() {
+          const reaches = rangeShape.map(e => e.reach)
+          for (const reach of reaches) {
+            const count = reaches.filter(e => e === reach).length
+            assert.strictEqual(count, 1)
+          }
+        })
+
+        it('断片同士が同じ相対位置を持たない', function() {
+          let compositePositionDeltas: {y: number, x: number}[] = []
+          for (const rangeShapeFragment of rangeShape) {
+            compositePositionDeltas = compositePositionDeltas.concat(rangeShapeFragment.positionDeltas)
+          }
+          while (compositePositionDeltas.length > 0) {
+            const positionDelta = compositePositionDeltas.pop() as {y: number, x: number}
+            const found = compositePositionDeltas.find(e => positionDelta.y === e.y && positionDelta.x === e.x)
+            assert.strictEqual(found, undefined, `${rangeShapeKey} の ${JSON.stringify(found)} が重複している`)
+          }
+        })
+      })
+    }
+  })
+
+  describe('findBattleFieldElementsByRange', function() {
+    let matrix: BattleFieldMatrix
+    beforeEach(function() {
+      matrix = createBattleFieldMatrix(7, 7)
+    })
+
+    it('存在しない範囲形状キーを指定したとき、例外を発生する', function() {
+      assert.throws(() => {
+        findBattleFieldElementsByRange(matrix, {y: 0, x: 0}, 'doesNotExist', 0, 0)
+      }, /rangeKey/)
+    })
+
+    describe('指定したリーチの幅が範囲形状の複数の断片を含むとき', function() {
+      it('断片を近い順で結合した結果を返す', function() {
+        const elements = findBattleFieldElementsByRange(matrix, {y: 3, x: 3}, 'cross', 1, 2)
+        assert.deepStrictEqual(
+          elements,
+          [
+            matrix[4][3],
+            matrix[3][4],
+            matrix[2][3],
+            matrix[3][2],
+            matrix[5][3],
+            matrix[3][5],
+            matrix[1][3],
+            matrix[3][1],
+          ]
+        )
+      })
+    })
+
+    describe('指定したリーチの幅が範囲形状の最小リーチ未満であるとき', function() {
+      it('空の結果を返す', function() {
+        const rangeShapes = {
+          foo: [
+            {
+              reach: 1,
+              positionDeltas: [{y: 0, x: 0}],
+            },
+          ],
+        }
+        const elements = findBattleFieldElementsByRange(matrix, {y: 0, x: 0}, 'foo', 0, 0, rangeShapes)
+        assert.deepStrictEqual(elements, [])
+      })
+    })
+
+    describe('指定したリーチの幅が範囲形状の最大リーチ超であるとき', function() {
+      it('空の結果を返す', function() {
+        const rangeShapes = {
+          foo: [
+            {
+              reach: 1,
+              positionDeltas: [{y: 0, x: 0}],
+            },
+          ],
+        }
+        const elements = findBattleFieldElementsByRange(matrix, {y: 0, x: 0}, 'foo', 2, 2, rangeShapes)
+        assert.deepStrictEqual(elements, [])
+      })
+    })
+
+    describe('指定した範囲に盤の広さを超える位置を含むとき', function() {
+      it('盤をはみ出す位置は無視され、盤に存在するマスのみを返す', function() {
+        const elements = findBattleFieldElementsByRange(matrix, {y: 3, x: 3}, 'circle', 0, 12)
+        assert.strictEqual(elements.length, 49)
+        for (const element of elements) {
+          assert.strictEqual(element.position.y >= 0, true)
+          assert.strictEqual(element.position.y <= 7, true)
+          assert.strictEqual(element.position.x >= 0, true)
+          assert.strictEqual(element.position.x <= 7, true)
+        }
+      })
     })
   })
 

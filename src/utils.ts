@@ -2,6 +2,21 @@
  * This file MUST NOT depend on any file in the project.
  */
 
+export type MatrixPosition = {
+  x: number,
+  y: number,
+}
+
+export type MatrixPositionDelta = {
+  x: number,
+  y: number,
+}
+
+export type RangeShapeFragment = {
+  reach: number,
+  positionDeltas: MatrixPositionDelta[],
+}
+
 export type FactionId = 'player' | 'computer'
 
 export type FactionRelationshipId = 'ally' | 'enemy'
@@ -48,11 +63,6 @@ export type Card = {
 
 export type CardRelationship = {
   creatureId: Creature['id'],
-}
-
-export type MatrixPosition = {
-  x: number,
-  y: number,
 }
 
 type GlobalPlacementId = 'battleFieldMatrix' | 'cardsOnPlayersHand'
@@ -150,8 +160,125 @@ export type ApplicationState = {
 }
 
 export const MAX_NUMBER_OF_PLAYERS_HAND = 5
+
 export const ACTION_POINTS_REQUIRED_FOR_CREATURE_PLACEMENT = 2
+
 export const ACTION_POINTS_REQUIRED_FOR_SKILL_USE = 1
+
+/**
+ * リーチに対しての円形の範囲を生成する。
+ *
+ * 例えば、reach=2 なら、以下の "o" で表現している相対位置のリストを返す。
+ * +-+-+-+-+-+
+ * | | |o| | |
+ * +-+-+-+-+-+
+ * | |o| |o| |
+ * +-+-+-+-+-+
+ * |o| |@| |o| @={y:0, x:0}
+ * +-+-+-+-+-+
+ * | |o| |o| |
+ * +-+-+-+-+-+
+ * | | |o| | |
+ * +-+-+-+-+-+
+ *
+ * reach=3 なら、以下の相対位置のリストを返す。
+ * +-+-+-+-+-+-+-+
+ * | | | |o| | | |
+ * +-+-+-+-+-+-+-+
+ * | | |o| |o| | |
+ * +-+-+-+-+-+-+-+
+ * | |o| | | |o| |
+ * +-+-+-+-+-+-+-+
+ * |o| | |@| | |o| @={y:0, x:0}
+ * +-+-+-+-+-+-+-+
+ * | |o| | | |o| |
+ * +-+-+-+-+-+-+-+
+ * | | |o| |o| | |
+ * +-+-+-+-+-+-+-+
+ * | | | |o| | | |
+ * +-+-+-+-+-+-+-+
+ */
+export function createCircularRangeForReach(reach: number): MatrixPositionDelta[] {
+  if (reach === 0) {
+    return [{y: 0, x: 0}]
+  }
+  // 例えば、reach=3 なら [[3, 0], [2, 1], [1, 2]] というリストを期待している。
+  // [0, 3] を含めない理由は、このリストを後続処理で 4 方向で掛けて処理するときに、
+  //   [0, 3] は別の方向の [3, 0] と重なるためである。
+  const combinationsWhoseTotalEqualsReach: [number, number][] = []
+  for (let i = 0; i < reach; i++) {
+    combinationsWhoseTotalEqualsReach.push([reach - i, i])
+  }
+  const positionDeltas: MatrixPositionDelta[] = []
+  for (const directionKey of ['top', 'right', 'bottom', 'left']) {
+    combinationsWhoseTotalEqualsReach.forEach(combination => {
+      switch (directionKey) {
+        case 'top':
+          positionDeltas.push({
+            y: combination[0] * 1,
+            x: combination[1] * 1,
+          })
+          break
+        case 'right':
+          positionDeltas.push({
+            y: combination[1] * -1 || 0,  // `-0` to `0`
+            x: combination[0] * 1,
+          })
+          break
+        case 'bottom':
+          positionDeltas.push({
+            y: combination[0] * -1 || 0,
+            x: combination[1] * -1 || 0,
+          })
+          break
+        case 'left':
+          positionDeltas.push({
+            y: combination[1] * 1,
+            x: combination[0] * -1 || 0,
+          })
+          break
+        default:
+          throw Error('This direction does not exist.')
+          break
+      }
+    })
+  }
+  return positionDeltas
+}
+
+export const RANGE_SHAPES: {[key: string]: RangeShapeFragment[]} = {
+  circle: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(reach => {
+    return {
+      reach,
+      positionDeltas: createCircularRangeForReach(reach),
+    }
+  }),
+  cross: [
+    {
+      reach: 0,
+      positionDeltas: [{y: 0, x: 0}],
+    },
+    ...(
+      [1, 2, 3, 4, 5, 6].map(reach => {
+        return {
+          reach,
+          positionDeltas: [
+            {y: reach, x: 0},
+            {y: 0, x: reach},
+            {y: -reach, x: 0},
+            {y: 0, x: -reach},
+          ],
+        }
+      })
+    ),
+  ],
+  onlyMyself: [
+    {
+      reach: 0,
+      positionDeltas: [{y: 0, x: 0}],
+    },
+  ],
+}
 
 /**
  * Shuffle an array with the Fisher–Yates algorithm.
@@ -342,6 +469,55 @@ export function findBattleFieldElementsByDistance(
     }
   }
   return elements
+}
+
+/**
+ * 指定範囲のマスリストを返す。
+ *
+ * マスの整列順は、1) reach の短い範囲から、2) おおよそ top -> right -> bottom -> left の方向の順、を想定している。
+ * 例えば、circle なら以下の順番になる。
+ * +-+-+-+-+-+
+ * | | |5| | |
+ * +-+-+-+-+-+
+ * | |c|1|6| |
+ * +-+-+-+-+-+
+ * |b|4|@|2|7|
+ * +-+-+-+-+-+
+ * | |a|3|8| |
+ * +-+-+-+-+-+
+ * | | |9| | |
+ * +-+-+-+-+-+
+ * ただし、2 の方向については、RANGE_SHAPES の手動で設定している順番に依存しているため、
+ *   その設定順が間違えるとずれる。
+ */
+export function findBattleFieldElementsByRange(
+  matrix: BattleFieldMatrix,
+  startPoint: MatrixPosition,
+  rangeShapeKey: string,
+  minReach: number,
+  maxReach: number,
+  rangeShapes: typeof RANGE_SHAPES = RANGE_SHAPES,
+): BattleFieldElement[] {
+  const rangeShape = rangeShapes[rangeShapeKey]
+  if (rangeShape === undefined) {
+    throw new Error('There is no range corresponding to this `rangeKey`.')
+  }
+  const rangeFragments = rangeShape.filter(rangeFragment => {
+    return rangeFragment.reach >= minReach && rangeFragment.reach <= maxReach
+  })
+  let compositePositionDeltas: {y: number, x: number}[] = []
+  for (const rangeFragment of rangeFragments) {
+    compositePositionDeltas = compositePositionDeltas.concat(rangeFragment.positionDeltas)
+  }
+  return compositePositionDeltas
+    .map(positionDelta => {
+      return {
+        y: startPoint.y + positionDelta.y,
+        x: startPoint.x + positionDelta.x,
+      }
+    })
+    .filter(({y, x}) => y >= 0 && y <= matrix.length - 1 && x >= 0 && x <= matrix[0].length - 1)
+    .map(({y, x}) => matrix[y][x])
 }
 
 export function pickBattleFieldElementsWhereCreatureExists(
