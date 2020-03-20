@@ -218,7 +218,7 @@ describe('reducers/utils', function() {
   })
 
   describe('invokeAutoAttack', function() {
-    describe('攻撃者の通常攻撃範囲内に敵が配置されている状況で、通常攻撃を行なったとき', function() {
+    describe('攻撃者の自動攻撃範囲内に敵が配置されている状況で、自動攻撃を行なったとき', function() {
       let state: ApplicationState
       let battlePage: BattlePage
       let attacker: Creature
@@ -249,13 +249,13 @@ describe('reducers/utils', function() {
         assert.strictEqual(newEnemy.lifePoints < enemy.lifePoints, true)
       })
 
-      it('攻撃者の通常攻撃発動済みフラグが true である', function() {
+      it('攻撃者の自動攻撃発動済みフラグが true である', function() {
         const newAttacker = findCreatureById(result.creatures, attacker.id)
         assert.strictEqual(newAttacker.autoAttackInvoked, true)
       })
     })
 
-    describe('攻撃者の通常攻撃範囲外に敵が配置されている状況で、通常攻撃を行なったとき', function() {
+    describe('攻撃者の自動攻撃範囲外に敵が配置されている状況で、自動攻撃を行なったとき', function() {
       let state: ApplicationState
       let battlePage: BattlePage
       let attacker: Creature
@@ -286,7 +286,7 @@ describe('reducers/utils', function() {
         assert.strictEqual(newEnemy.lifePoints, enemy.lifePoints)
       })
 
-      it('攻撃者の通常攻撃発動済みフラグが false である', function() {
+      it('攻撃者の自動攻撃発動済みフラグが false である', function() {
         const newAttacker = findCreatureById(result.creatures, attacker.id)
         assert.strictEqual(newAttacker.autoAttackInvoked, false)
       })
@@ -448,7 +448,7 @@ describe('reducers/utils', function() {
         battleFieldMatrix[0][0].creatureId = c.id
       })
 
-      describe('そのクリーチャーの通常攻撃発動済みフラグが false のとき', function() {
+      describe('そのクリーチャーの自動攻撃発動済みフラグが false のとき', function() {
         beforeEach(function() {
           c.autoAttackInvoked = false
         })
@@ -461,7 +461,7 @@ describe('reducers/utils', function() {
         })
       })
 
-      describe('そのクリーチャーの通常攻撃発動済みフラグが true のとき', function() {
+      describe('そのクリーチャーの自動攻撃発動済みフラグが true のとき', function() {
         beforeEach(function() {
           c.autoAttackInvoked = true
         })

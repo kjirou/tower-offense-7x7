@@ -71,7 +71,7 @@ export function selectBattleFieldElement(
 
       // カードの使用（クリーチャーの配置・スキルの使用）をする。
       //
-      // 勝敗決定前、または、通常攻撃フェーズ完了前、
+      // 勝敗決定前、または、自動攻撃フェーズ完了前、
       // かつ、手札のカードへカーソルが当たっているとき。
       if (
         (
@@ -230,19 +230,19 @@ export function runAutoAttackPhase(
 
     let gameBeingUpdated = {...game}
 
-    // 攻撃者リストをループし、それぞれの通常攻撃または襲撃を発動する。
+    // 攻撃者リストをループし、それぞれの自動攻撃または襲撃を発動する。
     attackerDataList.forEach((attackerData) => {
       const attackerCreatureId = attackerData.creature.id
 
       const attackerWithParty = findCreatureWithParty(
         gameBeingUpdated.creatures, gameBeingUpdated.parties, attackerCreatureId)
 
-      // 攻撃者が行動不能のときは通常攻撃または襲撃を行わない。
+      // 攻撃者が行動不能のときは自動攻撃または襲撃を行わない。
       if (!creatureUtils.canAct(attackerWithParty.creature)) {
         return
       }
 
-      // 通常攻撃を試みる。
+      // 自動攻撃を試みる。
       gameBeingUpdated = {
         ...gameBeingUpdated,
         ...invokeAutoAttack(
@@ -254,7 +254,7 @@ export function runAutoAttackPhase(
         ),
       }
 
-      // computer 側クリーチャー、かつ、襲撃の充電が満タン、かつ、通常攻撃を行わなかった、とき。
+      // computer 側クリーチャー、かつ、襲撃の充電が満タン、かつ、自動攻撃を行わなかった、とき。
       const attackerWithPartyAfterAttack = findCreatureWithParty(
         gameBeingUpdated.creatures, gameBeingUpdated.parties, attackerCreatureId)
       if (
@@ -289,7 +289,7 @@ export function runAutoAttackPhase(
 
     draft.game = gameBeingUpdated
 
-    // 通常攻撃フェーズを終了する。
+    // 自動攻撃フェーズを終了する。
     draft.game.completedAutoAttackPhase = true
   })
   return Object.assign({}, state, {pages: {battle: newBattlePage}})
@@ -314,7 +314,7 @@ export function proceedTurn(
       ),
     }
 
-    // 通常攻撃発動済みフラグを false へ戻す。
+    // 自動攻撃発動済みフラグを false へ戻す。
     draft.game = {
       ...draft.game,
       creatures: draft.game.creatures.map(creature => ({

@@ -232,7 +232,7 @@ export function invokeAutoAttack(
 
     // 影響を決定する。
     // NOTE: このループ内で攻撃対象が死亡するなどしても、対象から除外しなくても良い。
-    //       通常攻撃の副作用で攻撃者に有利な効果が発生することもあり、それが意図せずに発生しないと損な感じが強そう。
+    //       自動攻撃の副作用で攻撃者に有利な効果が発生することもあり、それが意図せずに発生しないと損な感じが強そう。
     //       それにより、死亡しているクリーチャーも攻撃対象に含まれることになる。
     const affectedCreatures: Creature[] = targeteesData
       .map(targeteeData => {
@@ -246,7 +246,7 @@ export function invokeAutoAttack(
       return affected || creature
     })
 
-    // 通常攻撃攻撃者の通常攻撃実行済みフラグを true にする。
+    // 自動攻撃攻撃者の自動攻撃実行済みフラグを true にする。
     newCreatures = newCreatures.map(creature => {
       if (creature.id === attackerData.creature.id) {
         creature.autoAttackInvoked = true

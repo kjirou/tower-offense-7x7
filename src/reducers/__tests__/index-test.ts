@@ -229,7 +229,7 @@ describe('reducers/index', function() {
         battlePage.game.battleFieldMatrix[0][0].creatureId = c.id
       })
 
-      describe('player 側クリーチャーが通常攻撃の範囲内にいるとき', function() {
+      describe('player 側クリーチャーが自動攻撃の範囲内にいるとき', function() {
         beforeEach(function() {
           battlePage.game = {
             ...battlePage.game,
@@ -249,7 +249,7 @@ describe('reducers/index', function() {
         })
       })
 
-      describe('player 側クリーチャーが通常攻撃の範囲内にいないとき', function() {
+      describe('player 側クリーチャーが自動攻撃の範囲内にいないとき', function() {
         it('本拠地は襲撃される', function() {
           const newState = runAutoAttackPhase(state)
           const newBattlePage = ensureBattlePage(newState)
@@ -282,7 +282,7 @@ describe('reducers/index', function() {
       assert.strictEqual(newA.raidCharge, 0)
     })
 
-    it('クリーチャーの通常攻撃発動済みフラグを一律 false へ更新する', function() {
+    it('クリーチャーの自動攻撃発動済みフラグを一律 false へ更新する', function() {
       const a = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
       a.autoAttackInvoked = true
       const newState = proceedTurn(runAutoAttackPhase(state))
