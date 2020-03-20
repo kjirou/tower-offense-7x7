@@ -20,7 +20,7 @@ import {
   creatureUtils,
   determineRelationshipBetweenFactions,
   findBattleFieldElementByCreatureId,
-  findBattleFieldElementsByDistance,
+  findBattleFieldElementsByRange,
   findCreatureAppearanceByTurnNumber,
   findCreatureById,
   findCreatureByIdIfPossible,
@@ -184,9 +184,9 @@ export function findNormalAttackTargeteeCandidates(
 
   // 攻撃対象者候補である、射程範囲内で敵対関係のクリーチャー情報を抽出する。
   const targeteeCandidatesData: CreatureWithPartyOnBattleFieldElement[] = []
-  const dummyDistance = 1
-  const reachableBattleFieldElements = findBattleFieldElementsByDistance(
-    battleFieldMatrix, attackerData.battleFieldElement.position, dummyDistance)
+  const dummyReach = 1
+  const reachableBattleFieldElements = findBattleFieldElementsByRange(
+    battleFieldMatrix, attackerData.battleFieldElement.position, 'circle', 0, dummyReach)
   for (const reachableBattleFieldElement of reachableBattleFieldElements) {
     if (reachableBattleFieldElement.creatureId !== undefined) {
       const creatureWithParty =
@@ -307,9 +307,9 @@ function invokeAttackSkill(context: SkillProcessContext): SkillProcessResult {
 
   // 作用対象者候補である、射程範囲内で敵対関係のクリーチャー情報を探す。
   const targeteeCandidatesData: CreatureWithPartyOnBattleFieldElement[] = []
-  const dummyDistance = 2
-  const reachableBattleFieldElements = findBattleFieldElementsByDistance(
-    context.battleFieldMatrix, attackerData.battleFieldElement.position, dummyDistance)
+  const dummyReach = 2
+  const reachableBattleFieldElements = findBattleFieldElementsByRange(
+    context.battleFieldMatrix, attackerData.battleFieldElement.position, 'circle', 0, dummyReach)
   for (const reachableBattleFieldElement of reachableBattleFieldElements) {
     if (reachableBattleFieldElement.creatureId !== undefined) {
       const creatureWithParty =
