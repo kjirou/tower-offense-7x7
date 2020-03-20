@@ -31,7 +31,7 @@ import {
   doesPlayerHaveDefeat,
   doesPlayerHaveVictory,
   increaseRaidChargeForEachComputerCreatures,
-  invokeNormalAttack,
+  invokeAutoAttack,
   invokeRaid,
   invokeSkill,
   placePlayerFactionCreature,
@@ -217,13 +217,13 @@ describe('reducers/utils', function() {
     })
   })
 
-  describe('invokeNormalAttack', function() {
+  describe('invokeAutoAttack', function() {
     describe('攻撃者の通常攻撃範囲内に敵が配置されている状況で、通常攻撃を行なったとき', function() {
       let state: ApplicationState
       let battlePage: BattlePage
       let attacker: Creature
       let enemy: Creature
-      let result: ReturnType<typeof invokeNormalAttack>
+      let result: ReturnType<typeof invokeAutoAttack>
 
       beforeEach(function() {
         state = createStateDisplayBattlePageAtStartOfGame()
@@ -235,7 +235,7 @@ describe('reducers/utils', function() {
         enemy.lifePoints = 2
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][1].creatureId = enemy.id
-        result = invokeNormalAttack(
+        result = invokeAutoAttack(
           battlePage.game.constants,
           battlePage.game.creatures,
           battlePage.game.parties,
@@ -260,7 +260,7 @@ describe('reducers/utils', function() {
       let battlePage: BattlePage
       let attacker: Creature
       let enemy: Creature
-      let result: ReturnType<typeof invokeNormalAttack>
+      let result: ReturnType<typeof invokeAutoAttack>
 
       beforeEach(function() {
         state = createStateDisplayBattlePageAtStartOfGame()
@@ -272,7 +272,7 @@ describe('reducers/utils', function() {
         enemy.lifePoints = 2
         battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
         battlePage.game.battleFieldMatrix[0][2].creatureId = enemy.id
-        result = invokeNormalAttack(
+        result = invokeAutoAttack(
           battlePage.game.constants,
           battlePage.game.creatures,
           battlePage.game.parties,

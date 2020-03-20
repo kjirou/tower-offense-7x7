@@ -163,7 +163,7 @@ export function removeDeadCreatures(
   }
 }
 
-export function invokeNormalAttack(
+export function invokeAutoAttack(
   constants: Game['constants'],
   creatures: Creature[],
   parties: Party[],

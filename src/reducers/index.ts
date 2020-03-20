@@ -28,7 +28,7 @@ import {
 import {
   determineVictoryOrDefeat,
   increaseRaidChargeForEachComputerCreatures,
-  invokeNormalAttack,
+  invokeAutoAttack,
   invokeRaid,
   invokeSkill,
   placePlayerFactionCreature,
@@ -245,7 +245,7 @@ export function runAutoAttackPhase(
       // 通常攻撃を試みる。
       gameBeingUpdated = {
         ...gameBeingUpdated,
-        ...invokeNormalAttack(
+        ...invokeAutoAttack(
           gameBeingUpdated.constants,
           gameBeingUpdated.creatures,
           gameBeingUpdated.parties,
