@@ -128,7 +128,7 @@ function mapBattlePageStateToProps(
         },
       }
       : {
-        label: 'Battle',
+        label: 'Auto-Attack',
         handleTouch: () => {
           setState(s => runAutoAttackPhase(s))
         },

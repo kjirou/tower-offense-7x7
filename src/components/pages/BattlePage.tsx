@@ -345,7 +345,7 @@ const Footer: React.FC<FooterProps> = (props) => {
         backgroundColor: 'lime',
       }}>
         <div style={{
-          fontSize: '24px',
+          fontSize: '20px',
         }}>Rollback</div>
       </div>
       <div style={{
@@ -365,7 +365,7 @@ const Footer: React.FC<FooterProps> = (props) => {
       >
         <div
           style={{
-            fontSize: '24px',
+            fontSize: '20px',
           }}
         >{props.progressButton.label}</div>
       </div>
