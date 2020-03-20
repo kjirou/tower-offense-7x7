@@ -284,11 +284,11 @@ describe('reducers/index', function() {
 
     it('クリーチャーの通常攻撃発動済みフラグを一律 false へ更新する', function() {
       const a = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
-      a.normalAttackInvoked = true
+      a.autoAttackInvoked = true
       const newState = proceedTurn(runAutoAttackPhase(state))
       const newBattlePage = ensureBattlePage(newState)
       const newA = findCreatureById(newBattlePage.game.creatures, a.id)
-      assert.strictEqual(newA.normalAttackInvoked, false)
+      assert.strictEqual(newA.autoAttackInvoked, false)
     })
 
     it('actionPoints を actionPointsRecovery の分回復する', function() {

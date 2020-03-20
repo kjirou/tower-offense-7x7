@@ -260,7 +260,7 @@ export function runAutoAttackPhase(
       if (
         attackerWithPartyAfterAttack.party.factionId === 'computer' &&
         creatureUtils.isRaidChageFull(attackerWithPartyAfterAttack.creature, game.constants) &&
-        attackerWithPartyAfterAttack.creature.normalAttackInvoked === false
+        attackerWithPartyAfterAttack.creature.autoAttackInvoked === false
       ) {
         // 襲撃を行う。
         gameBeingUpdated = {
@@ -319,7 +319,7 @@ export function proceedTurn(
       ...draft.game,
       creatures: draft.game.creatures.map(creature => ({
         ...creature,
-        normalAttackInvoked: false,
+        autoAttackInvoked: false,
       }))
     }
 

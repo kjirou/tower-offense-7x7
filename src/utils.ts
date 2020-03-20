@@ -48,10 +48,10 @@ export type Creature = {
   _maxLifePointsForTest?: Job['maxLifePoints'],
   _raidIntervalForTest?: Job['raidInterval'],
   _raidPowerForTest?: Job['raidPower'],
+  autoAttackInvoked: boolean,
   id: string,
   jobId: string,
   lifePoints: number,
-  normalAttackInvoked: boolean,
   raidCharge: number,
   skillIds: Skill['id'][],
 }

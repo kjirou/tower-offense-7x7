@@ -182,7 +182,7 @@ export function invokeNormalAttack(
     battleFieldElement: findBattleFieldElementByCreatureId(battleFieldMatrix, attackerCreatureId),
   }
 
-  if (attackerData.creature.normalAttackInvoked) {
+  if (attackerData.creature.autoAttackInvoked) {
     throw new Error('The creature had already invoked a auto-attack.')
   }
 
@@ -249,7 +249,7 @@ export function invokeNormalAttack(
     // 通常攻撃攻撃者の通常攻撃実行済みフラグを true にする。
     newCreatures = newCreatures.map(creature => {
       if (creature.id === attackerData.creature.id) {
-        creature.normalAttackInvoked = true
+        creature.autoAttackInvoked = true
       }
       return creature
     })
@@ -360,7 +360,7 @@ export function increaseRaidChargeForEachComputerCreatures(
       const creatureWithParty = findCreatureWithParty(creatures, parties, element.creatureId)
       if (
         creatureWithParty.party.factionId === 'computer' &&
-        creatureWithParty.creature.normalAttackInvoked === false
+        creatureWithParty.creature.autoAttackInvoked === false
       ) {
         affectedCreatures.push(creatureUtils.updateRaidChargeWithTurnProgress(creatureWithParty.creature, constants))
       }

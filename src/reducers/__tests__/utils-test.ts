@@ -251,7 +251,7 @@ describe('reducers/utils', function() {
 
       it('攻撃者の通常攻撃発動済みフラグが true である', function() {
         const newAttacker = findCreatureById(result.creatures, attacker.id)
-        assert.strictEqual(newAttacker.normalAttackInvoked, true)
+        assert.strictEqual(newAttacker.autoAttackInvoked, true)
       })
     })
 
@@ -288,7 +288,7 @@ describe('reducers/utils', function() {
 
       it('攻撃者の通常攻撃発動済みフラグが false である', function() {
         const newAttacker = findCreatureById(result.creatures, attacker.id)
-        assert.strictEqual(newAttacker.normalAttackInvoked, false)
+        assert.strictEqual(newAttacker.autoAttackInvoked, false)
       })
     })
   })
@@ -450,7 +450,7 @@ describe('reducers/utils', function() {
 
       describe('そのクリーチャーの通常攻撃発動済みフラグが false のとき', function() {
         beforeEach(function() {
-          c.normalAttackInvoked = false
+          c.autoAttackInvoked = false
         })
 
         it('そのクリーチャーの raidCharge を増加する', function() {
@@ -463,7 +463,7 @@ describe('reducers/utils', function() {
 
       describe('そのクリーチャーの通常攻撃発動済みフラグが true のとき', function() {
         beforeEach(function() {
-          c.normalAttackInvoked = true
+          c.autoAttackInvoked = true
         })
 
         it('そのクリーチャーの raidCharge は変化しない', function() {

@@ -66,7 +66,7 @@ export function createCreature(): Creature {
     lifePoints: 1,
     raidCharge: 0,
     skillIds: [],
-    normalAttackInvoked: false,
+    autoAttackInvoked: false,
   }
 }
 
