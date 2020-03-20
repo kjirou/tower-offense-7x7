@@ -23,7 +23,7 @@ import {
 } from './utils'
 import {
   proceedTurn,
-  runNormalAttackPhase,
+  runAutoAttackPhase,
   selectBattleFieldElement,
   selectCardOnPlayersHand,
 } from './reducers'
@@ -130,7 +130,7 @@ function mapBattlePageStateToProps(
       : {
         label: 'Battle',
         handleTouch: () => {
-          setState(s => runNormalAttackPhase(s))
+          setState(s => runAutoAttackPhase(s))
         },
       }
     : game.battleResult.victoryOrDefeatId === 'victory'

@@ -201,7 +201,7 @@ export function selectCardOnPlayersHand(
   return Object.assign({}, state, {pages: {battle: newBattlePage}})
 }
 
-export function runNormalAttackPhase(
+export function runAutoAttackPhase(
   state: ApplicationState,
 ): ApplicationState {
   const newBattlePage = produce(ensureBattlePage(state), draft => {
