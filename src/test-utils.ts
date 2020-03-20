@@ -42,7 +42,7 @@ export function createJob(): Job {
     raidInterval: 0,
     raidPower: 1,
     autoAttackRange: {
-      rangeShapeKey: 'range',
+      rangeShapeKey: 'circle',
       minReach: 1,
       maxReach: 1,
     },

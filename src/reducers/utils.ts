@@ -186,11 +186,16 @@ export function invokeNormalAttack(
     throw new Error('The creature had already invoked a normal-attack.')
   }
 
-  // 攻撃対象者候補である、射程範囲内で敵対関係のクリーチャー情報を抽出する。
+  // 攻撃対象者候補である、範囲内で敵対関係のクリーチャー情報を抽出する。
   const targeteeCandidatesData: CreatureWithPartyOnBattleFieldElement[] = []
-  const dummyReach = 1
+  const range = creatureUtils.getAutoAttackRange(attackerData.creature, constants)
   const reachableBattleFieldElements = findBattleFieldElementsByRange(
-    battleFieldMatrix, attackerData.battleFieldElement.position, 'circle', 0, dummyReach)
+    battleFieldMatrix,
+    attackerData.battleFieldElement.position,
+    range.rangeShapeKey,
+    range.minReach,
+    range.maxReach
+  )
   for (const reachableBattleFieldElement of reachableBattleFieldElements) {
     if (reachableBattleFieldElement.creatureId !== undefined) {
       const creatureWithParty =
