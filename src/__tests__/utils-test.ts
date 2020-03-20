@@ -18,14 +18,18 @@ import {
   Creature,
   Game,
   MatrixPosition,
+  MatrixPositionDelta,
   Party,
+  RANGE_SHAPES,
+  RangeShapeFragment,
   areGlobalPositionsEqual,
   choiceElementsAtRandom,
   createBattleFieldMatrix,
+  createCircularRangeForReach,
   creatureUtils,
   ensureBattlePage,
   findBattleFieldElementByCreatureId,
-  findBattleFieldElementsByDistance,
+  findBattleFieldElementsByRange,
   findCardUnderCursor,
   findCardsByCreatureIds,
   findPartyByCreatureId,
@@ -162,6 +166,43 @@ describe('utils', function() {
         [1, 2, 3, 4],
       )
     })
+  })
+
+  describe('createCircularRangeForReach', function() {
+    const testCases: {
+      reach: number,
+      positionDeltas: MatrixPositionDelta[],
+    }[] = [
+      {
+        reach: 0,
+        positionDeltas: [{y: 0, x: 0}],
+      },
+      {
+        reach: 1,
+        positionDeltas: [{y: 1, x: 0}, {y: 0, x: 1}, {y: -1, x: 0}, {y: 0, x: -1}],
+      },
+      {
+        reach: 2,
+        positionDeltas: [
+          {y: 2, x: 0}, {y: 1, x: 1}, {y: 0, x: 2}, {y: -1, x: 1},
+          {y: -2, x: 0}, {y: -1, x: -1}, {y: 0, x: -2}, {y: 1, x: -1},
+        ],
+      },
+      {
+        reach: 3,
+        positionDeltas: [
+          {y: 3, x: 0}, {y: 2, x: 1}, {y: 1, x: 2},
+          {y: 0, x: 3}, {y: -1, x: 2}, {y: -2, x: 1},
+          {y: -3, x: 0}, {y: -2, x: -1}, {y: -1, x: -2},
+          {y: 0, x: -3}, {y: 1, x: -2}, {y: 2, x: -1},
+        ],
+      },
+    ]
+    for (const testCase of testCases) {
+      it(`reach=${testCase.reach} に対する期待通りの範囲を生成する`, function() {
+        assert.deepStrictEqual(createCircularRangeForReach(testCase.reach), testCase.positionDeltas)
+      })
+    }
   })
 
   describe('findPartyByCreatureId', function() {
@@ -333,69 +374,109 @@ describe('utils', function() {
     })
   })
 
-  describe('findBattleFieldElementsByDistance', function() {
-    // +-+-+-+
-    // | |0| |
-    // +-+-+-+
-    // |1|S|3| (S == 2)
-    // +-+-+-+
-    // | |4| |
-    // +-+-+-+
-    it('can find elements within 1 or less than 1 distance', function() {
-      const matrix = createBattleFieldMatrix(3, 3)
-      const elements = findBattleFieldElementsByDistance(matrix, matrix[1][1].position, 1)
-      assert.strictEqual(elements[0].position.y, 0)
-      assert.strictEqual(elements[0].position.x, 1)
-      assert.strictEqual(elements[1].position.y, 1)
-      assert.strictEqual(elements[1].position.x, 0)
-      assert.strictEqual(elements[2].position.y, 1)
-      assert.strictEqual(elements[2].position.x, 1)
-      assert.strictEqual(elements[3].position.y, 1)
-      assert.strictEqual(elements[3].position.x, 2)
-      assert.strictEqual(elements[4].position.y, 2)
-      assert.strictEqual(elements[4].position.x, 1)
+  describe('RANGE_SHAPES', function() {
+    for (const rangeShapeKey of Object.keys(RANGE_SHAPES)) {
+      describe(rangeShapeKey, function() {
+        let rangeShape: RangeShapeFragment[]
+        beforeEach(function() {
+          rangeShape = RANGE_SHAPES[rangeShapeKey]
+        })
+
+        it('断片同士が同じリーチを持たない', function() {
+          const reaches = rangeShape.map(e => e.reach)
+          for (const reach of reaches) {
+            const count = reaches.filter(e => e === reach).length
+            assert.strictEqual(count, 1)
+          }
+        })
+
+        it('断片同士が同じ相対位置を持たない', function() {
+          let compositePositionDeltas: {y: number, x: number}[] = []
+          for (const rangeShapeFragment of rangeShape) {
+            compositePositionDeltas = compositePositionDeltas.concat(rangeShapeFragment.positionDeltas)
+          }
+          while (compositePositionDeltas.length > 0) {
+            const positionDelta = compositePositionDeltas.pop() as {y: number, x: number}
+            const found = compositePositionDeltas.find(e => positionDelta.y === e.y && positionDelta.x === e.x)
+            assert.strictEqual(found, undefined, `${rangeShapeKey} の ${JSON.stringify(found)} が重複している`)
+          }
+        })
+      })
+    }
+  })
+
+  describe('findBattleFieldElementsByRange', function() {
+    let matrix: BattleFieldMatrix
+    beforeEach(function() {
+      matrix = createBattleFieldMatrix(7, 7)
     })
 
-    // +-+-+-+
-    // | | |0|
-    // +-+-+-+
-    // | |1|2|
-    // +-+-+-+
-    // |3|4|S| (S == 5)
-    // +-+-+-+
-    it('can find elements within 2 or less than 2 distances', function() {
-      const matrix = createBattleFieldMatrix(3, 3)
-      const elements = findBattleFieldElementsByDistance(matrix, matrix[2][2].position, 2)
-      assert.strictEqual(elements[0].position.y, 0)
-      assert.strictEqual(elements[0].position.x, 2)
-      assert.strictEqual(elements[1].position.y, 1)
-      assert.strictEqual(elements[1].position.x, 1)
-      assert.strictEqual(elements[2].position.y, 1)
-      assert.strictEqual(elements[2].position.x, 2)
-      assert.strictEqual(elements[3].position.y, 2)
-      assert.strictEqual(elements[3].position.x, 0)
-      assert.strictEqual(elements[4].position.y, 2)
-      assert.strictEqual(elements[4].position.x, 1)
-      assert.strictEqual(elements[5].position.y, 2)
-      assert.strictEqual(elements[5].position.x, 2)
+    it('存在しない範囲形状キーを指定したとき、例外を発生する', function() {
+      assert.throws(() => {
+        findBattleFieldElementsByRange(matrix, {y: 0, x: 0}, 'doesNotExist', 0, 0)
+      }, /rangeKey/)
     })
 
-    // +-+-+
-    // |S|1| (S == 0)
-    // +-+-+
-    // |2|3|
-    // +-+-+
-    it('should sort in the order `y` then sort in the order `x`', function() {
-      const matrix = createBattleFieldMatrix(2, 2)
-      const elements = findBattleFieldElementsByDistance(matrix, matrix[0][0].position, 99)
-      assert.strictEqual(elements[0].position.y, 0)
-      assert.strictEqual(elements[0].position.x, 0)
-      assert.strictEqual(elements[1].position.y, 0)
-      assert.strictEqual(elements[1].position.x, 1)
-      assert.strictEqual(elements[2].position.y, 1)
-      assert.strictEqual(elements[2].position.x, 0)
-      assert.strictEqual(elements[3].position.y, 1)
-      assert.strictEqual(elements[3].position.x, 1)
+    describe('指定したリーチの幅が範囲形状の複数の断片を含むとき', function() {
+      it('断片を近い順で結合した結果を返す', function() {
+        const elements = findBattleFieldElementsByRange(matrix, {y: 3, x: 3}, 'cross', 1, 2)
+        assert.deepStrictEqual(
+          elements,
+          [
+            matrix[4][3],
+            matrix[3][4],
+            matrix[2][3],
+            matrix[3][2],
+            matrix[5][3],
+            matrix[3][5],
+            matrix[1][3],
+            matrix[3][1],
+          ]
+        )
+      })
+    })
+
+    describe('指定したリーチの幅が範囲形状の最小リーチ未満であるとき', function() {
+      it('空の結果を返す', function() {
+        const rangeShapes = {
+          foo: [
+            {
+              reach: 1,
+              positionDeltas: [{y: 0, x: 0}],
+            },
+          ],
+        }
+        const elements = findBattleFieldElementsByRange(matrix, {y: 0, x: 0}, 'foo', 0, 0, rangeShapes)
+        assert.deepStrictEqual(elements, [])
+      })
+    })
+
+    describe('指定したリーチの幅が範囲形状の最大リーチ超であるとき', function() {
+      it('空の結果を返す', function() {
+        const rangeShapes = {
+          foo: [
+            {
+              reach: 1,
+              positionDeltas: [{y: 0, x: 0}],
+            },
+          ],
+        }
+        const elements = findBattleFieldElementsByRange(matrix, {y: 0, x: 0}, 'foo', 2, 2, rangeShapes)
+        assert.deepStrictEqual(elements, [])
+      })
+    })
+
+    describe('指定した範囲に盤の広さを超える位置を含むとき', function() {
+      it('盤をはみ出す位置は無視され、盤に存在するマスのみを返す', function() {
+        const elements = findBattleFieldElementsByRange(matrix, {y: 3, x: 3}, 'circle', 0, 12)
+        assert.strictEqual(elements.length, 49)
+        for (const element of elements) {
+          assert.strictEqual(element.position.y >= 0, true)
+          assert.strictEqual(element.position.y <= 7, true)
+          assert.strictEqual(element.position.x >= 0, true)
+          assert.strictEqual(element.position.x <= 7, true)
+        }
+      })
     })
   })
 
@@ -501,6 +582,29 @@ describe('utils', function() {
         constants.jobs[0].attackPower = 2
         creature._attackPowerForTest = 99
         assert.strictEqual(creatureUtils.getAttackPower(creature, constants), 99)
+      })
+    })
+
+    describe('getAutoAttackRange', function() {
+      it('_autoAttackRangeForTest が存在しているときはその値を優先して返す', function() {
+        constants.jobs[0].autoAttackRange = {
+          rangeShapeKey: 'circle',
+          minReach: 0,
+          maxReach: 1,
+        }
+        creature._autoAttackRangeForTest = {
+          rangeShapeKey: 'cross',
+          minReach: 2,
+          maxReach: 3,
+        }
+        assert.deepStrictEqual(
+          creatureUtils.getAutoAttackRange(creature, constants),
+          {
+            rangeShapeKey: 'cross',
+            minReach: 2,
+            maxReach: 3,
+          }
+        )
       })
     })
 

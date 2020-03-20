@@ -27,6 +27,11 @@ const dummyJobTemplate = {
   attackPower: 1,
   raidInterval: 0,
   raidPower: 0,
+  autoAttackRange: {
+    rangeShapeKey: 'circle',
+    minReach: 1,
+    maxReach: 1,
+  },
 }
 const dummyJobs: Job[] = [
   {

@@ -41,6 +41,11 @@ export function createJob(): Job {
     maxLifePoints: 1,
     raidInterval: 0,
     raidPower: 1,
+    autoAttackRange: {
+      rangeShapeKey: 'circle',
+      minReach: 1,
+      maxReach: 1,
+    },
   }
 }
 
