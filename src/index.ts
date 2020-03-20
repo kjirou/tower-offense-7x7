@@ -88,7 +88,7 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
     lifePoints: 0,
     raidCharge: 0,
     skillIds: [],
-    normalAttackInvoked: false,
+    autoAttackInvoked: false,
   }
   switch (index % 5) {
     case 0:
@@ -127,7 +127,7 @@ const dummyEnemies: Creature[] = Array.from({length: 20}).map((unused, index) =>
     lifePoints: 0,
     raidCharge: 0,
     skillIds: [],
-    normalAttackInvoked: false,
+    autoAttackInvoked: false,
   }
   switch (index % 2) {
     case 0:
@@ -197,7 +197,7 @@ function createInitialGame(): Game {
       }),
     creatureAppearances: dummyCreatureAppearances,
     cursor: undefined,
-    completedNormalAttackPhase: false,
+    completedAutoAttackPhase: false,
     turnNumber: 1,
     battleResult: {
       victoryOrDefeatId: 'pending',

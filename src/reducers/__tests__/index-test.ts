@@ -20,7 +20,7 @@ import {
 } from '../../test-utils'
 import {
   proceedTurn,
-  runNormalAttackPhase,
+  runAutoAttackPhase,
   selectBattleFieldElement,
 } from '../index'
 import {
@@ -91,7 +91,7 @@ describe('reducers/index', function() {
     })
   })
 
-  describe('runNormalAttackPhase', function() {
+  describe('runAutoAttackPhase', function() {
     describe('敵対関係であるクリーチャーが隣接しているとき', function() {
       let state: ApplicationState
       let battlePage: BattlePage
@@ -120,7 +120,7 @@ describe('reducers/index', function() {
         a._attackPowerForTest = 1
         b.lifePoints = 2
         b._attackPowerForTest = 1
-        const newState = runNormalAttackPhase(state)
+        const newState = runAutoAttackPhase(state)
         const newBattlePage = ensureBattlePage(newState)
         const newA = findCreatureById(newBattlePage.game.creatures, a.id)
         const newB = findCreatureById(newBattlePage.game.creatures, b.id)
@@ -139,7 +139,7 @@ describe('reducers/index', function() {
         })
 
         it('b が盤上に存在しない結果を返す', function() {
-          const newState = runNormalAttackPhase(state)
+          const newState = runAutoAttackPhase(state)
           const newBattlePage = ensureBattlePage(newState)
           assert.strictEqual(newBattlePage.game.battleFieldMatrix[0][1].creatureId, undefined)
         })
@@ -174,7 +174,7 @@ describe('reducers/index', function() {
             {y: 0, x: 1}
           )
         }
-        const newState = runNormalAttackPhase(state)
+        const newState = runAutoAttackPhase(state)
         const newBattlePage = ensureBattlePage(newState)
         const newA = findCreatureById(newBattlePage.game.creatures, a.id)
         const newB = findCreatureById(newBattlePage.game.creatures, b.id)
@@ -204,7 +204,7 @@ describe('reducers/index', function() {
         }
         battlePage.game.battleFieldMatrix[0][1].creatureId = b.id
         const cardsInDeck = battlePage.game.cardsInDeck
-        const newState = runNormalAttackPhase(state)
+        const newState = runAutoAttackPhase(state)
         const newBattlePage = ensureBattlePage(newState)
         const newCardsInDeck = newBattlePage.game.cardsInDeck
         assert.strictEqual(newCardsInDeck.length > cardsInDeck.length, true)
@@ -229,7 +229,7 @@ describe('reducers/index', function() {
         battlePage.game.battleFieldMatrix[0][0].creatureId = c.id
       })
 
-      describe('player 側クリーチャーが通常攻撃の範囲内にいるとき', function() {
+      describe('player 側クリーチャーが自動攻撃の範囲内にいるとき', function() {
         beforeEach(function() {
           battlePage.game = {
             ...battlePage.game,
@@ -243,15 +243,15 @@ describe('reducers/index', function() {
         })
 
         it('本拠地は襲撃されない', function() {
-          const newState = runNormalAttackPhase(state)
+          const newState = runAutoAttackPhase(state)
           const newBattlePage = ensureBattlePage(newState)
           assert.strictEqual(newBattlePage.game.headquartersLifePoints, battlePage.game.headquartersLifePoints)
         })
       })
 
-      describe('player 側クリーチャーが通常攻撃の範囲内にいないとき', function() {
+      describe('player 側クリーチャーが自動攻撃の範囲内にいないとき', function() {
         it('本拠地は襲撃される', function() {
-          const newState = runNormalAttackPhase(state)
+          const newState = runAutoAttackPhase(state)
           const newBattlePage = ensureBattlePage(newState)
           assert.strictEqual(
             newBattlePage.game.headquartersLifePoints < battlePage.game.headquartersLifePoints,
@@ -276,25 +276,25 @@ describe('reducers/index', function() {
       a._raidIntervalForTest = 1
       a.raidCharge = 0
       battlePage.game.battleFieldMatrix[0][0].reservedCreatureId = a.id
-      const newState = proceedTurn(runNormalAttackPhase(state))
+      const newState = proceedTurn(runAutoAttackPhase(state))
       const newBattlePage = ensureBattlePage(newState)
       const newA = findCreatureById(newBattlePage.game.creatures, a.id)
       assert.strictEqual(newA.raidCharge, 0)
     })
 
-    it('クリーチャーの通常攻撃発動済みフラグを一律 false へ更新する', function() {
+    it('クリーチャーの自動攻撃発動済みフラグを一律 false へ更新する', function() {
       const a = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
-      a.normalAttackInvoked = true
-      const newState = proceedTurn(runNormalAttackPhase(state))
+      a.autoAttackInvoked = true
+      const newState = proceedTurn(runAutoAttackPhase(state))
       const newBattlePage = ensureBattlePage(newState)
       const newA = findCreatureById(newBattlePage.game.creatures, a.id)
-      assert.strictEqual(newA.normalAttackInvoked, false)
+      assert.strictEqual(newA.autoAttackInvoked, false)
     })
 
     it('actionPoints を actionPointsRecovery の分回復する', function() {
       battlePage.game.actionPoints = 2
       battlePage.game.actionPointsRecovery = 3
-      const newState = proceedTurn(runNormalAttackPhase(state))
+      const newState = proceedTurn(runAutoAttackPhase(state))
       const newBattlePage = ensureBattlePage(newState)
       assert.strictEqual(newBattlePage.game.actionPoints, 5)
     })

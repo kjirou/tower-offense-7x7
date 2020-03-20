@@ -28,7 +28,7 @@ import {
 import {
   determineVictoryOrDefeat,
   increaseRaidChargeForEachComputerCreatures,
-  invokeNormalAttack,
+  invokeAutoAttack,
   invokeRaid,
   invokeSkill,
   placePlayerFactionCreature,
@@ -71,12 +71,12 @@ export function selectBattleFieldElement(
 
       // カードの使用（クリーチャーの配置・スキルの使用）をする。
       //
-      // 勝敗決定前、または、通常攻撃フェーズ完了前、
+      // 勝敗決定前、または、自動攻撃フェーズ完了前、
       // かつ、手札のカードへカーソルが当たっているとき。
       if (
         (
           draft.game.battleResult.victoryOrDefeatId === 'pending' &&
-          draft.game.completedNormalAttackPhase === false
+          draft.game.completedAutoAttackPhase === false
         ) &&
         cardUnderCursor
       ) {
@@ -201,14 +201,14 @@ export function selectCardOnPlayersHand(
   return Object.assign({}, state, {pages: {battle: newBattlePage}})
 }
 
-export function runNormalAttackPhase(
+export function runAutoAttackPhase(
   state: ApplicationState,
 ): ApplicationState {
   const newBattlePage = produce(ensureBattlePage(state), draft => {
     const game = draft.game
 
-    if (game.completedNormalAttackPhase) {
-      throw new Error('The normal-attack phase is over.')
+    if (game.completedAutoAttackPhase) {
+      throw new Error('The auto-attack phase is over.')
     }
 
     // TODO: アニメーション用の情報を生成する。
@@ -230,22 +230,22 @@ export function runNormalAttackPhase(
 
     let gameBeingUpdated = {...game}
 
-    // 攻撃者リストをループし、それぞれの通常攻撃または襲撃を発動する。
+    // 攻撃者リストをループし、それぞれの自動攻撃または襲撃を発動する。
     attackerDataList.forEach((attackerData) => {
       const attackerCreatureId = attackerData.creature.id
 
       const attackerWithParty = findCreatureWithParty(
         gameBeingUpdated.creatures, gameBeingUpdated.parties, attackerCreatureId)
 
-      // 攻撃者が行動不能のときは通常攻撃または襲撃を行わない。
+      // 攻撃者が行動不能のときは自動攻撃または襲撃を行わない。
       if (!creatureUtils.canAct(attackerWithParty.creature)) {
         return
       }
 
-      // 通常攻撃を試みる。
+      // 自動攻撃を試みる。
       gameBeingUpdated = {
         ...gameBeingUpdated,
-        ...invokeNormalAttack(
+        ...invokeAutoAttack(
           gameBeingUpdated.constants,
           gameBeingUpdated.creatures,
           gameBeingUpdated.parties,
@@ -254,13 +254,13 @@ export function runNormalAttackPhase(
         ),
       }
 
-      // computer 側クリーチャー、かつ、襲撃の充電が満タン、かつ、通常攻撃を行わなかった、とき。
+      // computer 側クリーチャー、かつ、襲撃の充電が満タン、かつ、自動攻撃を行わなかった、とき。
       const attackerWithPartyAfterAttack = findCreatureWithParty(
         gameBeingUpdated.creatures, gameBeingUpdated.parties, attackerCreatureId)
       if (
         attackerWithPartyAfterAttack.party.factionId === 'computer' &&
         creatureUtils.isRaidChageFull(attackerWithPartyAfterAttack.creature, game.constants) &&
-        attackerWithPartyAfterAttack.creature.normalAttackInvoked === false
+        attackerWithPartyAfterAttack.creature.autoAttackInvoked === false
       ) {
         // 襲撃を行う。
         gameBeingUpdated = {
@@ -289,8 +289,8 @@ export function runNormalAttackPhase(
 
     draft.game = gameBeingUpdated
 
-    // 通常攻撃フェーズを終了する。
-    draft.game.completedNormalAttackPhase = true
+    // 自動攻撃フェーズを終了する。
+    draft.game.completedAutoAttackPhase = true
   })
   return Object.assign({}, state, {pages: {battle: newBattlePage}})
 }
@@ -299,8 +299,8 @@ export function proceedTurn(
   state: ApplicationState,
 ): ApplicationState {
   const newBattlePage = produce(ensureBattlePage(state), draft => {
-    if (!draft.game.completedNormalAttackPhase) {
-      throw new Error('The normal-attack phase must be completed.')
+    if (!draft.game.completedAutoAttackPhase) {
+      throw new Error('The auto-attack phase must be completed.')
     }
 
     // computer 側クリーチャーの襲撃充電数の自然増加を行う。
@@ -314,12 +314,12 @@ export function proceedTurn(
       ),
     }
 
-    // 通常攻撃発動済みフラグを false へ戻す。
+    // 自動攻撃発動済みフラグを false へ戻す。
     draft.game = {
       ...draft.game,
       creatures: draft.game.creatures.map(creature => ({
         ...creature,
-        normalAttackInvoked: false,
+        autoAttackInvoked: false,
       }))
     }
 
@@ -372,7 +372,7 @@ export function proceedTurn(
       gameParameterUtils.getActionPointsRecovery(draft.game)
     )
 
-    draft.game.completedNormalAttackPhase = false
+    draft.game.completedAutoAttackPhase = false
     draft.game.turnNumber += 1
   })
   return Object.assign({}, state, {pages: {battle: newBattlePage}})

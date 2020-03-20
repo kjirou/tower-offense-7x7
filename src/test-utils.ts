@@ -66,7 +66,7 @@ export function createCreature(): Creature {
     lifePoints: 1,
     raidCharge: 0,
     skillIds: [],
-    normalAttackInvoked: false,
+    autoAttackInvoked: false,
   }
 }
 
@@ -125,7 +125,7 @@ export function createStateDisplayBattlePageAtStartOfGame(): ApplicationState {
           cardsOnPlayersHand: cards.slice(0, MAX_NUMBER_OF_PLAYERS_HAND).map(e => ({creatureId: e.creatureId})),
           creatureAppearances: [],
           cursor: undefined,
-          completedNormalAttackPhase: false,
+          completedAutoAttackPhase: false,
           turnNumber: 1,
           battleResult: {
             victoryOrDefeatId: 'pending',

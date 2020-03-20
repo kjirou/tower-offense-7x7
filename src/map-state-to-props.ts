@@ -23,7 +23,7 @@ import {
 } from './utils'
 import {
   proceedTurn,
-  runNormalAttackPhase,
+  runAutoAttackPhase,
   selectBattleFieldElement,
   selectCardOnPlayersHand,
 } from './reducers'
@@ -120,7 +120,7 @@ function mapBattlePageStateToProps(
     })
 
   const progressButton = game.battleResult.victoryOrDefeatId === 'pending'
-    ? game.completedNormalAttackPhase
+    ? game.completedAutoAttackPhase
       ? {
         label: 'Next',
         handleTouch: () => {
@@ -128,9 +128,9 @@ function mapBattlePageStateToProps(
         },
       }
       : {
-        label: 'Battle',
+        label: 'Auto-Attack',
         handleTouch: () => {
-          setState(s => runNormalAttackPhase(s))
+          setState(s => runAutoAttackPhase(s))
         },
       }
     : game.battleResult.victoryOrDefeatId === 'victory'
@@ -149,7 +149,7 @@ function mapBattlePageStateToProps(
       handleTouch({y, x}) {
         setState(s => selectBattleFieldElement(s, y, x))
       },
-      updatesAreProhibited: game.battleResult.victoryOrDefeatId !== 'pending' || game.completedNormalAttackPhase,
+      updatesAreProhibited: game.battleResult.victoryOrDefeatId !== 'pending' || game.completedAutoAttackPhase,
     },
     cardsOnPlayersHand: {
       cards: cardsProps
