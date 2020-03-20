@@ -183,7 +183,7 @@ export function invokeNormalAttack(
   }
 
   if (attackerData.creature.normalAttackInvoked) {
-    throw new Error('The creature had already invoked a normal-attack.')
+    throw new Error('The creature had already invoked a auto-attack.')
   }
 
   // 攻撃対象者候補である、範囲内で敵対関係のクリーチャー情報を抽出する。

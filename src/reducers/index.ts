@@ -208,7 +208,7 @@ export function runAutoAttackPhase(
     const game = draft.game
 
     if (game.completedNormalAttackPhase) {
-      throw new Error('The normal-attack phase is over.')
+      throw new Error('The auto-attack phase is over.')
     }
 
     // TODO: アニメーション用の情報を生成する。
@@ -300,7 +300,7 @@ export function proceedTurn(
 ): ApplicationState {
   const newBattlePage = produce(ensureBattlePage(state), draft => {
     if (!draft.game.completedNormalAttackPhase) {
-      throw new Error('The normal-attack phase must be completed.')
+      throw new Error('The auto-attack phase must be completed.')
     }
 
     // computer 側クリーチャーの襲撃充電数の自然増加を行う。
