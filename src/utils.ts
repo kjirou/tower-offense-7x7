@@ -561,6 +561,13 @@ export const creatureUtils = {
     const job = findJobById(constants.jobs, creature.jobId)
     return job.attackPower
   },
+  getAutoAttackRange: (creature: Creature, constants: Game['constants']): Job['autoAttackRange'] => {
+    if (creature._autoAttackRangeForTest !== undefined) {
+      return creature._autoAttackRangeForTest
+    }
+    const job = findJobById(constants.jobs, creature.jobId)
+    return job.autoAttackRange
+  },
   getMaxLifePoints: (creature: Creature, constants: Game['constants']): number => {
     if (creature._maxLifePointsForTest !== undefined) {
       return creature._maxLifePointsForTest

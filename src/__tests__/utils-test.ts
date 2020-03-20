@@ -585,6 +585,29 @@ describe('utils', function() {
       })
     })
 
+    describe('getAutoAttackRange', function() {
+      it('_autoAttackRangeForTest が存在しているときはその値を優先して返す', function() {
+        constants.jobs[0].autoAttackRange = {
+          rangeShapeKey: 'circle',
+          minReach: 0,
+          maxReach: 1,
+        }
+        creature._autoAttackRangeForTest = {
+          rangeShapeKey: 'cross',
+          minReach: 2,
+          maxReach: 3,
+        }
+        assert.deepStrictEqual(
+          creatureUtils.getAutoAttackRange(creature, constants),
+          {
+            rangeShapeKey: 'cross',
+            minReach: 2,
+            maxReach: 3,
+          }
+        )
+      })
+    })
+
     describe('getMaxLifePoints', function() {
       it('_maxLifePointsForTest が存在しているときはその値を優先して返す', function() {
         constants.jobs[0].maxLifePoints = 2
