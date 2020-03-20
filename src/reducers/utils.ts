@@ -163,51 +163,6 @@ export function removeDeadCreatures(
   }
 }
 
-// TODO: creature.normalAttackInvoked を作ったことで、現在は関数に分けることが不要になっている。不要なら消す。
-//       元々は、通常攻撃を試みた際に実行されるのか、を予測できるように範囲内判定だけ分離した。
-//       今は上記フラグに集約したので不要になった。また、同じ抽出を重複して行なっているので煩雑になっている。
-export function findNormalAttackTargeteeCandidates(
-  jobs: Job[],
-  creatures: Creature[],
-  parties: Party[],
-  battleFieldMatrix: BattleFieldMatrix,
-  attackerCreatureId: Creature['id'],
-): CreatureWithPartyOnBattleFieldElement[] {
-  const attackerWithParty = findCreatureWithParty(creatures, parties, attackerCreatureId)
-
-  // 攻撃者情報を抽出する。
-  const attackerData: CreatureWithPartyOnBattleFieldElement = {
-    creature: attackerWithParty.creature,
-    party: attackerWithParty.party,
-    battleFieldElement: findBattleFieldElementByCreatureId(battleFieldMatrix, attackerCreatureId),
-  }
-
-  // 攻撃対象者候補である、射程範囲内で敵対関係のクリーチャー情報を抽出する。
-  const targeteeCandidatesData: CreatureWithPartyOnBattleFieldElement[] = []
-  const dummyReach = 1
-  const reachableBattleFieldElements = findBattleFieldElementsByRange(
-    battleFieldMatrix, attackerData.battleFieldElement.position, 'circle', 0, dummyReach)
-  for (const reachableBattleFieldElement of reachableBattleFieldElements) {
-    if (reachableBattleFieldElement.creatureId !== undefined) {
-      const creatureWithParty =
-        findCreatureWithParty(creatures, parties, reachableBattleFieldElement.creatureId)
-      if (
-        determineRelationshipBetweenFactions(
-          creatureWithParty.party.factionId, attackerData.party.factionId
-        ) === 'enemy'
-      ) {
-        targeteeCandidatesData.push({
-          creature: creatureWithParty.creature,
-          party: creatureWithParty.party,
-          battleFieldElement: reachableBattleFieldElement,
-        })
-      }
-    }
-  }
-
-  return targeteeCandidatesData
-}
-
 export function invokeNormalAttack(
   constants: Game['constants'],
   creatures: Creature[],
@@ -232,8 +187,27 @@ export function invokeNormalAttack(
   }
 
   // 攻撃対象者候補である、射程範囲内で敵対関係のクリーチャー情報を抽出する。
-  const targeteeCandidatesData = findNormalAttackTargeteeCandidates(
-    jobs, creatures, parties, battleFieldMatrix, attackerData.creature.id)
+  const targeteeCandidatesData: CreatureWithPartyOnBattleFieldElement[] = []
+  const dummyReach = 1
+  const reachableBattleFieldElements = findBattleFieldElementsByRange(
+    battleFieldMatrix, attackerData.battleFieldElement.position, 'circle', 0, dummyReach)
+  for (const reachableBattleFieldElement of reachableBattleFieldElements) {
+    if (reachableBattleFieldElement.creatureId !== undefined) {
+      const creatureWithParty =
+        findCreatureWithParty(creatures, parties, reachableBattleFieldElement.creatureId)
+      if (
+        determineRelationshipBetweenFactions(
+          creatureWithParty.party.factionId, attackerData.party.factionId
+        ) === 'enemy'
+      ) {
+        targeteeCandidatesData.push({
+          creature: creatureWithParty.creature,
+          party: creatureWithParty.party,
+          battleFieldElement: reachableBattleFieldElement,
+        })
+      }
+    }
+  }
 
   let newCreatures = creatures.slice()
 
