@@ -197,7 +197,7 @@ function createInitialGame(): Game {
       }),
     creatureAppearances: dummyCreatureAppearances,
     cursor: undefined,
-    completedNormalAttackPhase: false,
+    completedAutoAttackPhase: false,
     turnNumber: 1,
     battleResult: {
       victoryOrDefeatId: 'pending',

@@ -120,7 +120,7 @@ function mapBattlePageStateToProps(
     })
 
   const progressButton = game.battleResult.victoryOrDefeatId === 'pending'
-    ? game.completedNormalAttackPhase
+    ? game.completedAutoAttackPhase
       ? {
         label: 'Next',
         handleTouch: () => {
@@ -149,7 +149,7 @@ function mapBattlePageStateToProps(
       handleTouch({y, x}) {
         setState(s => selectBattleFieldElement(s, y, x))
       },
-      updatesAreProhibited: game.battleResult.victoryOrDefeatId !== 'pending' || game.completedNormalAttackPhase,
+      updatesAreProhibited: game.battleResult.victoryOrDefeatId !== 'pending' || game.completedAutoAttackPhase,
     },
     cardsOnPlayersHand: {
       cards: cardsProps

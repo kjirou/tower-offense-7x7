@@ -143,7 +143,7 @@ export type Game = {
   cardsInDeck: CardRelationship[],
   cardsOnPlayersHand: CardRelationship[],
   cards: Card[],
-  completedNormalAttackPhase: boolean,
+  completedAutoAttackPhase: boolean,
   constants: {
     jobs: Job[],
   },

@@ -76,7 +76,7 @@ export function selectBattleFieldElement(
       if (
         (
           draft.game.battleResult.victoryOrDefeatId === 'pending' &&
-          draft.game.completedNormalAttackPhase === false
+          draft.game.completedAutoAttackPhase === false
         ) &&
         cardUnderCursor
       ) {
@@ -207,7 +207,7 @@ export function runAutoAttackPhase(
   const newBattlePage = produce(ensureBattlePage(state), draft => {
     const game = draft.game
 
-    if (game.completedNormalAttackPhase) {
+    if (game.completedAutoAttackPhase) {
       throw new Error('The auto-attack phase is over.')
     }
 
@@ -290,7 +290,7 @@ export function runAutoAttackPhase(
     draft.game = gameBeingUpdated
 
     // 通常攻撃フェーズを終了する。
-    draft.game.completedNormalAttackPhase = true
+    draft.game.completedAutoAttackPhase = true
   })
   return Object.assign({}, state, {pages: {battle: newBattlePage}})
 }
@@ -299,7 +299,7 @@ export function proceedTurn(
   state: ApplicationState,
 ): ApplicationState {
   const newBattlePage = produce(ensureBattlePage(state), draft => {
-    if (!draft.game.completedNormalAttackPhase) {
+    if (!draft.game.completedAutoAttackPhase) {
       throw new Error('The auto-attack phase must be completed.')
     }
 
@@ -372,7 +372,7 @@ export function proceedTurn(
       gameParameterUtils.getActionPointsRecovery(draft.game)
     )
 
-    draft.game.completedNormalAttackPhase = false
+    draft.game.completedAutoAttackPhase = false
     draft.game.turnNumber += 1
   })
   return Object.assign({}, state, {pages: {battle: newBattlePage}})
