@@ -11,12 +11,15 @@ import {
 } from './components/pages/BattlePage'
 import {
   ApplicationState,
+  BattleFieldElement,
   BattlePage,
+  CreatureWithParty,
   GlobalPosition,
   SkillCategoryId,
   areGlobalPositionsEqual,
   creatureUtils,
   determineRelationshipBetweenFactions,
+  findBattleFieldElementsByRange,
   findCardByCreatureId,
   findCreatureById,
   findCreatureWithParty,
@@ -64,6 +67,11 @@ function mapBattlePageStateToProps(
 ): BattlePageProps {
   const game = battlePage.game
 
+  let cursoredElement: {
+    creatureWithParty?: CreatureWithParty,
+    battleFieldElement?: BattleFieldElement,
+  } = {}
+
   const boardProps: BattlePageProps['battleFieldBoard']['board'] = game.battleFieldMatrix.map(row => {
     return row.map(element => {
       const creatureWithParty = element.creatureId !== undefined
@@ -71,6 +79,15 @@ function mapBattlePageStateToProps(
         : element.reservedCreatureId !== undefined
           ? findCreatureWithParty(game.creatures, game.parties, element.reservedCreatureId)
           : undefined
+      const isSelected = game.cursor
+        ? areGlobalPositionsEqual(element.globalPosition, game.cursor.globalPosition)
+        : false
+      if (isSelected) {
+        cursoredElement = {
+          ...(creatureWithParty ? {creatureWithParty} : {}),
+          battleFieldElement: element,
+        }
+      }
 
       let creatureProps: CreatureOnElementProps | undefined = undefined
       if (creatureWithParty) {
@@ -88,13 +105,26 @@ function mapBattlePageStateToProps(
         y: element.position.y,
         x: element.position.x,
         creature: creatureProps,
-        isSelected: game.cursor
-          ? areGlobalPositionsEqual(element.globalPosition, game.cursor.globalPosition)
-          : false,
+        isSelected,
         isWithinRange: false,
       }
     })
   })
+
+  // マスへカーソルが当たっている、かつ、クリーチャーが存在するとき。
+  if (cursoredElement.battleFieldElement && cursoredElement.creatureWithParty) {
+    // 自動攻撃範囲内のマスへ範囲内フラグを立てる。
+    const range = creatureUtils.getAutoAttackRange(cursoredElement.creatureWithParty.creature, game.constants)
+    findBattleFieldElementsByRange(
+      game.battleFieldMatrix,
+      cursoredElement.battleFieldElement.position,
+      range.rangeShapeKey,
+      range.minReach,
+      range.maxReach
+    ).forEach(element => {
+      boardProps[element.position.y][element.position.x].isWithinRange = true
+    })
+  }
 
   const cardsProps: CardProps[] = game.cardsOnPlayersHand
     .map(({creatureId}, index) => {
