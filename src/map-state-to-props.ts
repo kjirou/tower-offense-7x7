@@ -91,6 +91,7 @@ function mapBattlePageStateToProps(
         isSelected: game.cursor
           ? areGlobalPositionsEqual(element.globalPosition, game.cursor.globalPosition)
           : false,
+        isWithinRange: false,
       }
     })
   })

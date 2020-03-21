@@ -116,25 +116,37 @@ const CreatureOnElement: React.FC<CreatureOnElementProps> = (props) => {
 type BattleFieldElementProps = {
   creature: CreatureOnElementProps | void,
   isSelected: boolean,
+  isWithinRange: boolean,
   x: number,
   y: number,
 }
 
 const BattleFieldElement: React.FC<BattleFieldElementProps> = (props) => {
-  const style = {
-    position: 'absolute',
-    top: `${6 + props.y * 48 + props.y * 2}px`,
-    left: `${6 + props.x * 48 + props.x * 2}px`,
-    width: '48px',
-    height: '48px',
-    backgroundColor: props.isSelected ? 'yellow' : 'lime',
-  }
-
   return (
-    <div style={style}>
-    {
-      props.creature ? <CreatureOnElement {...props.creature} /> : undefined
-    }
+    <div
+      style={{
+        position: 'absolute',
+        top: `${6 + props.y * 48 + props.y * 2}px`,
+        left: `${6 + props.x * 48 + props.x * 2}px`,
+        width: '48px',
+        height: '48px',
+        backgroundColor: props.isSelected ? 'yellow' : 'lime',
+      }}
+    >
+      <div
+        style={{
+          position: 'absolute',
+          top: '0',
+          left: '0',
+          width: '48px',
+          height: '48px',
+          backgroundColor: props.isWithinRange ? 'yellow' : '',
+          opacity: 0.5,
+        }}
+      />
+      {
+        props.creature ? <CreatureOnElement {...props.creature} /> : undefined
+      }
     </div>
   )
 }
