@@ -39,6 +39,11 @@ const dummyJobs: Job[] = [
     id: 'archer',
     maxLifePoints: 6,
     attackPower: 3,
+    autoAttackRange: {
+      rangeShapeKey: 'circle',
+      minReach: 1,
+      maxReach: 2,
+    },
   },
   {
     ...dummyJobTemplate,
@@ -56,6 +61,17 @@ const dummyJobs: Job[] = [
   },
   {
     ...dummyJobTemplate,
+    id: 'gunner',
+    maxLifePoints: 6,
+    attackPower: 3,
+    autoAttackRange: {
+      rangeShapeKey: 'cross',
+      minReach: 1,
+      maxReach: 3,
+    },
+  },
+  {
+    ...dummyJobTemplate,
     id: 'knight',
     maxLifePoints: 18,
     attackPower: 2,
@@ -64,7 +80,12 @@ const dummyJobs: Job[] = [
     ...dummyJobTemplate,
     id: 'mage',
     maxLifePoints: 3,
-    attackPower: 3,
+    attackPower: 2,
+    autoAttackRange: {
+      rangeShapeKey: 'circle',
+      minReach: 1,
+      maxReach: 2,
+    },
   },
   {
     ...dummyJobTemplate,
@@ -90,7 +111,7 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
     skillIds: [],
     autoAttackInvoked: false,
   }
-  switch (index % 5) {
+  switch (index % 6) {
     case 0:
       return {
         ...dummyAllyTemplate,
@@ -115,6 +136,11 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
       return {
         ...dummyAllyTemplate,
         jobId: 'priest',
+      }
+    case 5:
+      return {
+        ...dummyAllyTemplate,
+        jobId: 'gunner',
       }
     default:
       throw new Error('')

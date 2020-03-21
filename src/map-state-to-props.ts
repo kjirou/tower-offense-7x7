@@ -40,6 +40,7 @@ const jobIdToDummyImage = (jobId: string): string => {
     archer: '弓',
     fighter: '戦',
     goblin: 'ゴ',
+    gunner: '銃',
     knight: '重',
     mage: '魔',
     priest: '聖',
