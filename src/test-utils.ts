@@ -67,6 +67,7 @@ export function createCreature(): Creature {
     raidCharge: 0,
     skillIds: [],
     autoAttackInvoked: false,
+    placementOrder: 0,
   }
 }
 

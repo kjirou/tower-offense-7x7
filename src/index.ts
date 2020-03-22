@@ -110,6 +110,7 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
     raidCharge: 0,
     skillIds: [],
     autoAttackInvoked: false,
+    placementOrder: 0,
   }
   switch (index % 6) {
     case 0:
@@ -154,6 +155,7 @@ const dummyEnemies: Creature[] = Array.from({length: 20}).map((unused, index) =>
     raidCharge: 0,
     skillIds: [],
     autoAttackInvoked: false,
+    placementOrder: 0,
   }
   switch (index % 2) {
     case 0:

@@ -52,6 +52,9 @@ export type Creature = {
   id: string,
   jobId: string,
   lifePoints: number,
+  // This value is used as the priority for auto-attacks.
+  // Creatures placed earlier have higher priority as auto-attack targets.
+  placementOrder: number,
   raidCharge: number,
   skillIds: Skill['id'][],
 }
