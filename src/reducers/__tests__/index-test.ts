@@ -9,6 +9,7 @@ import {
   ApplicationState,
   BattlePage,
   Creature,
+  DEFAULT_PLACEMENT_ORDER,
   Party,
   createBattleFieldMatrix,
   ensureBattlePage,
@@ -302,6 +303,14 @@ describe('reducers/index', function() {
       const newState = proceedTurn(runAutoAttackPhase(state))
       const newBattlePage = ensureBattlePage(newState)
       assert.strictEqual(newBattlePage.game.actionPoints, 5)
+    })
+
+    it('配置されていないクリーチャーの配置順は初期値と等しい', function() {
+      const newState = proceedTurn(runAutoAttackPhase(state))
+      const newBattlePage = ensureBattlePage(newState)
+      for (const newCreature of newBattlePage.game.creatures) {
+        assert.strictEqual(newCreature.placementOrder, DEFAULT_PLACEMENT_ORDER)
+      }
     })
   })
 })
