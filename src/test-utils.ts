@@ -5,6 +5,7 @@ import {
   FactionId,
   Game,
   Job,
+  DEFAULT_PLACEMENT_ORDER,
   MAX_NUMBER_OF_PLAYERS_HAND,
   Party,
   createBattleFieldMatrix,
@@ -67,7 +68,7 @@ export function createCreature(): Creature {
     raidCharge: 0,
     skillIds: [],
     autoAttackInvoked: false,
-    placementOrder: 0,
+    placementOrder: DEFAULT_PLACEMENT_ORDER,
   }
 }
 

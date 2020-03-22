@@ -11,6 +11,7 @@ import {
   CreatureWithPartyOnBattleFieldElement,
   Game,
   Job,
+  DEFAULT_PLACEMENT_ORDER,
   MAX_NUMBER_OF_PLAYERS_HAND,
   MatrixPosition,
   Party,
@@ -85,6 +86,7 @@ export function determineVictoryOrDefeat(
 }
 
 export function placePlayerFactionCreature(
+  creatures: Creature[],
   battleFieldMatrix: BattleFieldMatrix,
   cardsOnPlayersHand: CardRelationship[],
   creatureId: Creature['id'],
@@ -92,6 +94,7 @@ export function placePlayerFactionCreature(
 ): {
   battleFieldMatrix: BattleFieldMatrix,
   cardsOnPlayersHand: CardRelationship[],
+  creatures: Creature[],
 } {
   const element = battleFieldMatrix[position.y][position.x]
   // NOTE: 欲しい仕様ではないが、今はこの状況にならないはず。
@@ -110,7 +113,20 @@ export function placePlayerFactionCreature(
     throw new Error('The `creatureId` does not exist on the player\'s hand.')
   }
 
+  // 配置順を記録する。
+  const maxPlacementOrder = Math.max(DEFAULT_PLACEMENT_ORDER, ...creatures.map(e => e.placementOrder))
+  const newCreatures = creatures.map(creature => {
+    if (creature.id === creatureId) {
+      return {
+        ...creature,
+        placementOrder: maxPlacementOrder + 1,
+      }
+    }
+    return creature
+  })
+
   return {
+    creatures: newCreatures,
     battleFieldMatrix: newBattleFieldMatrix,
     cardsOnPlayersHand: newCardsOnPlayersHand,
   }

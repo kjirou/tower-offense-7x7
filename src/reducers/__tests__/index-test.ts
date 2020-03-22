@@ -106,6 +106,7 @@ describe('reducers/index', function() {
         battlePage.game = {
           ...battlePage.game,
           ...placePlayerFactionCreature(
+            battlePage.game.creatures,
             battlePage.game.battleFieldMatrix,
             battlePage.game.cardsOnPlayersHand,
             a.id,
@@ -159,6 +160,7 @@ describe('reducers/index', function() {
         battlePage.game = {
           ...battlePage.game,
           ...placePlayerFactionCreature(
+            battlePage.game.creatures,
             battlePage.game.battleFieldMatrix,
             battlePage.game.cardsOnPlayersHand,
             a.id,
@@ -168,6 +170,7 @@ describe('reducers/index', function() {
         battlePage.game = {
           ...battlePage.game,
           ...placePlayerFactionCreature(
+            battlePage.game.creatures,
             battlePage.game.battleFieldMatrix,
             battlePage.game.cardsOnPlayersHand,
             b.id,
@@ -196,6 +199,7 @@ describe('reducers/index', function() {
         battlePage.game = {
           ...battlePage.game,
           ...placePlayerFactionCreature(
+            battlePage.game.creatures,
             battlePage.game.battleFieldMatrix,
             battlePage.game.cardsOnPlayersHand,
             a.id,
@@ -234,6 +238,7 @@ describe('reducers/index', function() {
           battlePage.game = {
             ...battlePage.game,
             ...placePlayerFactionCreature(
+              battlePage.game.creatures,
               battlePage.game.battleFieldMatrix,
               battlePage.game.cardsOnPlayersHand,
               p.id,

@@ -11,6 +11,7 @@ import {
   Creature,
   Game,
   Job,
+  DEFAULT_PLACEMENT_ORDER,
   MAX_NUMBER_OF_PLAYERS_HAND,
   Party,
   SkillCategoryId,
@@ -110,7 +111,7 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
     raidCharge: 0,
     skillIds: [],
     autoAttackInvoked: false,
-    placementOrder: 0,
+    placementOrder: DEFAULT_PLACEMENT_ORDER,
   }
   switch (index % 6) {
     case 0:
@@ -155,7 +156,7 @@ const dummyEnemies: Creature[] = Array.from({length: 20}).map((unused, index) =>
     raidCharge: 0,
     skillIds: [],
     autoAttackInvoked: false,
-    placementOrder: 0,
+    placementOrder: DEFAULT_PLACEMENT_ORDER,
   }
   switch (index % 2) {
     case 0:

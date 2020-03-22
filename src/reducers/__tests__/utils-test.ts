@@ -322,31 +322,43 @@ describe('reducers/utils', function() {
   })
 
   describe('placePlayerFactionCreature', function() {
+    let a: Creature
+    let creatures: Creature[]
+    let matrix: BattleFieldMatrix
+
+    beforeEach(function() {
+      a = createCreature()
+      creatures = [a]
+      matrix = createBattleFieldMatrix(1, 1)
+    })
+
     it('指定したマスにクリーチャーが存在するとき、例外を発生する', function() {
-      const matrix = createBattleFieldMatrix(1, 1)
       matrix[0][0].creatureId = 'a'
       assert.throws(() => {
-        placePlayerFactionCreature(matrix, [], 'b', {y: 0, x: 0})
+        placePlayerFactionCreature(creatures, matrix, [], a.id, {y: 0, x: 0})
       }, /creature exist/)
     })
 
     it('指定したクリーチャーが手札にないとき、例外を発生する', function() {
-      const matrix = createBattleFieldMatrix(1, 1)
       assert.throws(() => {
-        placePlayerFactionCreature(matrix, [], 'a', {y: 0, x: 0})
+        placePlayerFactionCreature(creatures, matrix, [], 'foo', {y: 0, x: 0})
       }, /does not exist/)
     })
 
     it('盤上へクリーチャーが配置される', function() {
-      const matrix = createBattleFieldMatrix(1, 1)
-      const result = placePlayerFactionCreature(matrix, [{creatureId: 'a'}], 'a', {y: 0, x: 0})
-      assert.strictEqual(result.battleFieldMatrix[0][0].creatureId, 'a')
+      const result = placePlayerFactionCreature(creatures, matrix, [{creatureId: a.id}], a.id, {y: 0, x: 0})
+      assert.strictEqual(result.battleFieldMatrix[0][0].creatureId, a.id)
     })
 
     it('指定したクリーチャーのカードが手札から削除される', function() {
-      const matrix = createBattleFieldMatrix(1, 1)
-      const result = placePlayerFactionCreature(matrix, [{creatureId: 'a'}, {creatureId: 'b'}], 'a', {y: 0, x: 0})
-      assert.deepStrictEqual(result.cardsOnPlayersHand, [{creatureId: 'b'}])
+      const result = placePlayerFactionCreature(
+        creatures, matrix, [{creatureId: a.id}, {creatureId: 'foo'}], a.id, {y: 0, x: 0})
+      assert.deepStrictEqual(result.cardsOnPlayersHand, [{creatureId: 'foo'}])
+    })
+
+    it('指定したクリーチャーの配置順を増加する', function() {
+      const result = placePlayerFactionCreature(creatures, matrix, [{creatureId: a.id}], a.id, {y: 0, x: 0})
+      assert.strictEqual(result.creatures[0].placementOrder > a.placementOrder, true)
     })
   })
 

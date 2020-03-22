@@ -174,6 +174,8 @@ export const ACTION_POINTS_REQUIRED_FOR_CREATURE_PLACEMENT = 2
 
 export const ACTION_POINTS_REQUIRED_FOR_SKILL_USE = 1
 
+export const DEFAULT_PLACEMENT_ORDER = 0
+
 /**
  * リーチに対しての円形の範囲を生成する。
  *
