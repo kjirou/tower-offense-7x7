@@ -108,6 +108,7 @@ function mapBattlePageStateToProps(
         creature: creatureProps,
         isSelected,
         isWithinRange: false,
+        isTarget: false,
       }
     })
   })

@@ -116,6 +116,7 @@ const CreatureOnElement: React.FC<CreatureOnElementProps> = (props) => {
 type BattleFieldElementProps = {
   creature: CreatureOnElementProps | void,
   isSelected: boolean,
+  isTarget: boolean,
   isWithinRange: boolean,
   x: number,
   y: number,
@@ -140,8 +141,8 @@ const BattleFieldElement: React.FC<BattleFieldElementProps> = (props) => {
           left: '0',
           width: '48px',
           height: '48px',
-          backgroundColor: props.isWithinRange ? 'yellow' : '',
-          opacity: 0.5,
+          border: props.isTarget ? '2px solid white' : '',
+          backgroundColor: props.isWithinRange ? 'rgba(255, 255, 0, .5)' : '',
         }}
       />
       {
