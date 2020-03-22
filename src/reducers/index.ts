@@ -343,6 +343,7 @@ export function proceedTurn(
     draft.game = {
       ...draft.game,
       ...reserveCreatures(
+        draft.game.creatures,
         draft.game.battleFieldMatrix,
         draft.game.creatureAppearances,
         draft.game.turnNumber,

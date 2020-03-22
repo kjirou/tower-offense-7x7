@@ -393,13 +393,16 @@ export function increaseRaidChargeForEachComputerCreatures(
 }
 
 export function reserveCreatures(
+  creatures: Creature[],
   battleFieldMatrix: BattleFieldMatrix,
   creatureAppearances: CreatureAppearance[],
   turnNumber: Game['turnNumber'],
   choiceElements: (elements: BattleFieldElement[], numberOfElements: number) => BattleFieldElement[]
 ): {
   battleFieldMatrix: BattleFieldMatrix,
+  creatures: Creature[],
 } {
+  let newCreatures = creatures.slice()
   const newBattleFieldMatrix = battleFieldMatrix.slice().map(row => row.slice())
 
   // 指定ターン数のクリーチャー出現情報を抽出する。
@@ -425,15 +428,30 @@ export function reserveCreatures(
       })
 
     // 各マスへクリーチャー出現を予約する。
+    // クリーチャーの配置順を更新する。
+    // NOTE: 配置順の更新を出現の実現時に行う方が良さそうだったが、この時点でないと、
+    //         同じ出現ターン内で複数のクリーチャーが存在するときの、その間の優先順位の上下がわからない。
+    let maxPlacementOrder = Math.max(DEFAULT_PLACEMENT_ORDER, ...newCreatures.map(e => e.placementOrder))
     reservedCreaturePositions.forEach(({position, creatureId}) => {
       newBattleFieldMatrix[position.y][position.x] = {
         ...newBattleFieldMatrix[position.y][position.x],
         reservedCreatureId: creatureId,
       }
+      maxPlacementOrder++
+      newCreatures = newCreatures.map(creature => {
+        if (creatureId === creature.id) {
+          return {
+            ...creature,
+            placementOrder: maxPlacementOrder,
+          }
+        }
+        return creature
+      })
     })
   }
 
   return {
+    creatures: newCreatures,
     battleFieldMatrix: newBattleFieldMatrix,
   }
 }
@@ -471,8 +489,9 @@ export function initializeGame(game: Game): Game {
   newGame = {
     ...newGame,
     ...reserveCreatures(
-      game.battleFieldMatrix,
-      game.creatureAppearances,
+      newGame.creatures,
+      newGame.battleFieldMatrix,
+      newGame.creatureAppearances,
       0,
       (elements: BattleFieldElement[], numberOfElements: number): BattleFieldElement[] => {
         return choiceElementsAtRandom<BattleFieldElement>(elements, numberOfElements)

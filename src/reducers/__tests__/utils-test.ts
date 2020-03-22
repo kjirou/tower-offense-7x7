@@ -392,18 +392,43 @@ describe('reducers/utils', function() {
   })
 
   describe('reserveCreatures', function() {
-    it('works', function() {
-      const matrix = createBattleFieldMatrix(3, 3)
-      const creatureAppearances = [
+    let a: Creature
+    let b: Creature
+    let creatures: Creature[]
+    let matrix: BattleFieldMatrix
+    let creatureAppearances: CreatureAppearance[]
+
+    beforeEach(function() {
+      a = createCreature()
+      b = createCreature()
+      creatures = [a, b]
+      matrix = createBattleFieldMatrix(3, 3)
+      creatureAppearances = [
         {
           turnNumber: 2,
-          creatureIds: ['a', 'b'],
+          creatureIds: [a.id, b.id],
         }
       ]
-      const result = reserveCreatures(
-        matrix, creatureAppearances, 2, (elements, num) => elements.slice(0, num))
-      assert.strictEqual(result.battleFieldMatrix[0][0].reservedCreatureId, 'a')
-      assert.strictEqual(result.battleFieldMatrix[0][1].reservedCreatureId, 'b')
+    })
+
+    describe('出現が予約されているターン数を指定したとき', function() {
+      const turnNumber = 2
+
+      it('クリーチャーの出現を盤へ予約する', function() {
+        const result = reserveCreatures(
+          creatures, matrix, creatureAppearances, turnNumber, () => [matrix[0][0], matrix[0][1]])
+        assert.strictEqual(result.battleFieldMatrix[0][0].reservedCreatureId, a.id)
+        assert.strictEqual(result.battleFieldMatrix[0][1].reservedCreatureId, b.id)
+      })
+
+      it('クリーチャーの配置順を増加する', function() {
+        const result = reserveCreatures(
+          creatures, matrix, creatureAppearances, turnNumber, () => [matrix[0][0], matrix[0][1]])
+        const newA = findCreatureById(result.creatures, a.id)
+        const newB = findCreatureById(result.creatures, b.id)
+        assert.strictEqual(newA.placementOrder > a.placementOrder, true)
+        assert.strictEqual(newB.placementOrder > b.placementOrder, true)
+      })
     })
   })
 
