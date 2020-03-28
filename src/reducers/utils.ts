@@ -17,6 +17,7 @@ import {
   Party,
   Skill,
   VictoryOrDefeatId,
+  calculateRangeAndTargeteesOfAutoAttack,
   choiceElementsAtRandom,
   creatureUtils,
   determineRelationshipBetweenFactions,
@@ -188,87 +189,40 @@ export function invokeAutoAttack(
 ): {
   creatures: Creature[],
 } {
-  const {jobs} = constants
-  const attackerWithParty = findCreatureWithParty(creatures, parties, attackerCreatureId)
-
   // 攻撃者情報を抽出する。
-  const attackerData: CreatureWithPartyOnBattleFieldElement = {
-    creature: attackerWithParty.creature,
-    party: attackerWithParty.party,
+  const attackerSet: CreatureWithPartyOnBattleFieldElement = {
+    ...findCreatureWithParty(creatures, parties, attackerCreatureId),
     battleFieldElement: findBattleFieldElementByCreatureId(battleFieldMatrix, attackerCreatureId),
   }
 
-  if (attackerData.creature.autoAttackInvoked) {
+  if (attackerSet.creature.autoAttackInvoked) {
     throw new Error('The creature had already invoked a auto-attack.')
   }
 
-  // 攻撃対象者候補である、範囲内で敵対関係のクリーチャー情報を抽出する。
-  const targeteeCandidatesData: CreatureWithPartyOnBattleFieldElement[] = []
-  const range = creatureUtils.getAutoAttackRange(attackerData.creature, constants)
-  const reachableBattleFieldElements = findBattleFieldElementsByRange(
-    battleFieldMatrix,
-    attackerData.battleFieldElement.position,
-    range.rangeShapeKey,
-    range.minReach,
-    range.maxReach
-  )
-  for (const reachableBattleFieldElement of reachableBattleFieldElements) {
-    if (reachableBattleFieldElement.creatureId !== undefined) {
-      const creatureWithParty =
-        findCreatureWithParty(creatures, parties, reachableBattleFieldElement.creatureId)
-      if (
-        determineRelationshipBetweenFactions(
-          creatureWithParty.party.factionId, attackerData.party.factionId
-        ) === 'enemy'
-      ) {
-        targeteeCandidatesData.push({
-          creature: creatureWithParty.creature,
-          party: creatureWithParty.party,
-          battleFieldElement: reachableBattleFieldElement,
-        })
-      }
-    }
-  }
+  const {targetees} = calculateRangeAndTargeteesOfAutoAttack(
+    constants, creatures, parties, battleFieldMatrix, attackerCreatureId)
 
   let newCreatures = creatures.slice()
 
-  // 範囲内に攻撃対象がいたとき。
-  if (targeteeCandidatesData.length > 0) {
-    // 最大攻撃対象数を算出する。
-    const maxNumberOfTargetees = creatureUtils.getAutoAttackTargets(attackerData.creature, constants)
-
-    // 優先順位を考慮して攻撃対象を決定する。
-    const targeteesData = targeteeCandidatesData
-      .slice()
-      .sort((a, b) => {
-        if (a.creature.placementOrder < b.creature.placementOrder) {
-          return -1
-        } else if (a.creature.placementOrder > b.creature.placementOrder) {
-          return 1
-        }
-        return 0
-      })
-      .slice(0, maxNumberOfTargetees)
-
+  if (targetees.length > 0) {
     // 影響を決定する。
     // NOTE: このループ内で攻撃対象が死亡するなどしても、対象から除外しなくても良い。
     //       自動攻撃の副作用で攻撃者に有利な効果が発生することもあり、それが意図せずに発生しないと損な感じが強そう。
     //       それにより、死亡しているクリーチャーも攻撃対象に含まれることになる。
-    const affectedCreatures: Creature[] = targeteesData
-      .map(targeteeData => {
-        const damage = creatureUtils.getAttackPower(attackerData.creature, constants)
-        return creatureUtils.alterLifePoints(targeteeData.creature, constants, -damage)
+    const affectedCreatures: Creature[] = targetees
+      .map(targeteeSet => {
+        const damage = creatureUtils.getAttackPower(attackerSet.creature, constants)
+        return creatureUtils.alterLifePoints(targeteeSet.creature, constants, -damage)
       })
 
     // 攻撃対象へ影響を反映する。
     newCreatures = newCreatures.map(creature => {
-      const affected = findCreatureByIdIfPossible(affectedCreatures, creature.id)
-      return affected || creature
+      return findCreatureByIdIfPossible(affectedCreatures, creature.id) || creature
     })
 
     // 自動攻撃攻撃者の自動攻撃実行済みフラグを true にする。
     newCreatures = newCreatures.map(creature => {
-      if (creature.id === attackerData.creature.id) {
+      if (creature.id === attackerSet.creature.id) {
         creature.autoAttackInvoked = true
       }
       return creature

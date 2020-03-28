@@ -560,6 +560,74 @@ export function findCardUnderCursor(cards: Card[], cursor: Cursor): Card | undef
   return undefined
 }
 
+/**
+ * 自動攻撃の範囲と対象者を算出する。
+ */
+export function calculateRangeAndTargeteesOfAutoAttack(
+  constants: Game['constants'],
+  creatures: Creature[],
+  parties: Party[],
+  battleFieldMatrix: BattleFieldMatrix,
+  invokerCreatureId: Creature['id'],
+): {
+  rangedBattleFieldElements: BattleFieldElement[],
+  targetees: CreatureWithPartyOnBattleFieldElement[],
+} {
+  // 発動者情報を抽出する。
+  const invokerSet: CreatureWithPartyOnBattleFieldElement = {
+    ...findCreatureWithParty(creatures, parties, invokerCreatureId),
+    battleFieldElement: findBattleFieldElementByCreatureId(battleFieldMatrix, invokerCreatureId),
+  }
+
+  // 対象者候補リスト。
+  let targeteeCandidates: CreatureWithPartyOnBattleFieldElement[] = []
+
+  // 自動攻撃の範囲内のクリーチャーリストを抽出する。
+  const range = creatureUtils.getAutoAttackRange(invokerSet.creature, constants)
+  const rangedElements = findBattleFieldElementsByRange(
+    battleFieldMatrix,
+    invokerSet.battleFieldElement.position,
+    range.rangeShapeKey,
+    range.minReach,
+    range.maxReach
+  )
+  for (const element of rangedElements) {
+    if (element.creatureId !== undefined) {
+      targeteeCandidates.push({
+        ...findCreatureWithParty(creatures, parties, element.creatureId),
+        battleFieldElement: element,
+      })
+    }
+  }
+
+  // 敵対関係のクリーチャーのみへ絞り込む。
+  targeteeCandidates = targeteeCandidates.filter(creatureSet => {
+    return determineRelationshipBetweenFactions(
+      creatureSet.party.factionId, invokerSet.party.factionId) === 'enemy'
+  })
+
+  // 最大攻撃対象数を取得する。
+  const maxNumberOfTargetees = creatureUtils.getAutoAttackTargets(invokerSet.creature, constants)
+
+  // 優先順位を考慮して攻撃対象を決定する。
+  const targetees = targeteeCandidates
+    .slice()
+    .sort((a, b) => {
+      if (a.creature.placementOrder < b.creature.placementOrder) {
+        return -1
+      } else if (a.creature.placementOrder > b.creature.placementOrder) {
+        return 1
+      }
+      return 0
+    })
+    .slice(0, maxNumberOfTargetees)
+
+  return {
+    rangedBattleFieldElements: rangedElements,
+    targetees,
+  }
+}
+
 export const creatureUtils = {
   getAttackPower: (creature: Creature, constants: Game['constants']): number => {
     if (creature._attackPowerForTest !== undefined) {

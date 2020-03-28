@@ -18,6 +18,7 @@ import {
   GlobalPosition,
   SkillCategoryId,
   areGlobalPositionsEqual,
+  calculateRangeAndTargeteesOfAutoAttack,
   creatureUtils,
   determineRelationshipBetweenFactions,
   findBattleFieldElementsByRange,
@@ -115,57 +116,26 @@ function mapBattlePageStateToProps(
     })
   })
 
-  // TODO: この部分のロジックが複雑なのでテストを書く。
   // マスへカーソルが当たっている、かつ、クリーチャーが存在するとき。
   if (cursoredElement.battleFieldElement && cursoredElement.creatureWithParty) {
-    const range = creatureUtils.getAutoAttackRange(cursoredElement.creatureWithParty.creature, game.constants)
-    // 自動攻撃範囲内のマスリストを取得する。
-    const rangedElements = findBattleFieldElementsByRange(
+    const {rangedBattleFieldElements, targetees} = calculateRangeAndTargeteesOfAutoAttack(
+      game.constants,
+      game.creatures,
+      game.parties,
       game.battleFieldMatrix,
-      cursoredElement.battleFieldElement.position,
-      range.rangeShapeKey,
-      range.minReach,
-      range.maxReach
+      cursoredElement.creatureWithParty.creature.id
     )
-    // そのマスリスト内の敵対クリーチャーリストを取得する。
-    let attackees: CreatureWithPartyOnBattleFieldElement[] = []
-    for (const element of rangedElements) {
-      if (element.creatureId !== undefined) {
-        const creatureWithParty = findCreatureWithParty(game.creatures, game.parties, element.creatureId)
-        if (
-          determineRelationshipBetweenFactions(
-            cursoredElement.creatureWithParty.party.factionId,
-            creatureWithParty.party.factionId
-          ) === 'enemy'
-        ) {
-          attackees.push({
-            creature: creatureWithParty.creature,
-            party: creatureWithParty.party,
-            battleFieldElement: element,
-          })
-        }
-      }
-    }
-    // TODO: invokeAutoAttack 内の同じロジックと共通化する。攻撃対象数・優先順位判定など。
-    attackees.sort((a, b) => {
-      if (a.creature.placementOrder < b.creature.placementOrder) {
-        return -1
-      } else if (a.creature.placementOrder > b.creature.placementOrder) {
-        return 1
-      }
-      return 0
-    })
-    attackees = attackees.slice(
-      0, creatureUtils.getAutoAttackTargets(cursoredElement.creatureWithParty.creature, game.constants))
+
     // 範囲内のマスリストへ範囲内フラグを立てる。
-    for (const element of rangedElements) {
+    for (const element of rangedBattleFieldElements) {
       boardProps[element.position.y][element.position.x].isWithinRange = true
     }
+
     // 攻撃対象のマスへ対象フラグを立てる。
     // 攻撃対象のマスへ優先順位を表示する。
-    for (let i = 0; i < attackees.length; i++) {
-      const attackee = attackees[i]
-      const element = attackee.battleFieldElement
+    for (let i = 0; i < targetees.length; i++) {
+      const targetee = targetees[i]
+      const element = targetee.battleFieldElement
       boardProps[element.position.y][element.position.x].isTarget = true
       boardProps[element.position.y][element.position.x].targetPriority = i + 1
     }
