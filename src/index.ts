@@ -88,6 +88,7 @@ const dummyJobs: Job[] = [
       minReach: 1,
       maxReach: 2,
     },
+    autoAttackTargets: 99,
   },
   {
     ...dummyJobTemplate,
