@@ -136,36 +136,51 @@ const BattleFieldElement: React.FC<BattleFieldElementProps> = (props) => {
         backgroundColor: props.isSelected ? 'yellow' : 'lime',
       }}
     >
-      <div
-        style={{
-          position: 'absolute',
-          top: '0',
-          left: '0',
-          width: '48px',
-          height: '48px',
-          border: props.isTarget ? '2px solid white' : '',
-          backgroundColor: props.isWithinRange ? 'rgba(255, 255, 0, .5)' : '',
-        }}
-      >
-        {
-          props.targetPriority !== undefined
-            ? <div
-              style={{
-                position: 'absolute',
-                top: '0',
-                left: '0',
-                width: '48px',
-                height: '48px',
-                lineHeight: '48px',
-                fontSize: '24px',
-                fontWeight: 'bold',
-                textAlign: 'center',
-                color: 'white',
-              }}
-            >{props.targetPriority}</div>
-            : null
-        }
-      </div>
+      {
+        props.isTarget && <div
+          style={{
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            width: '48px',
+            height: '48px',
+            border: '2px solid white',
+            zIndex: 2,
+          }}
+        >
+          {
+            props.targetPriority !== undefined
+              ? <div
+                style={{
+                  position: 'absolute',
+                  top: '0',
+                  left: '0',
+                  width: '48px',
+                  height: '48px',
+                  lineHeight: '48px',
+                  fontSize: '24px',
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                  color: 'white',
+                }}
+              >{props.targetPriority}</div>
+              : null
+          }
+        </div>
+      }
+      {
+        props.isWithinRange && <div
+          style={{
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            width: '48px',
+            height: '48px',
+            backgroundColor: 'rgba(255, 255, 0, .5)',
+            zIndex: 1,
+          }}
+        />
+      }
       {
         props.creature ? <CreatureOnElement {...props.creature} /> : undefined
       }
