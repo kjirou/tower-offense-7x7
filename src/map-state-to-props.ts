@@ -11,12 +11,17 @@ import {
 } from './components/pages/BattlePage'
 import {
   ApplicationState,
+  BattleFieldElement,
   BattlePage,
+  CreatureWithParty,
+  CreatureWithPartyOnBattleFieldElement,
   GlobalPosition,
   SkillCategoryId,
   areGlobalPositionsEqual,
+  calculateRangeAndTargeteesOfAutoAttack,
   creatureUtils,
   determineRelationshipBetweenFactions,
+  findBattleFieldElementsByRange,
   findCardByCreatureId,
   findCreatureById,
   findCreatureWithParty,
@@ -28,7 +33,7 @@ import {
   selectCardOnPlayersHand,
 } from './reducers'
 
-type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>
+export type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>
 
 const jobIdToDummyImage = (jobId: string): string => {
   const mapping: {
@@ -37,6 +42,7 @@ const jobIdToDummyImage = (jobId: string): string => {
     archer: '弓',
     fighter: '戦',
     goblin: 'ゴ',
+    gunner: '銃',
     knight: '重',
     mage: '魔',
     priest: '聖',
@@ -64,6 +70,11 @@ function mapBattlePageStateToProps(
 ): BattlePageProps {
   const game = battlePage.game
 
+  let cursoredElement: {
+    creatureWithParty?: CreatureWithParty,
+    battleFieldElement?: BattleFieldElement,
+  } = {}
+
   const boardProps: BattlePageProps['battleFieldBoard']['board'] = game.battleFieldMatrix.map(row => {
     return row.map(element => {
       const creatureWithParty = element.creatureId !== undefined
@@ -71,6 +82,15 @@ function mapBattlePageStateToProps(
         : element.reservedCreatureId !== undefined
           ? findCreatureWithParty(game.creatures, game.parties, element.reservedCreatureId)
           : undefined
+      const isSelected = game.cursor
+        ? areGlobalPositionsEqual(element.globalPosition, game.cursor.globalPosition)
+        : false
+      if (isSelected) {
+        cursoredElement = {
+          ...(creatureWithParty ? {creatureWithParty} : {}),
+          battleFieldElement: element,
+        }
+      }
 
       let creatureProps: CreatureOnElementProps | undefined = undefined
       if (creatureWithParty) {
@@ -88,12 +108,38 @@ function mapBattlePageStateToProps(
         y: element.position.y,
         x: element.position.x,
         creature: creatureProps,
-        isSelected: game.cursor
-          ? areGlobalPositionsEqual(element.globalPosition, game.cursor.globalPosition)
-          : false,
+        isSelected,
+        isWithinRange: false,
+        isTarget: false,
+        targetPriority: undefined,
       }
     })
   })
+
+  // マスへカーソルが当たっている、かつ、クリーチャーが存在するとき。
+  if (cursoredElement.battleFieldElement && cursoredElement.creatureWithParty) {
+    const {rangedBattleFieldElements, targetees} = calculateRangeAndTargeteesOfAutoAttack(
+      game.constants,
+      game.creatures,
+      game.parties,
+      game.battleFieldMatrix,
+      cursoredElement.creatureWithParty.creature.id
+    )
+
+    // 範囲内のマスリストへ範囲内フラグを立てる。
+    for (const element of rangedBattleFieldElements) {
+      boardProps[element.position.y][element.position.x].isWithinRange = true
+    }
+
+    // 攻撃対象のマスへ対象フラグを立てる。
+    // 攻撃対象のマスへ優先順位を表示する。
+    for (let i = 0; i < targetees.length; i++) {
+      const targetee = targetees[i]
+      const element = targetee.battleFieldElement
+      boardProps[element.position.y][element.position.x].isTarget = true
+      boardProps[element.position.y][element.position.x].targetPriority = i + 1
+    }
+  }
 
   const cardsProps: CardProps[] = game.cardsOnPlayersHand
     .map(({creatureId}, index) => {

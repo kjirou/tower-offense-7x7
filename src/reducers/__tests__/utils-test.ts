@@ -24,6 +24,7 @@ import {
   createConstants,
   createJob,
   createStateDisplayBattlePageAtStartOfGame,
+  findAllies,
   findFirstAlly,
 } from '../../test-utils'
 import {
@@ -222,36 +223,93 @@ describe('reducers/utils', function() {
       let state: ApplicationState
       let battlePage: BattlePage
       let attacker: Creature
-      let enemy: Creature
-      let result: ReturnType<typeof invokeAutoAttack>
 
       beforeEach(function() {
         state = createStateDisplayBattlePageAtStartOfGame()
         battlePage = ensureBattlePage(state)
         attacker = findCreatureById(battlePage.game.creatures, battlePage.game.cardsOnPlayersHand[0].creatureId)
         attacker._attackPowerForTest = 1
-        enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
-        enemy._maxLifePointsForTest = 2
-        enemy.lifePoints = 2
-        battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
-        battlePage.game.battleFieldMatrix[0][1].creatureId = enemy.id
-        result = invokeAutoAttack(
-          battlePage.game.constants,
-          battlePage.game.creatures,
-          battlePage.game.parties,
-          battlePage.game.battleFieldMatrix,
-          attacker.id,
-        )
+        battlePage.game.battleFieldMatrix[1][1].creatureId = attacker.id
       })
 
-      it('敵へダメージを与える', function() {
-        const newEnemy = findCreatureById(result.creatures, enemy.id)
-        assert.strictEqual(newEnemy.lifePoints < enemy.lifePoints, true)
+      describe('攻撃対象の敵が 1 体のみのとき', function() {
+        let enemy: Creature
+        let result: ReturnType<typeof invokeAutoAttack>
+
+        beforeEach(function() {
+          enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
+          enemy._maxLifePointsForTest = 2
+          enemy.lifePoints = 2
+          battlePage.game.battleFieldMatrix[0][1].creatureId = enemy.id
+          result = invokeAutoAttack(
+            battlePage.game.constants,
+            battlePage.game.creatures,
+            battlePage.game.parties,
+            battlePage.game.battleFieldMatrix,
+            attacker.id,
+          )
+        })
+
+        it('敵へダメージを与える', function() {
+          const newEnemy = findCreatureById(result.creatures, enemy.id)
+          assert.strictEqual(newEnemy.lifePoints < enemy.lifePoints, true)
+        })
+
+        it('攻撃者の自動攻撃発動済みフラグが true である', function() {
+          const newAttacker = findCreatureById(result.creatures, attacker.id)
+          assert.strictEqual(newAttacker.autoAttackInvoked, true)
+        })
       })
 
-      it('攻撃者の自動攻撃発動済みフラグが true である', function() {
-        const newAttacker = findCreatureById(result.creatures, attacker.id)
-        assert.strictEqual(newAttacker.autoAttackInvoked, true)
+      describe('攻撃対象の敵が複数体のとき', function() {
+        let enemies: Creature[]
+
+        beforeEach(function() {
+          enemies = findAllies(battlePage.game.creatures, battlePage.game.parties, 'computer').slice(3)
+          for (const enemy of enemies) {
+            enemy._maxLifePointsForTest = 2
+            enemy.lifePoints = 2
+          }
+          battlePage.game.battleFieldMatrix[0][1].creatureId = enemies[0].id
+          battlePage.game.battleFieldMatrix[1][0].creatureId = enemies[1].id
+          battlePage.game.battleFieldMatrix[1][2].creatureId = enemies[2].id
+        })
+
+        it('攻撃者の攻撃対象数が 1 のとき、配置順が最も低い攻撃対象のみを攻撃する', function() {
+          attacker._autoAttackTargetsForTest = 1
+          enemies[0].placementOrder = 2
+          enemies[1].placementOrder = 1
+          enemies[2].placementOrder = 3
+          const result = invokeAutoAttack(
+            battlePage.game.constants,
+            battlePage.game.creatures,
+            battlePage.game.parties,
+            battlePage.game.battleFieldMatrix,
+            attacker.id,
+          )
+          const newEnemies = enemies.map(e => findCreatureById(result.creatures, e.id))
+          assert.strictEqual(newEnemies[0].lifePoints < 2, false)
+          assert.strictEqual(newEnemies[1].lifePoints < 2, true)
+          assert.strictEqual(newEnemies[2].lifePoints < 2, false)
+        })
+
+        it('攻撃者の攻撃対象数が複数のとき、配置順が低い順に複数の攻撃対象を攻撃する', function() {
+          attacker._autoAttackTargetsForTest = 2
+          enemies[0].placementOrder = 2
+          enemies[1].placementOrder = 1
+          enemies[2].placementOrder = 3
+          const result = invokeAutoAttack(
+            battlePage.game.constants,
+            battlePage.game.creatures,
+            battlePage.game.parties,
+            battlePage.game.battleFieldMatrix,
+            attacker.id,
+          )
+          const newEnemies = enemies.map(e => findCreatureById(result.creatures, e.id))
+          assert.strictEqual(newEnemies[0].lifePoints < 2, true)
+          assert.strictEqual(newEnemies[1].lifePoints < 2, true)
+          assert.strictEqual(newEnemies[2].lifePoints < 2, false)
+        })
       })
     })
 
@@ -322,31 +380,43 @@ describe('reducers/utils', function() {
   })
 
   describe('placePlayerFactionCreature', function() {
+    let a: Creature
+    let creatures: Creature[]
+    let matrix: BattleFieldMatrix
+
+    beforeEach(function() {
+      a = createCreature()
+      creatures = [a]
+      matrix = createBattleFieldMatrix(1, 1)
+    })
+
     it('指定したマスにクリーチャーが存在するとき、例外を発生する', function() {
-      const matrix = createBattleFieldMatrix(1, 1)
       matrix[0][0].creatureId = 'a'
       assert.throws(() => {
-        placePlayerFactionCreature(matrix, [], 'b', {y: 0, x: 0})
+        placePlayerFactionCreature(creatures, matrix, [], a.id, {y: 0, x: 0})
       }, /creature exist/)
     })
 
     it('指定したクリーチャーが手札にないとき、例外を発生する', function() {
-      const matrix = createBattleFieldMatrix(1, 1)
       assert.throws(() => {
-        placePlayerFactionCreature(matrix, [], 'a', {y: 0, x: 0})
+        placePlayerFactionCreature(creatures, matrix, [], 'foo', {y: 0, x: 0})
       }, /does not exist/)
     })
 
     it('盤上へクリーチャーが配置される', function() {
-      const matrix = createBattleFieldMatrix(1, 1)
-      const result = placePlayerFactionCreature(matrix, [{creatureId: 'a'}], 'a', {y: 0, x: 0})
-      assert.strictEqual(result.battleFieldMatrix[0][0].creatureId, 'a')
+      const result = placePlayerFactionCreature(creatures, matrix, [{creatureId: a.id}], a.id, {y: 0, x: 0})
+      assert.strictEqual(result.battleFieldMatrix[0][0].creatureId, a.id)
     })
 
     it('指定したクリーチャーのカードが手札から削除される', function() {
-      const matrix = createBattleFieldMatrix(1, 1)
-      const result = placePlayerFactionCreature(matrix, [{creatureId: 'a'}, {creatureId: 'b'}], 'a', {y: 0, x: 0})
-      assert.deepStrictEqual(result.cardsOnPlayersHand, [{creatureId: 'b'}])
+      const result = placePlayerFactionCreature(
+        creatures, matrix, [{creatureId: a.id}, {creatureId: 'foo'}], a.id, {y: 0, x: 0})
+      assert.deepStrictEqual(result.cardsOnPlayersHand, [{creatureId: 'foo'}])
+    })
+
+    it('指定したクリーチャーの配置順を増加する', function() {
+      const result = placePlayerFactionCreature(creatures, matrix, [{creatureId: a.id}], a.id, {y: 0, x: 0})
+      assert.strictEqual(result.creatures[0].placementOrder > a.placementOrder, true)
     })
   })
 
@@ -380,18 +450,43 @@ describe('reducers/utils', function() {
   })
 
   describe('reserveCreatures', function() {
-    it('works', function() {
-      const matrix = createBattleFieldMatrix(3, 3)
-      const creatureAppearances = [
+    let a: Creature
+    let b: Creature
+    let creatures: Creature[]
+    let matrix: BattleFieldMatrix
+    let creatureAppearances: CreatureAppearance[]
+
+    beforeEach(function() {
+      a = createCreature()
+      b = createCreature()
+      creatures = [a, b]
+      matrix = createBattleFieldMatrix(3, 3)
+      creatureAppearances = [
         {
           turnNumber: 2,
-          creatureIds: ['a', 'b'],
+          creatureIds: [a.id, b.id],
         }
       ]
-      const result = reserveCreatures(
-        matrix, creatureAppearances, 2, (elements, num) => elements.slice(0, num))
-      assert.strictEqual(result.battleFieldMatrix[0][0].reservedCreatureId, 'a')
-      assert.strictEqual(result.battleFieldMatrix[0][1].reservedCreatureId, 'b')
+    })
+
+    describe('出現が予約されているターン数を指定したとき', function() {
+      const turnNumber = 2
+
+      it('クリーチャーの出現を盤へ予約する', function() {
+        const result = reserveCreatures(
+          creatures, matrix, creatureAppearances, turnNumber, () => [matrix[0][0], matrix[0][1]])
+        assert.strictEqual(result.battleFieldMatrix[0][0].reservedCreatureId, a.id)
+        assert.strictEqual(result.battleFieldMatrix[0][1].reservedCreatureId, b.id)
+      })
+
+      it('クリーチャーの配置順を増加する', function() {
+        const result = reserveCreatures(
+          creatures, matrix, creatureAppearances, turnNumber, () => [matrix[0][0], matrix[0][1]])
+        const newA = findCreatureById(result.creatures, a.id)
+        const newB = findCreatureById(result.creatures, b.id)
+        assert.strictEqual(newA.placementOrder > a.placementOrder, true)
+        assert.strictEqual(newB.placementOrder > b.placementOrder, true)
+      })
     })
   })
 

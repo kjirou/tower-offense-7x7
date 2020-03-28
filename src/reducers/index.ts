@@ -147,6 +147,7 @@ export function selectBattleFieldElement(
             draft.game = {
               ...draft.game,
               ...placePlayerFactionCreature(
+                draft.game.creatures,
                 draft.game.battleFieldMatrix,
                 draft.game.cardsOnPlayersHand,
                 cardUnderCursor.creatureId,
@@ -342,6 +343,7 @@ export function proceedTurn(
     draft.game = {
       ...draft.game,
       ...reserveCreatures(
+        draft.game.creatures,
         draft.game.battleFieldMatrix,
         draft.game.creatureAppearances,
         draft.game.turnNumber,

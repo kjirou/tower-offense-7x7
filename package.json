@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "develop": "$(npm bin)/webpack-dev-server --config webpack-configs/development.js",
-    "test": "$(npm bin)/mocha --require 'ts-node-reigister.js' --recursive 'src/**/__tests__/**/*-test.ts'",
+    "test": "$(npm bin)/mocha --require 'setup-mocha-runner.js' --recursive 'src/**/__tests__/**/*-test.ts'",
     "typecheck": "$(npm bin)/tsc --noEmit"
   },
   "repository": {

@@ -11,11 +11,13 @@ import {
   CreatureWithPartyOnBattleFieldElement,
   Game,
   Job,
+  DEFAULT_PLACEMENT_ORDER,
   MAX_NUMBER_OF_PLAYERS_HAND,
   MatrixPosition,
   Party,
   Skill,
   VictoryOrDefeatId,
+  calculateRangeAndTargeteesOfAutoAttack,
   choiceElementsAtRandom,
   creatureUtils,
   determineRelationshipBetweenFactions,
@@ -85,6 +87,7 @@ export function determineVictoryOrDefeat(
 }
 
 export function placePlayerFactionCreature(
+  creatures: Creature[],
   battleFieldMatrix: BattleFieldMatrix,
   cardsOnPlayersHand: CardRelationship[],
   creatureId: Creature['id'],
@@ -92,6 +95,7 @@ export function placePlayerFactionCreature(
 ): {
   battleFieldMatrix: BattleFieldMatrix,
   cardsOnPlayersHand: CardRelationship[],
+  creatures: Creature[],
 } {
   const element = battleFieldMatrix[position.y][position.x]
   // NOTE: 欲しい仕様ではないが、今はこの状況にならないはず。
@@ -110,7 +114,20 @@ export function placePlayerFactionCreature(
     throw new Error('The `creatureId` does not exist on the player\'s hand.')
   }
 
+  // 配置順を記録する。
+  const maxPlacementOrder = Math.max(DEFAULT_PLACEMENT_ORDER, ...creatures.map(e => e.placementOrder))
+  const newCreatures = creatures.map(creature => {
+    if (creature.id === creatureId) {
+      return {
+        ...creature,
+        placementOrder: maxPlacementOrder + 1,
+      }
+    }
+    return creature
+  })
+
   return {
+    creatures: newCreatures,
     battleFieldMatrix: newBattleFieldMatrix,
     cardsOnPlayersHand: newCardsOnPlayersHand,
   }
@@ -172,83 +189,40 @@ export function invokeAutoAttack(
 ): {
   creatures: Creature[],
 } {
-  const {jobs} = constants
-  const attackerWithParty = findCreatureWithParty(creatures, parties, attackerCreatureId)
-
   // 攻撃者情報を抽出する。
-  const attackerData: CreatureWithPartyOnBattleFieldElement = {
-    creature: attackerWithParty.creature,
-    party: attackerWithParty.party,
+  const attackerSet: CreatureWithPartyOnBattleFieldElement = {
+    ...findCreatureWithParty(creatures, parties, attackerCreatureId),
     battleFieldElement: findBattleFieldElementByCreatureId(battleFieldMatrix, attackerCreatureId),
   }
 
-  if (attackerData.creature.autoAttackInvoked) {
+  if (attackerSet.creature.autoAttackInvoked) {
     throw new Error('The creature had already invoked a auto-attack.')
   }
 
-  // 攻撃対象者候補である、範囲内で敵対関係のクリーチャー情報を抽出する。
-  const targeteeCandidatesData: CreatureWithPartyOnBattleFieldElement[] = []
-  const range = creatureUtils.getAutoAttackRange(attackerData.creature, constants)
-  const reachableBattleFieldElements = findBattleFieldElementsByRange(
-    battleFieldMatrix,
-    attackerData.battleFieldElement.position,
-    range.rangeShapeKey,
-    range.minReach,
-    range.maxReach
-  )
-  for (const reachableBattleFieldElement of reachableBattleFieldElements) {
-    if (reachableBattleFieldElement.creatureId !== undefined) {
-      const creatureWithParty =
-        findCreatureWithParty(creatures, parties, reachableBattleFieldElement.creatureId)
-      if (
-        determineRelationshipBetweenFactions(
-          creatureWithParty.party.factionId, attackerData.party.factionId
-        ) === 'enemy'
-      ) {
-        targeteeCandidatesData.push({
-          creature: creatureWithParty.creature,
-          party: creatureWithParty.party,
-          battleFieldElement: reachableBattleFieldElement,
-        })
-      }
-    }
-  }
+  const {targetees} = calculateRangeAndTargeteesOfAutoAttack(
+    constants, creatures, parties, battleFieldMatrix, attackerCreatureId)
 
   let newCreatures = creatures.slice()
 
-  // 範囲内に攻撃対象がいたとき。
-  if (targeteeCandidatesData.length > 0) {
-    // 最大攻撃対象数を算出する。
-    const dummyMaxNumberOfTargetees = 1
-
-    // 優先順位を考慮して攻撃対象を決定する。
-    const targeteesData = targeteeCandidatesData
-      .slice()
-      // TODO: Priority calculation
-      .sort((a, b) => {
-        return -1
-      })
-      .slice(0, dummyMaxNumberOfTargetees)
-
+  if (targetees.length > 0) {
     // 影響を決定する。
     // NOTE: このループ内で攻撃対象が死亡するなどしても、対象から除外しなくても良い。
     //       自動攻撃の副作用で攻撃者に有利な効果が発生することもあり、それが意図せずに発生しないと損な感じが強そう。
     //       それにより、死亡しているクリーチャーも攻撃対象に含まれることになる。
-    const affectedCreatures: Creature[] = targeteesData
-      .map(targeteeData => {
-        const damage = creatureUtils.getAttackPower(attackerData.creature, constants)
-        return creatureUtils.alterLifePoints(targeteeData.creature, constants, -damage)
+    const affectedCreatures: Creature[] = targetees
+      .map(targeteeSet => {
+        const damage = creatureUtils.getAttackPower(attackerSet.creature, constants)
+        return creatureUtils.alterLifePoints(targeteeSet.creature, constants, -damage)
       })
 
     // 攻撃対象へ影響を反映する。
     newCreatures = newCreatures.map(creature => {
-      const affected = findCreatureByIdIfPossible(affectedCreatures, creature.id)
-      return affected || creature
+      return findCreatureByIdIfPossible(affectedCreatures, creature.id) || creature
     })
 
     // 自動攻撃攻撃者の自動攻撃実行済みフラグを true にする。
     newCreatures = newCreatures.map(creature => {
-      if (creature.id === attackerData.creature.id) {
+      if (creature.id === attackerSet.creature.id) {
         creature.autoAttackInvoked = true
       }
       return creature
@@ -377,13 +351,16 @@ export function increaseRaidChargeForEachComputerCreatures(
 }
 
 export function reserveCreatures(
+  creatures: Creature[],
   battleFieldMatrix: BattleFieldMatrix,
   creatureAppearances: CreatureAppearance[],
   turnNumber: Game['turnNumber'],
   choiceElements: (elements: BattleFieldElement[], numberOfElements: number) => BattleFieldElement[]
 ): {
   battleFieldMatrix: BattleFieldMatrix,
+  creatures: Creature[],
 } {
+  let newCreatures = creatures.slice()
   const newBattleFieldMatrix = battleFieldMatrix.slice().map(row => row.slice())
 
   // 指定ターン数のクリーチャー出現情報を抽出する。
@@ -409,15 +386,30 @@ export function reserveCreatures(
       })
 
     // 各マスへクリーチャー出現を予約する。
+    // クリーチャーの配置順を更新する。
+    // NOTE: 配置順の更新を出現の実現時に行う方が良さそうだったが、この時点でないと、
+    //         同じ出現ターン内で複数のクリーチャーが存在するときの、その間の優先順位の上下がわからない。
+    let maxPlacementOrder = Math.max(DEFAULT_PLACEMENT_ORDER, ...newCreatures.map(e => e.placementOrder))
     reservedCreaturePositions.forEach(({position, creatureId}) => {
       newBattleFieldMatrix[position.y][position.x] = {
         ...newBattleFieldMatrix[position.y][position.x],
         reservedCreatureId: creatureId,
       }
+      maxPlacementOrder++
+      newCreatures = newCreatures.map(creature => {
+        if (creatureId === creature.id) {
+          return {
+            ...creature,
+            placementOrder: maxPlacementOrder,
+          }
+        }
+        return creature
+      })
     })
   }
 
   return {
+    creatures: newCreatures,
     battleFieldMatrix: newBattleFieldMatrix,
   }
 }
@@ -455,8 +447,9 @@ export function initializeGame(game: Game): Game {
   newGame = {
     ...newGame,
     ...reserveCreatures(
-      game.battleFieldMatrix,
-      game.creatureAppearances,
+      newGame.creatures,
+      newGame.battleFieldMatrix,
+      newGame.creatureAppearances,
       0,
       (elements: BattleFieldElement[], numberOfElements: number): BattleFieldElement[] => {
         return choiceElementsAtRandom<BattleFieldElement>(elements, numberOfElements)

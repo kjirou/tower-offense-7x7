@@ -1,3 +1,4 @@
+import {setAutoFreeze} from 'immer'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
@@ -11,6 +12,7 @@ import {
   Creature,
   Game,
   Job,
+  DEFAULT_PLACEMENT_ORDER,
   MAX_NUMBER_OF_PLAYERS_HAND,
   Party,
   SkillCategoryId,
@@ -20,6 +22,8 @@ import {
 import {
   initializeGame,
 } from './reducers/utils'
+
+setAutoFreeze(false)
 
 const dummyJobTemplate = {
   id: '',
@@ -32,6 +36,7 @@ const dummyJobTemplate = {
     minReach: 1,
     maxReach: 1,
   },
+  autoAttackTargets: 1,
 }
 const dummyJobs: Job[] = [
   {
@@ -39,6 +44,11 @@ const dummyJobs: Job[] = [
     id: 'archer',
     maxLifePoints: 6,
     attackPower: 3,
+    autoAttackRange: {
+      rangeShapeKey: 'circle',
+      minReach: 1,
+      maxReach: 2,
+    },
   },
   {
     ...dummyJobTemplate,
@@ -56,6 +66,17 @@ const dummyJobs: Job[] = [
   },
   {
     ...dummyJobTemplate,
+    id: 'gunner',
+    maxLifePoints: 6,
+    attackPower: 3,
+    autoAttackRange: {
+      rangeShapeKey: 'cross',
+      minReach: 1,
+      maxReach: 3,
+    },
+  },
+  {
+    ...dummyJobTemplate,
     id: 'knight',
     maxLifePoints: 18,
     attackPower: 2,
@@ -64,7 +85,13 @@ const dummyJobs: Job[] = [
     ...dummyJobTemplate,
     id: 'mage',
     maxLifePoints: 3,
-    attackPower: 3,
+    attackPower: 2,
+    autoAttackRange: {
+      rangeShapeKey: 'circle',
+      minReach: 1,
+      maxReach: 2,
+    },
+    autoAttackTargets: 99,
   },
   {
     ...dummyJobTemplate,
@@ -89,8 +116,9 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
     raidCharge: 0,
     skillIds: [],
     autoAttackInvoked: false,
+    placementOrder: DEFAULT_PLACEMENT_ORDER,
   }
-  switch (index % 5) {
+  switch (index % 6) {
     case 0:
       return {
         ...dummyAllyTemplate,
@@ -116,6 +144,11 @@ const dummyAllies: Creature[] = Array.from({length: 20}).map((unused, index) => 
         ...dummyAllyTemplate,
         jobId: 'priest',
       }
+    case 5:
+      return {
+        ...dummyAllyTemplate,
+        jobId: 'gunner',
+      }
     default:
       throw new Error('')
   }
@@ -128,6 +161,7 @@ const dummyEnemies: Creature[] = Array.from({length: 20}).map((unused, index) =>
     raidCharge: 0,
     skillIds: [],
     autoAttackInvoked: false,
+    placementOrder: DEFAULT_PLACEMENT_ORDER,
   }
   switch (index % 2) {
     case 0:

@@ -5,12 +5,19 @@ import {
   FactionId,
   Game,
   Job,
+  DEFAULT_PLACEMENT_ORDER,
   MAX_NUMBER_OF_PLAYERS_HAND,
   Party,
   createBattleFieldMatrix,
   determineRelationshipBetweenFactions,
   findCreatureWithParty,
 } from './utils'
+import {
+  Props as BattlePageProps,
+} from './components/pages/BattlePage'
+import {
+  Props as RootProps,
+} from './components/Root'
 
 /**
  * 整数を元にしたユニークIDを作成する関数を作成する
@@ -46,6 +53,7 @@ export function createJob(): Job {
       minReach: 1,
       maxReach: 1,
     },
+    autoAttackTargets: 1,
   }
 }
 
@@ -67,6 +75,7 @@ export function createCreature(): Creature {
     raidCharge: 0,
     skillIds: [],
     autoAttackInvoked: false,
+    placementOrder: DEFAULT_PLACEMENT_ORDER,
   }
 }
 
@@ -87,6 +96,14 @@ export function findFirstAlly(creatures: Creature[], parties: Party[], factionId
     return allies[0]
   }
   throw new Error('Can not find an ally.')
+}
+
+export function ensureBattlePageProps(props: RootProps): BattlePageProps {
+  const battlePage = props.pages.battle
+  if (battlePage === undefined) {
+    throw new Error('`props.pages.battle` does not exist.')
+  }
+  return battlePage
 }
 
 /**

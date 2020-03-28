@@ -30,6 +30,7 @@ export type Job = {
     minReach: number,
     rangeShapeKey: string,
   },
+  autoAttackTargets: number,
   id: string,
   maxLifePoints: number,
   raidInterval: number,
@@ -45,6 +46,7 @@ export type Skill = {
 export type Creature = {
   _attackPowerForTest?: Job['attackPower'],
   _autoAttackRangeForTest?: Job['autoAttackRange'],
+  _autoAttackTargetsForTest?: Job['autoAttackTargets'],
   _maxLifePointsForTest?: Job['maxLifePoints'],
   _raidIntervalForTest?: Job['raidInterval'],
   _raidPowerForTest?: Job['raidPower'],
@@ -52,6 +54,9 @@ export type Creature = {
   id: string,
   jobId: string,
   lifePoints: number,
+  // This value is used as the priority for auto-attacks.
+  // Creatures placed earlier have higher priority as auto-attack targets.
+  placementOrder: number,
   raidCharge: number,
   skillIds: Skill['id'][],
 }
@@ -170,6 +175,8 @@ export const MAX_NUMBER_OF_PLAYERS_HAND = 5
 export const ACTION_POINTS_REQUIRED_FOR_CREATURE_PLACEMENT = 2
 
 export const ACTION_POINTS_REQUIRED_FOR_SKILL_USE = 1
+
+export const DEFAULT_PLACEMENT_ORDER = 0
 
 /**
  * リーチに対しての円形の範囲を生成する。
@@ -553,6 +560,74 @@ export function findCardUnderCursor(cards: Card[], cursor: Cursor): Card | undef
   return undefined
 }
 
+/**
+ * 自動攻撃の範囲と対象者を算出する。
+ */
+export function calculateRangeAndTargeteesOfAutoAttack(
+  constants: Game['constants'],
+  creatures: Creature[],
+  parties: Party[],
+  battleFieldMatrix: BattleFieldMatrix,
+  invokerCreatureId: Creature['id'],
+): {
+  rangedBattleFieldElements: BattleFieldElement[],
+  targetees: CreatureWithPartyOnBattleFieldElement[],
+} {
+  // 発動者情報を抽出する。
+  const invokerSet: CreatureWithPartyOnBattleFieldElement = {
+    ...findCreatureWithParty(creatures, parties, invokerCreatureId),
+    battleFieldElement: findBattleFieldElementByCreatureId(battleFieldMatrix, invokerCreatureId),
+  }
+
+  // 対象者候補リスト。
+  let targeteeCandidates: CreatureWithPartyOnBattleFieldElement[] = []
+
+  // 自動攻撃の範囲内のクリーチャーリストを抽出する。
+  const range = creatureUtils.getAutoAttackRange(invokerSet.creature, constants)
+  const rangedElements = findBattleFieldElementsByRange(
+    battleFieldMatrix,
+    invokerSet.battleFieldElement.position,
+    range.rangeShapeKey,
+    range.minReach,
+    range.maxReach
+  )
+  for (const element of rangedElements) {
+    if (element.creatureId !== undefined) {
+      targeteeCandidates.push({
+        ...findCreatureWithParty(creatures, parties, element.creatureId),
+        battleFieldElement: element,
+      })
+    }
+  }
+
+  // 敵対関係のクリーチャーのみへ絞り込む。
+  targeteeCandidates = targeteeCandidates.filter(creatureSet => {
+    return determineRelationshipBetweenFactions(
+      creatureSet.party.factionId, invokerSet.party.factionId) === 'enemy'
+  })
+
+  // 最大攻撃対象数を取得する。
+  const maxNumberOfTargetees = creatureUtils.getAutoAttackTargets(invokerSet.creature, constants)
+
+  // 優先順位を考慮して攻撃対象を決定する。
+  const targetees = targeteeCandidates
+    .slice()
+    .sort((a, b) => {
+      if (a.creature.placementOrder < b.creature.placementOrder) {
+        return -1
+      } else if (a.creature.placementOrder > b.creature.placementOrder) {
+        return 1
+      }
+      return 0
+    })
+    .slice(0, maxNumberOfTargetees)
+
+  return {
+    rangedBattleFieldElements: rangedElements,
+    targetees,
+  }
+}
+
 export const creatureUtils = {
   getAttackPower: (creature: Creature, constants: Game['constants']): number => {
     if (creature._attackPowerForTest !== undefined) {
@@ -560,6 +635,13 @@ export const creatureUtils = {
     }
     const job = findJobById(constants.jobs, creature.jobId)
     return job.attackPower
+  },
+  getAutoAttackTargets: (creature: Creature, constants: Game['constants']): Job['autoAttackTargets'] => {
+    if (creature._autoAttackTargetsForTest !== undefined) {
+      return creature._autoAttackTargetsForTest
+    }
+    const job = findJobById(constants.jobs, creature.jobId)
+    return job.autoAttackTargets
   },
   getAutoAttackRange: (creature: Creature, constants: Game['constants']): Job['autoAttackRange'] => {
     if (creature._autoAttackRangeForTest !== undefined) {
