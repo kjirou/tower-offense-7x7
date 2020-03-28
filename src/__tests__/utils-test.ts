@@ -609,9 +609,9 @@ describe('utils', function() {
     })
 
     describe('getAutoAttackTargets', function() {
-      it('_autoAttackTargets が存在しているときはその値を優先して返す', function() {
+      it('_autoAttackTargetsForTest が存在しているときはその値を優先して返す', function() {
         constants.jobs[0].autoAttackTargets = 1
-        creature._autoAttackTargets = 2
+        creature._autoAttackTargetsForTest = 2
         assert.strictEqual(creatureUtils.getAutoAttackTargets(creature, constants), 2)
       })
     })

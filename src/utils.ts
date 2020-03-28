@@ -46,7 +46,7 @@ export type Skill = {
 export type Creature = {
   _attackPowerForTest?: Job['attackPower'],
   _autoAttackRangeForTest?: Job['autoAttackRange'],
-  _autoAttackTargets?: Job['autoAttackTargets'],
+  _autoAttackTargetsForTest?: Job['autoAttackTargets'],
   _maxLifePointsForTest?: Job['maxLifePoints'],
   _raidIntervalForTest?: Job['raidInterval'],
   _raidPowerForTest?: Job['raidPower'],
@@ -569,8 +569,8 @@ export const creatureUtils = {
     return job.attackPower
   },
   getAutoAttackTargets: (creature: Creature, constants: Game['constants']): Job['autoAttackTargets'] => {
-    if (creature._autoAttackTargets !== undefined) {
-      return creature._autoAttackTargets
+    if (creature._autoAttackTargetsForTest !== undefined) {
+      return creature._autoAttackTargetsForTest
     }
     const job = findJobById(constants.jobs, creature.jobId)
     return job.autoAttackTargets

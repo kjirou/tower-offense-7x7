@@ -276,7 +276,7 @@ describe('reducers/utils', function() {
         })
 
         it('攻撃者の攻撃対象数が 1 のとき、配置順が最も低い攻撃対象のみを攻撃する', function() {
-          attacker._autoAttackTargets = 1
+          attacker._autoAttackTargetsForTest = 1
           enemies[0].placementOrder = 2
           enemies[1].placementOrder = 1
           enemies[2].placementOrder = 3
@@ -294,7 +294,7 @@ describe('reducers/utils', function() {
         })
 
         it('攻撃者の攻撃対象数が複数のとき、配置順が低い順に複数の攻撃対象を攻撃する', function() {
-          attacker._autoAttackTargets = 2
+          attacker._autoAttackTargetsForTest = 2
           enemies[0].placementOrder = 2
           enemies[1].placementOrder = 1
           enemies[2].placementOrder = 3
