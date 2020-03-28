@@ -1,3 +1,4 @@
+import {setAutoFreeze} from 'immer'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
@@ -21,6 +22,8 @@ import {
 import {
   initializeGame,
 } from './reducers/utils'
+
+setAutoFreeze(false)
 
 const dummyJobTemplate = {
   id: '',
