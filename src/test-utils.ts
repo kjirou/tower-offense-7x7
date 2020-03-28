@@ -12,6 +12,12 @@ import {
   determineRelationshipBetweenFactions,
   findCreatureWithParty,
 } from './utils'
+import {
+  Props as BattlePageProps,
+} from './components/pages/BattlePage'
+import {
+  Props as RootProps,
+} from './components/Root'
 
 /**
  * 整数を元にしたユニークIDを作成する関数を作成する
@@ -90,6 +96,14 @@ export function findFirstAlly(creatures: Creature[], parties: Party[], factionId
     return allies[0]
   }
   throw new Error('Can not find an ally.')
+}
+
+export function ensureBattlePageProps(props: RootProps): BattlePageProps {
+  const battlePage = props.pages.battle
+  if (battlePage === undefined) {
+    throw new Error('`props.pages.battle` does not exist.')
+  }
+  return battlePage
 }
 
 /**

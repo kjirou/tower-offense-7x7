@@ -32,7 +32,7 @@ import {
   selectCardOnPlayersHand,
 } from './reducers'
 
-type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>
+export type ReactSetState = React.Dispatch<React.SetStateAction<ApplicationState>>
 
 const jobIdToDummyImage = (jobId: string): string => {
   const mapping: {
@@ -127,16 +127,23 @@ function mapBattlePageStateToProps(
       range.minReach,
       range.maxReach
     )
-    // そのマスリスト内のクリーチャーリストを取得し、攻撃対象の優先順位が高い順に整列する。
+    // そのマスリスト内の敵対クリーチャーリストを取得する。
     let attackees: CreatureWithPartyOnBattleFieldElement[] = []
     for (const element of rangedElements) {
       if (element.creatureId !== undefined) {
         const creatureWithParty = findCreatureWithParty(game.creatures, game.parties, element.creatureId)
-        attackees.push({
-          creature: creatureWithParty.creature,
-          party: creatureWithParty.party,
-          battleFieldElement: element,
-        })
+        if (
+          determineRelationshipBetweenFactions(
+            cursoredElement.creatureWithParty.party.factionId,
+            creatureWithParty.party.factionId
+          ) === 'enemy'
+        ) {
+          attackees.push({
+            creature: creatureWithParty.creature,
+            party: creatureWithParty.party,
+            battleFieldElement: element,
+          })
+        }
       }
     }
     // TODO: invokeAutoAttack 内の同じロジックと共通化する。攻撃対象数・優先順位判定など。
@@ -160,7 +167,7 @@ function mapBattlePageStateToProps(
       const attackee = attackees[i]
       const element = attackee.battleFieldElement
       boardProps[element.position.y][element.position.x].isTarget = true
-      boardProps[element.position.y][element.position.x].targetPriority = i + 1 
+      boardProps[element.position.y][element.position.x].targetPriority = i + 1
     }
   }
 
