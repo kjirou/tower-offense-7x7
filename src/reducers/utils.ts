@@ -235,7 +235,7 @@ export function invokeAutoAttack(
   // 範囲内に攻撃対象がいたとき。
   if (targeteeCandidatesData.length > 0) {
     // 最大攻撃対象数を算出する。
-    const dummyMaxNumberOfTargetees = 1
+    const maxNumberOfTargetees = creatureUtils.getAutoAttackTargets(attackerData.creature, constants)
 
     // 優先順位を考慮して攻撃対象を決定する。
     const targeteesData = targeteeCandidatesData
@@ -248,7 +248,7 @@ export function invokeAutoAttack(
         }
         return 0
       })
-      .slice(0, dummyMaxNumberOfTargetees)
+      .slice(0, maxNumberOfTargetees)
 
     // 影響を決定する。
     // NOTE: このループ内で攻撃対象が死亡するなどしても、対象から除外しなくても良い。

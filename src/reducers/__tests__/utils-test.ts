@@ -275,8 +275,8 @@ describe('reducers/utils', function() {
           battlePage.game.battleFieldMatrix[1][2].creatureId = enemies[2].id
         })
 
-        // TODO: "攻撃者の攻撃対象数" の能力値ができたら、コンテキストとして設定する。
-        it('攻撃者の攻撃対象数が 1 のとき、配置順が低い方の攻撃対象のみを攻撃する', function() {
+        it('攻撃者の攻撃対象数が 1 のとき、配置順が最も低い攻撃対象のみを攻撃する', function() {
+          attacker._autoAttackTargets = 1
           enemies[0].placementOrder = 2
           enemies[1].placementOrder = 1
           enemies[2].placementOrder = 3
@@ -289,6 +289,24 @@ describe('reducers/utils', function() {
           )
           const newEnemies = enemies.map(e => findCreatureById(result.creatures, e.id))
           assert.strictEqual(newEnemies[0].lifePoints < 2, false)
+          assert.strictEqual(newEnemies[1].lifePoints < 2, true)
+          assert.strictEqual(newEnemies[2].lifePoints < 2, false)
+        })
+
+        it('攻撃者の攻撃対象数が複数のとき、配置順が低い順に複数の攻撃対象を攻撃する', function() {
+          attacker._autoAttackTargets = 2
+          enemies[0].placementOrder = 2
+          enemies[1].placementOrder = 1
+          enemies[2].placementOrder = 3
+          const result = invokeAutoAttack(
+            battlePage.game.constants,
+            battlePage.game.creatures,
+            battlePage.game.parties,
+            battlePage.game.battleFieldMatrix,
+            attacker.id,
+          )
+          const newEnemies = enemies.map(e => findCreatureById(result.creatures, e.id))
+          assert.strictEqual(newEnemies[0].lifePoints < 2, true)
           assert.strictEqual(newEnemies[1].lifePoints < 2, true)
           assert.strictEqual(newEnemies[2].lifePoints < 2, false)
         })
