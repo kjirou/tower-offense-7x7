@@ -116,8 +116,10 @@ const CreatureOnElement: React.FC<CreatureOnElementProps> = (props) => {
 type BattleFieldElementProps = {
   creature: CreatureOnElementProps | void,
   isSelected: boolean,
+  // TODO: 対象かと優先順位が見辛すぎるので改善する。
   isTarget: boolean,
   isWithinRange: boolean,
+  targetPriority: number | undefined,
   x: number,
   y: number,
 }
@@ -144,7 +146,26 @@ const BattleFieldElement: React.FC<BattleFieldElementProps> = (props) => {
           border: props.isTarget ? '2px solid white' : '',
           backgroundColor: props.isWithinRange ? 'rgba(255, 255, 0, .5)' : '',
         }}
-      />
+      >
+        {
+          props.targetPriority !== undefined
+            ? <div
+              style={{
+                position: 'absolute',
+                top: '0',
+                left: '0',
+                width: '48px',
+                height: '48px',
+                lineHeight: '48px',
+                fontSize: '24px',
+                fontWeight: 'bold',
+                textAlign: 'center',
+                color: 'white',
+              }}
+            >{props.targetPriority}</div>
+            : null
+        }
+      </div>
       {
         props.creature ? <CreatureOnElement {...props.creature} /> : undefined
       }

@@ -14,6 +14,7 @@ import {
   BattleFieldElement,
   BattlePage,
   CreatureWithParty,
+  CreatureWithPartyOnBattleFieldElement,
   GlobalPosition,
   SkillCategoryId,
   areGlobalPositionsEqual,
@@ -109,23 +110,58 @@ function mapBattlePageStateToProps(
         isSelected,
         isWithinRange: false,
         isTarget: false,
+        targetPriority: undefined,
       }
     })
   })
 
+  // TODO: この部分のロジックが複雑なのでテストを書く。
   // マスへカーソルが当たっている、かつ、クリーチャーが存在するとき。
   if (cursoredElement.battleFieldElement && cursoredElement.creatureWithParty) {
-    // 自動攻撃範囲内のマスへ範囲内フラグを立てる。
     const range = creatureUtils.getAutoAttackRange(cursoredElement.creatureWithParty.creature, game.constants)
-    findBattleFieldElementsByRange(
+    // 自動攻撃範囲内のマスリストを取得する。
+    const rangedElements = findBattleFieldElementsByRange(
       game.battleFieldMatrix,
       cursoredElement.battleFieldElement.position,
       range.rangeShapeKey,
       range.minReach,
       range.maxReach
-    ).forEach(element => {
-      boardProps[element.position.y][element.position.x].isWithinRange = true
+    )
+    // そのマスリスト内のクリーチャーリストを取得し、攻撃対象の優先順位が高い順に整列する。
+    let attackees: CreatureWithPartyOnBattleFieldElement[] = []
+    for (const element of rangedElements) {
+      if (element.creatureId !== undefined) {
+        const creatureWithParty = findCreatureWithParty(game.creatures, game.parties, element.creatureId)
+        attackees.push({
+          creature: creatureWithParty.creature,
+          party: creatureWithParty.party,
+          battleFieldElement: element,
+        })
+      }
+    }
+    // TODO: invokeAutoAttack 内の同じロジックと共通化する。攻撃対象数・優先順位判定など。
+    attackees.sort((a, b) => {
+      if (a.creature.placementOrder < b.creature.placementOrder) {
+        return -1
+      } else if (a.creature.placementOrder > b.creature.placementOrder) {
+        return 1
+      }
+      return 0
     })
+    attackees = attackees.slice(
+      0, creatureUtils.getAutoAttackTargets(cursoredElement.creatureWithParty.creature, game.constants))
+    // 範囲内のマスリストへ範囲内フラグを立てる。
+    for (const element of rangedElements) {
+      boardProps[element.position.y][element.position.x].isWithinRange = true
+    }
+    // 攻撃対象のマスへ対象フラグを立てる。
+    // 攻撃対象のマスへ優先順位を表示する。
+    for (let i = 0; i < attackees.length; i++) {
+      const attackee = attackees[i]
+      const element = attackee.battleFieldElement
+      boardProps[element.position.y][element.position.x].isTarget = true
+      boardProps[element.position.y][element.position.x].targetPriority = i + 1 
+    }
   }
 
   const cardsProps: CardProps[] = game.cardsOnPlayersHand
