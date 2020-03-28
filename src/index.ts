@@ -33,6 +33,7 @@ const dummyJobTemplate = {
     minReach: 1,
     maxReach: 1,
   },
+  autoAttackTargets: 1,
 }
 const dummyJobs: Job[] = [
   {

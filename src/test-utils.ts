@@ -47,6 +47,7 @@ export function createJob(): Job {
       minReach: 1,
       maxReach: 1,
     },
+    autoAttackTargets: 1,
   }
 }
 

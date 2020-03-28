@@ -608,6 +608,14 @@ describe('utils', function() {
       })
     })
 
+    describe('getAutoAttackTargets', function() {
+      it('_autoAttackTargets が存在しているときはその値を優先して返す', function() {
+        constants.jobs[0].autoAttackTargets = 1
+        creature._autoAttackTargets = 2
+        assert.strictEqual(creatureUtils.getAutoAttackTargets(creature, constants), 2)
+      })
+    })
+
     describe('getMaxLifePoints', function() {
       it('_maxLifePointsForTest が存在しているときはその値を優先して返す', function() {
         constants.jobs[0].maxLifePoints = 2
