@@ -240,9 +240,13 @@ export function invokeAutoAttack(
     // 優先順位を考慮して攻撃対象を決定する。
     const targeteesData = targeteeCandidatesData
       .slice()
-      // TODO: Priority calculation
       .sort((a, b) => {
-        return -1
+        if (a.creature.placementOrder < b.creature.placementOrder) {
+          return -1
+        } else if (a.creature.placementOrder > b.creature.placementOrder) {
+          return 1
+        }
+        return 0
       })
       .slice(0, dummyMaxNumberOfTargetees)
 

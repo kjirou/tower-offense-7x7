@@ -24,6 +24,7 @@ import {
   createConstants,
   createJob,
   createStateDisplayBattlePageAtStartOfGame,
+  findAllies,
   findFirstAlly,
 } from '../../test-utils'
 import {
@@ -222,36 +223,75 @@ describe('reducers/utils', function() {
       let state: ApplicationState
       let battlePage: BattlePage
       let attacker: Creature
-      let enemy: Creature
-      let result: ReturnType<typeof invokeAutoAttack>
 
       beforeEach(function() {
         state = createStateDisplayBattlePageAtStartOfGame()
         battlePage = ensureBattlePage(state)
         attacker = findCreatureById(battlePage.game.creatures, battlePage.game.cardsOnPlayersHand[0].creatureId)
         attacker._attackPowerForTest = 1
-        enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
-        enemy._maxLifePointsForTest = 2
-        enemy.lifePoints = 2
-        battlePage.game.battleFieldMatrix[0][0].creatureId = attacker.id
-        battlePage.game.battleFieldMatrix[0][1].creatureId = enemy.id
-        result = invokeAutoAttack(
-          battlePage.game.constants,
-          battlePage.game.creatures,
-          battlePage.game.parties,
-          battlePage.game.battleFieldMatrix,
-          attacker.id,
-        )
+        battlePage.game.battleFieldMatrix[1][1].creatureId = attacker.id
       })
 
-      it('敵へダメージを与える', function() {
-        const newEnemy = findCreatureById(result.creatures, enemy.id)
-        assert.strictEqual(newEnemy.lifePoints < enemy.lifePoints, true)
+      describe('攻撃対象の敵が 1 体のみのとき', function() {
+        let enemy: Creature
+        let result: ReturnType<typeof invokeAutoAttack>
+
+        beforeEach(function() {
+          enemy = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
+          enemy._maxLifePointsForTest = 2
+          enemy.lifePoints = 2
+          battlePage.game.battleFieldMatrix[0][1].creatureId = enemy.id
+          result = invokeAutoAttack(
+            battlePage.game.constants,
+            battlePage.game.creatures,
+            battlePage.game.parties,
+            battlePage.game.battleFieldMatrix,
+            attacker.id,
+          )
+        })
+
+        it('敵へダメージを与える', function() {
+          const newEnemy = findCreatureById(result.creatures, enemy.id)
+          assert.strictEqual(newEnemy.lifePoints < enemy.lifePoints, true)
+        })
+
+        it('攻撃者の自動攻撃発動済みフラグが true である', function() {
+          const newAttacker = findCreatureById(result.creatures, attacker.id)
+          assert.strictEqual(newAttacker.autoAttackInvoked, true)
+        })
       })
 
-      it('攻撃者の自動攻撃発動済みフラグが true である', function() {
-        const newAttacker = findCreatureById(result.creatures, attacker.id)
-        assert.strictEqual(newAttacker.autoAttackInvoked, true)
+      describe('攻撃対象の敵が複数体のとき', function() {
+        let enemies: Creature[]
+
+        beforeEach(function() {
+          enemies = findAllies(battlePage.game.creatures, battlePage.game.parties, 'computer').slice(3)
+          for (const enemy of enemies) {
+            enemy._maxLifePointsForTest = 2
+            enemy.lifePoints = 2
+          }
+          battlePage.game.battleFieldMatrix[0][1].creatureId = enemies[0].id
+          battlePage.game.battleFieldMatrix[1][0].creatureId = enemies[1].id
+          battlePage.game.battleFieldMatrix[1][2].creatureId = enemies[2].id
+        })
+
+        // TODO: "攻撃者の攻撃対象数" の能力値ができたら、コンテキストとして設定する。
+        it('攻撃者の攻撃対象数が 1 のとき、配置順が低い方の攻撃対象のみを攻撃する', function() {
+          enemies[0].placementOrder = 2
+          enemies[1].placementOrder = 1
+          enemies[2].placementOrder = 3
+          const result = invokeAutoAttack(
+            battlePage.game.constants,
+            battlePage.game.creatures,
+            battlePage.game.parties,
+            battlePage.game.battleFieldMatrix,
+            attacker.id,
+          )
+          const newEnemies = enemies.map(e => findCreatureById(result.creatures, e.id))
+          assert.strictEqual(newEnemies[0].lifePoints < 2, false)
+          assert.strictEqual(newEnemies[1].lifePoints < 2, true)
+          assert.strictEqual(newEnemies[2].lifePoints < 2, false)
+        })
       })
     })
 
