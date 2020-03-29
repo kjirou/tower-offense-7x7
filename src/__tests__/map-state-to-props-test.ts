@@ -110,12 +110,11 @@ describe('map-state-to-props', function() {
             assert.strictEqual(board[1][0].targetPriority, 1)
           })
 
-          it('範囲内で敵が存在していないマスは isTarget=false, targetPriority=undefined, isWithinRange=true である', function() {
+          it('範囲内で敵が存在していないマスは isTarget=false, targetPriority=undefined である', function() {
             const battlePageProps = ensureBattlePageProps(mapStateToProps(state, dummySetState))
             const board = battlePageProps.battleFieldBoard.board
             assert.strictEqual(board[1][2].isTarget, false)
             assert.strictEqual(board[1][2].targetPriority, undefined)
-            assert.strictEqual(board[1][2].isWithinRange, true)
           })
         })
       })
