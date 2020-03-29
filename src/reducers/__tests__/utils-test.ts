@@ -38,7 +38,7 @@ import {
   placePlayerFactionCreature,
   refillCardsOnPlayersHand,
   removeDeadCreatures,
-  reserveCreatures,
+  spawnCreatures,
 } from '../utils'
 
 describe('reducers/utils', function() {
@@ -449,7 +449,7 @@ describe('reducers/utils', function() {
     })
   })
 
-  describe('reserveCreatures', function() {
+  describe('spawnCreatures', function() {
     let a: Creature
     let b: Creature
     let creatures: Creature[]
@@ -469,18 +469,18 @@ describe('reducers/utils', function() {
       ]
     })
 
-    describe('出現が予約されているターン数を指定したとき', function() {
+    describe('出現が登録されているターン数を指定したとき', function() {
       const turnNumber = 2
 
-      it('クリーチャーの出現を盤へ予約する', function() {
-        const result = reserveCreatures(
+      it('クリーチャーが盤上へ出現する', function() {
+        const result = spawnCreatures(
           creatures, matrix, creatureAppearances, turnNumber, () => [matrix[0][0], matrix[0][1]])
-        assert.strictEqual(result.battleFieldMatrix[0][0].reservedCreatureId, a.id)
-        assert.strictEqual(result.battleFieldMatrix[0][1].reservedCreatureId, b.id)
+        assert.strictEqual(result.battleFieldMatrix[0][0].creatureId, a.id)
+        assert.strictEqual(result.battleFieldMatrix[0][1].creatureId, b.id)
       })
 
-      it('クリーチャーの配置順を増加する', function() {
-        const result = reserveCreatures(
+      it('出現したクリーチャーの配置順を増加する', function() {
+        const result = spawnCreatures(
           creatures, matrix, creatureAppearances, turnNumber, () => [matrix[0][0], matrix[0][1]])
         const newA = findCreatureById(result.creatures, a.id)
         const newB = findCreatureById(result.creatures, b.id)

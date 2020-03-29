@@ -34,7 +34,7 @@ import {
   placePlayerFactionCreature,
   refillCardsOnPlayersHand,
   removeDeadCreatures,
-  reserveCreatures,
+  spawnCreatures,
 } from './utils'
 
 export function selectBattleFieldElement(
@@ -324,10 +324,10 @@ export function proceedTurn(
       }))
     }
 
-    // クリーチャーの出現を予約する。
+    // クリーチャーを出現させる。
     draft.game = {
       ...draft.game,
-      ...reserveCreatures(
+      ...spawnCreatures(
         draft.game.creatures,
         draft.game.battleFieldMatrix,
         draft.game.creatureAppearances,
