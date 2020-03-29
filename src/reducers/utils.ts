@@ -56,13 +56,8 @@ export function doesPlayerHaveVictory(
     creatureAppearances.filter(e => e.turnNumber > currentTurnNumber).length === 0 &&
     battleFieldMatrix.every(row => {
       return row.every(element => {
-        return (
-          element.reservedCreatureId === undefined &&
-          (
-            element.creatureId === undefined ||
-            findPartyByCreatureId(parties, element.creatureId).factionId === 'player'
-          )
-        )
+        return element.creatureId === undefined ||
+          findPartyByCreatureId(parties, element.creatureId).factionId === 'player'
       })
     })
   )
@@ -350,7 +345,7 @@ export function increaseRaidChargeForEachComputerCreatures(
   }
 }
 
-export function reserveCreatures(
+export function spawnCreatures(
   creatures: Creature[],
   battleFieldMatrix: BattleFieldMatrix,
   creatureAppearances: CreatureAppearance[],
@@ -369,15 +364,14 @@ export function reserveCreatures(
   // クリーチャーが出現するターン数のとき。
   if (creatureAppearance) {
     const elements = pickBattleFieldElementsWhereCreatureExists(battleFieldMatrix, false)
-      .filter(e => e.reservedCreatureId === undefined)
 
     // TODO: 勝敗判定に含めるなどして、この状況が発生しないようにする。
     if (elements.length < creatureAppearance.creatureIds.length) {
       throw new Error('There are no battle field elements for creature appearances.')
     }
 
-    // 出現ルールに従って、予約される位置リストを生成する。
-    const reservedCreaturePositions = choiceElements(elements, creatureAppearance.creatureIds.length)
+    // 出現ルールに従って、出現位置リストを生成する。
+    const creaturePositions = choiceElements(elements, creatureAppearance.creatureIds.length)
       .map((choicedElement, index) => {
         return {
           creatureId: creatureAppearance.creatureIds[index],
@@ -385,15 +379,12 @@ export function reserveCreatures(
         }
       })
 
-    // 各マスへクリーチャー出現を予約する。
-    // クリーチャーの配置順を更新する。
-    // NOTE: 配置順の更新を出現の実現時に行う方が良さそうだったが、この時点でないと、
-    //         同じ出現ターン内で複数のクリーチャーが存在するときの、その間の優先順位の上下がわからない。
+    // 各マスへクリーチャーを出現させる、そして、クリーチャーの配置順を更新する。
     let maxPlacementOrder = Math.max(DEFAULT_PLACEMENT_ORDER, ...newCreatures.map(e => e.placementOrder))
-    reservedCreaturePositions.forEach(({position, creatureId}) => {
+    creaturePositions.forEach(({position, creatureId}) => {
       newBattleFieldMatrix[position.y][position.x] = {
         ...newBattleFieldMatrix[position.y][position.x],
-        reservedCreatureId: creatureId,
+        creatureId: creatureId,
       }
       maxPlacementOrder++
       newCreatures = newCreatures.map(creature => {
@@ -443,10 +434,10 @@ export function initializeGame(game: Game): Game {
     }),
   }
 
-  // 1 ターン目のクリーチャーを予約する。
+  // 1 ターン目のクリーチャーを出現させる。
   newGame = {
     ...newGame,
-    ...reserveCreatures(
+    ...spawnCreatures(
       newGame.creatures,
       newGame.battleFieldMatrix,
       newGame.creatureAppearances,

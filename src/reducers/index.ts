@@ -34,7 +34,7 @@ import {
   placePlayerFactionCreature,
   refillCardsOnPlayersHand,
   removeDeadCreatures,
-  reserveCreatures,
+  spawnCreatures,
 } from './utils'
 
 export function selectBattleFieldElement(
@@ -324,25 +324,10 @@ export function proceedTurn(
       }))
     }
 
-    // 予約されているクリーチャーの出現が実現する。
-    const realizedCreatureAppearances: MatrixPosition[] = []
-    for (const row of draft.game.battleFieldMatrix) {
-      for (const element of row) {
-        if (element.reservedCreatureId !== undefined) {
-          realizedCreatureAppearances.push(element.position)
-        }
-      }
-    }
-    realizedCreatureAppearances.forEach(position => {
-      const element = draft.game.battleFieldMatrix[position.y][position.x]
-      element.creatureId = element.reservedCreatureId
-      element.reservedCreatureId = undefined
-    })
-
-    // クリーチャーの出現を予約する。
+    // クリーチャーを出現させる。
     draft.game = {
       ...draft.game,
-      ...reserveCreatures(
+      ...spawnCreatures(
         draft.game.creatures,
         draft.game.battleFieldMatrix,
         draft.game.creatureAppearances,

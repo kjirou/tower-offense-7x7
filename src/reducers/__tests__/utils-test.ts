@@ -38,7 +38,7 @@ import {
   placePlayerFactionCreature,
   refillCardsOnPlayersHand,
   removeDeadCreatures,
-  reserveCreatures,
+  spawnCreatures,
 } from '../utils'
 
 describe('reducers/utils', function() {
@@ -55,15 +55,6 @@ describe('reducers/utils', function() {
     describe('ターン数が、computer 側クリーチャーの出現する最後のターンのとき', function() {
       const currentTurnNumber = 2
 
-      it('予約の computer 側クリーチャーが盤上に存在するとき、勝利ではない', function() {
-        const battleFieldMatrix = createBattleFieldMatrix(1, 1)
-        battleFieldMatrix[0][0].reservedCreatureId = 'a'
-        assert.strictEqual(
-          doesPlayerHaveVictory(parties, battleFieldMatrix, creatureAppearances, currentTurnNumber),
-          false
-        )
-      })
-
       it('computer 側クリーチャーが盤上に存在するとき、勝利ではない', function() {
         const battleFieldMatrix = createBattleFieldMatrix(1, 1)
         battleFieldMatrix[0][0].creatureId = 'a'
@@ -73,7 +64,7 @@ describe('reducers/utils', function() {
         )
       })
 
-      describe('予約を含む computer 側クリーチャーが盤上に存在しないとき', function() {
+      describe('computer 側クリーチャーが盤上に存在しないとき', function() {
         it('player 側クリーチャーが盤上に存在するときでも、勝利である', function() {
           const battleFieldMatrix = createBattleFieldMatrix(1, 1)
           battleFieldMatrix[0][0].creatureId = 'x'
@@ -88,7 +79,7 @@ describe('reducers/utils', function() {
     describe('ターン数が、computer 側クリーチャーの出現する最後のターン未満のとき', function() {
       const currentTurnNumber = 1
 
-      it('予約を含む computer 側クリーチャーが盤上に存在しないときでも、勝利ではない', function() {
+      it('computer 側クリーチャーが盤上に存在しないときでも、勝利ではない', function() {
         const battleFieldMatrix = createBattleFieldMatrix(1, 1)
         assert.strictEqual(
           doesPlayerHaveVictory(parties, battleFieldMatrix, creatureAppearances, currentTurnNumber),
@@ -449,7 +440,7 @@ describe('reducers/utils', function() {
     })
   })
 
-  describe('reserveCreatures', function() {
+  describe('spawnCreatures', function() {
     let a: Creature
     let b: Creature
     let creatures: Creature[]
@@ -469,18 +460,18 @@ describe('reducers/utils', function() {
       ]
     })
 
-    describe('出現が予約されているターン数を指定したとき', function() {
+    describe('出現が登録されているターン数を指定したとき', function() {
       const turnNumber = 2
 
-      it('クリーチャーの出現を盤へ予約する', function() {
-        const result = reserveCreatures(
+      it('クリーチャーが盤上へ出現する', function() {
+        const result = spawnCreatures(
           creatures, matrix, creatureAppearances, turnNumber, () => [matrix[0][0], matrix[0][1]])
-        assert.strictEqual(result.battleFieldMatrix[0][0].reservedCreatureId, a.id)
-        assert.strictEqual(result.battleFieldMatrix[0][1].reservedCreatureId, b.id)
+        assert.strictEqual(result.battleFieldMatrix[0][0].creatureId, a.id)
+        assert.strictEqual(result.battleFieldMatrix[0][1].creatureId, b.id)
       })
 
-      it('クリーチャーの配置順を増加する', function() {
-        const result = reserveCreatures(
+      it('出現したクリーチャーの配置順を増加する', function() {
+        const result = spawnCreatures(
           creatures, matrix, creatureAppearances, turnNumber, () => [matrix[0][0], matrix[0][1]])
         const newA = findCreatureById(result.creatures, a.id)
         const newB = findCreatureById(result.creatures, b.id)

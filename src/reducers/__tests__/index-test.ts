@@ -277,17 +277,6 @@ describe('reducers/index', function() {
       battlePage = ensureBattlePage(state)
     })
 
-    it('予約中の computer 側クリーチャーの raidCharge は自然増加しない', function() {
-      const a = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'computer')
-      a._raidIntervalForTest = 1
-      a.raidCharge = 0
-      battlePage.game.battleFieldMatrix[0][0].reservedCreatureId = a.id
-      const newState = proceedTurn(runAutoAttackPhase(state))
-      const newBattlePage = ensureBattlePage(newState)
-      const newA = findCreatureById(newBattlePage.game.creatures, a.id)
-      assert.strictEqual(newA.raidCharge, 0)
-    })
-
     it('クリーチャーの自動攻撃発動済みフラグを一律 false へ更新する', function() {
       const a = findFirstAlly(battlePage.game.creatures, battlePage.game.parties, 'player')
       a.autoAttackInvoked = true
