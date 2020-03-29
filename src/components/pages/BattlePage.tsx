@@ -50,7 +50,6 @@ const MetaInformationBar: React.FC<MetaInformationBarProps> = (props) => {
 export type CreatureOnElementProps = {
   factionRelationshipId: FactionRelationshipId,
   image: string,
-  isReserved: boolean,
   lifePoints: string,
   turnsUntilRaid: number,
 }
@@ -72,7 +71,6 @@ const CreatureOnElement: React.FC<CreatureOnElementProps> = (props) => {
           lineHeight: '48px',
           fontSize: '24px',
           textAlign: 'center',
-          opacity: props.isReserved ? 0.5 : 1,
         }}
       >{props.image}</div>
       {
