@@ -64,7 +64,7 @@ describe('reducers/utils', function() {
         )
       })
 
-      describe('予約を含む computer 側クリーチャーが盤上に存在しないとき', function() {
+      describe('computer 側クリーチャーが盤上に存在しないとき', function() {
         it('player 側クリーチャーが盤上に存在するときでも、勝利である', function() {
           const battleFieldMatrix = createBattleFieldMatrix(1, 1)
           battleFieldMatrix[0][0].creatureId = 'x'
@@ -79,7 +79,7 @@ describe('reducers/utils', function() {
     describe('ターン数が、computer 側クリーチャーの出現する最後のターン未満のとき', function() {
       const currentTurnNumber = 1
 
-      it('予約を含む computer 側クリーチャーが盤上に存在しないときでも、勝利ではない', function() {
+      it('computer 側クリーチャーが盤上に存在しないときでも、勝利ではない', function() {
         const battleFieldMatrix = createBattleFieldMatrix(1, 1)
         assert.strictEqual(
           doesPlayerHaveVictory(parties, battleFieldMatrix, creatureAppearances, currentTurnNumber),
