@@ -56,13 +56,8 @@ export function doesPlayerHaveVictory(
     creatureAppearances.filter(e => e.turnNumber > currentTurnNumber).length === 0 &&
     battleFieldMatrix.every(row => {
       return row.every(element => {
-        return (
-          element.reservedCreatureId === undefined &&
-          (
-            element.creatureId === undefined ||
-            findPartyByCreatureId(parties, element.creatureId).factionId === 'player'
-          )
-        )
+        return element.creatureId === undefined ||
+          findPartyByCreatureId(parties, element.creatureId).factionId === 'player'
       })
     })
   )

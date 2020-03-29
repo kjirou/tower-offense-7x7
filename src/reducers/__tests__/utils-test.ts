@@ -55,15 +55,6 @@ describe('reducers/utils', function() {
     describe('ターン数が、computer 側クリーチャーの出現する最後のターンのとき', function() {
       const currentTurnNumber = 2
 
-      it('予約の computer 側クリーチャーが盤上に存在するとき、勝利ではない', function() {
-        const battleFieldMatrix = createBattleFieldMatrix(1, 1)
-        battleFieldMatrix[0][0].reservedCreatureId = 'a'
-        assert.strictEqual(
-          doesPlayerHaveVictory(parties, battleFieldMatrix, creatureAppearances, currentTurnNumber),
-          false
-        )
-      })
-
       it('computer 側クリーチャーが盤上に存在するとき、勝利ではない', function() {
         const battleFieldMatrix = createBattleFieldMatrix(1, 1)
         battleFieldMatrix[0][0].creatureId = 'a'
