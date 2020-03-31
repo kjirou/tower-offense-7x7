@@ -34,6 +34,7 @@ import {
   placePlayerFactionCreature,
   refillCardsOnPlayersHand,
   removeDeadCreatures,
+  sortAutoAttackersOrder,
   spawnCreatures,
 } from './utils'
 
@@ -217,7 +218,7 @@ export function runAutoAttackPhase(
     // 攻撃者リストを抽出する。
     const elementsWhereCreatureExists =
       pickBattleFieldElementsWhereCreatureExists(game.battleFieldMatrix)
-    const attackerDataList: CreatureWithPartyOnBattleFieldElement[] = elementsWhereCreatureExists
+    let attackerDataList: CreatureWithPartyOnBattleFieldElement[] = elementsWhereCreatureExists
       .map((battleFieldElement) => {
         // NOTE: pickBattleFieldElementsWhereCreatureExists で creatureId が存在していることを保証している。
         const creatureId = battleFieldElement.creatureId as Creature['id']
@@ -227,7 +228,8 @@ export function runAutoAttackPhase(
         )
       })
 
-    // TODO: 攻撃者リストを発動順に整列する。
+    // 攻撃者リストを発動順に整列する。
+    attackerDataList = sortAutoAttackersOrder(attackerDataList)
 
     let gameBeingUpdated = {...game}
 

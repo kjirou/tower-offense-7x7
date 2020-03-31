@@ -146,6 +146,31 @@ describe('reducers/index', function() {
           assert.strictEqual(newBattlePage.game.battleFieldMatrix[0][1].creatureId, undefined)
         })
       })
+
+      describe('クリーチャーそれぞれがお互いの一回の攻撃で死亡するとき', function() {
+        beforeEach(function() {
+          a.lifePoints = 1
+          a._attackPowerForTest = 1
+          b.lifePoints = 1
+          b._attackPowerForTest = 1
+        })
+
+        describe('computer 側クリーチャーが player 側クリーチャーより先に配置されているとき', function() {
+          beforeEach(function() {
+            a.placementOrder = 2
+            b.placementOrder = 1
+          })
+
+          it('player 側クリーチャーの攻撃が先行するため computer 側クリーチャーが死亡し、player 側は無傷である', function() {
+            const newState = runAutoAttackPhase(state)
+            const newBattlePage = ensureBattlePage(newState)
+            const newA = findCreatureById(newBattlePage.game.creatures, a.id)
+            const newB = findCreatureById(newBattlePage.game.creatures, b.id)
+            assert.strictEqual(newA.lifePoints, 1)
+            assert.strictEqual(newB.lifePoints, 0)
+          })
+        })
+      })
     })
 
     describe('味方関係であるクリーチャーが隣接しているとき', function() {

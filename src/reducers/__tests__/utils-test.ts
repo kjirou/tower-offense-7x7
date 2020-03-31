@@ -11,13 +11,16 @@ import {
   BattlePage,
   Creature,
   CreatureAppearance,
+  CreatureWithPartyOnBattleFieldElement,
   Game,
   Job,
   Party,
   createBattleFieldMatrix,
   creatureUtils,
   ensureBattlePage,
+  findBattleFieldElementByCreatureId,
   findCreatureById,
+  findPartyByCreatureId,
 } from '../../utils'
 import {
   createCreature,
@@ -38,6 +41,7 @@ import {
   placePlayerFactionCreature,
   refillCardsOnPlayersHand,
   removeDeadCreatures,
+  sortAutoAttackersOrder,
   spawnCreatures,
 } from '../utils'
 
@@ -206,6 +210,64 @@ describe('reducers/utils', function() {
       ]
       const result = invokeRaid(constants, creatures, creatures[0].id, 1)
       assert.strictEqual(result.headquartersLifePoints, 0)
+    })
+  })
+
+  describe('sortAutoAttackersOrder', function() {
+    let creatures: Creature[]
+    let parties: Party[]
+    let matrix: BattleFieldMatrix
+    let attackers: CreatureWithPartyOnBattleFieldElement[]
+
+    beforeEach(function() {
+      creatures = [
+        createCreature(),
+        createCreature(),
+        createCreature(),
+        createCreature(),
+      ]
+      parties = [
+        {
+          factionId: 'computer',
+          creatureIds: [creatures[0].id, creatures[2].id],
+        },
+        {
+          factionId: 'player',
+          creatureIds: [creatures[1].id, creatures[3].id],
+        },
+      ]
+      matrix = createBattleFieldMatrix(1, creatures.length)
+      for (let i = 0; i <  creatures.length; i++) {
+        creatures[i].placementOrder = creatures.length - i
+        matrix[0][i].creatureId = creatures[i].id
+      }
+      // [0] = computer 側 / 配置順 4
+      // [1] =   player 側 / 配置順 3
+      // [2] = computer 側 / 配置順 2
+      // [3] =   player 側 / 配置順 1
+      attackers = creatures.map(creature => {
+        return {
+          creature,
+          party: findPartyByCreatureId(parties, creature.id),
+          battleFieldElement: findBattleFieldElementByCreatureId(matrix, creature.id),
+        }
+      })
+    })
+
+    it('第 1 にplayer 側が先頭になるように、第 2 に配置順の昇順で、整列する', function() {
+      const newAttackers = sortAutoAttackersOrder(attackers)
+      assert.strictEqual(newAttackers[0].party.factionId, 'player')
+      assert.strictEqual(newAttackers[1].party.factionId, 'player')
+      assert.strictEqual(
+        newAttackers[0].creature.placementOrder < newAttackers[1].creature.placementOrder,
+        true
+      )
+      assert.strictEqual(newAttackers[2].party.factionId, 'computer')
+      assert.strictEqual(newAttackers[3].party.factionId, 'computer')
+      assert.strictEqual(
+        newAttackers[2].creature.placementOrder < newAttackers[3].creature.placementOrder,
+        true
+      )
     })
   })
 

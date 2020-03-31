@@ -175,6 +175,34 @@ export function removeDeadCreatures(
   }
 }
 
+/**
+ * 自動攻撃の攻撃者リストを発動順で整列する。
+ */
+export function sortAutoAttackersOrder(
+  attackers: CreatureWithPartyOnBattleFieldElement[],
+): CreatureWithPartyOnBattleFieldElement[] {
+  return attackers
+    .slice()
+    // 第 2 条件は、クリーチャーの配置順である。
+    .sort((a, b) => {
+      if (a.creature.placementOrder < b.creature.placementOrder) {
+        return -1
+      } else if (a.creature.placementOrder > b.creature.placementOrder) {
+        return 1
+      }
+      return 0
+    })
+    // 第 1 条件は、player 側かどうかである。
+    .sort((a, b) => {
+      if (a.party.factionId === 'player' && b.party.factionId === 'computer') {
+        return -1
+      } else if (a.party.factionId === 'computer' && b.party.factionId === 'player') {
+        return 1
+      }
+      return 0
+    })
+}
+
 export function invokeAutoAttack(
   constants: Game['constants'],
   creatures: Creature[],
